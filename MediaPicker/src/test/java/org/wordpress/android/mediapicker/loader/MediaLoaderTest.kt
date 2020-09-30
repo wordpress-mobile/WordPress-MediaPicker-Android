@@ -1,4 +1,4 @@
-package org.wordpress.android.mediapicker
+package org.wordpress.android.mediapicker.loader
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.isNull
@@ -13,10 +13,11 @@ import org.junit.Test
 import org.mockito.Mock
 import org.wordpress.android.BaseUnitTest
 import org.wordpress.android.test
+import org.wordpress.android.mediapicker.MediaItem
 import org.wordpress.android.mediapicker.MediaItem.Identifier
-import org.wordpress.android.mediapicker.MediaLoader.DomainModel
-import org.wordpress.android.mediapicker.MediaLoader.LoadAction
-import org.wordpress.android.mediapicker.MediaSource.MediaLoadingResult
+import org.wordpress.android.mediapicker.loader.MediaLoader.DomainModel
+import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction
+import org.wordpress.android.mediapicker.loader.MediaSource.MediaLoadingResult
 import org.wordpress.android.mediapicker.MediaType.IMAGE
 import org.wordpress.android.mediapicker.MediaType.VIDEO
 import org.wordpress.android.util.LocaleManagerWrapper

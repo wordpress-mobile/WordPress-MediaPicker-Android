@@ -1,4 +1,4 @@
-package org.wordpress.android.mediapicker
+package org.wordpress.android.mediapicker.loader
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
@@ -14,8 +14,10 @@ import org.wordpress.android.fluxc.store.MediaStore.FetchMediaListPayload
 import org.wordpress.android.fluxc.store.MediaStore.OnMediaListFetched
 import org.wordpress.android.fluxc.utils.MimeType
 import org.wordpress.android.modules.BG_THREAD
+import org.wordpress.android.mediapicker.MediaItem
 import org.wordpress.android.mediapicker.MediaItem.Identifier.RemoteId
-import org.wordpress.android.mediapicker.MediaSource.MediaLoadingResult
+import org.wordpress.android.mediapicker.MediaType
+import org.wordpress.android.mediapicker.loader.MediaSource.MediaLoadingResult
 import org.wordpress.android.mediapicker.MediaType.AUDIO
 import org.wordpress.android.mediapicker.MediaType.DOCUMENT
 import org.wordpress.android.mediapicker.MediaType.IMAGE
