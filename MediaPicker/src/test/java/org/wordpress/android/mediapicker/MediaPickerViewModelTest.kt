@@ -29,7 +29,6 @@ import org.wordpress.android.mediapicker.MediaPickerUiItem.PhotoItem
 import org.wordpress.android.mediapicker.MediaPickerUiItem.VideoItem
 import org.wordpress.android.mediapicker.MediaPickerViewModel.ActionModeUiModel
 import org.wordpress.android.mediapicker.MediaPickerViewModel.EditActionUiModel
-import org.wordpress.android.mediapicker.MediaPickerViewModel.FabUiModel
 import org.wordpress.android.mediapicker.MediaPickerViewModel.IconClickEvent
 import org.wordpress.android.mediapicker.MediaPickerViewModel.MediaPickerUiState
 import org.wordpress.android.mediapicker.MediaPickerViewModel.PhotoListUiModel.Data
