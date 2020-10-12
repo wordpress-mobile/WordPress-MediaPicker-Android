@@ -2,7 +2,6 @@ package org.wordpress.android.mediapicker.loader
 
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatExceptionOfType
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -12,7 +11,6 @@ import org.wordpress.android.R.string
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.mediapicker.MediaPickerSetup
 import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.DEVICE
-import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.GIF_LIBRARY
 import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.STOCK_LIBRARY
 import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.WP_LIBRARY
 import org.wordpress.android.mediapicker.loader.DeviceListBuilder.DeviceListBuilderFactory
