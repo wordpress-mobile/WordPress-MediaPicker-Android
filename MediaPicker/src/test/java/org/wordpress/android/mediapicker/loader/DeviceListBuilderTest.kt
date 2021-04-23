@@ -18,7 +18,6 @@ import org.wordpress.android.mediapicker.MediaType.IMAGE
 import org.wordpress.android.mediapicker.loader.DeviceMediaLoader.DeviceMediaItem
 import org.wordpress.android.mediapicker.loader.DeviceMediaLoader.DeviceMediaList
 import org.wordpress.android.mediapicker.loader.MediaSource.MediaLoadingResult
-import org.wordpress.android.mediapicker.loader.MediaSource.MediaLoadingResult.Empty
 import org.wordpress.android.util.LocaleManagerWrapper
 import org.wordpress.android.util.MediaUtilsWrapper
 import org.wordpress.android.util.UriWrapper
