@@ -16,4 +16,5 @@ pluginManagement {
 }
 
 rootProject.name = "MediaPicker"
-include ':MediaPicker'
+include ':MediaPicker',
+        ':sampleapp'
