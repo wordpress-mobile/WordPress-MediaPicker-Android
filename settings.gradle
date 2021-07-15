@@ -1,0 +1,19 @@
+pluginManagement {
+    plugins {
+        id 'org.jetbrains.kotlin.android' version '1.5.21'
+    }
+    repositories {
+        google()
+        gradlePluginPortal()
+    }
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.id.contains("com.android")) {
+                useModule("com.android.tools.build:gradle:4.0.2")
+            }
+        }
+    }
+}
+
+rootProject.name = "MediaPicker"
+include ':MediaPicker'
