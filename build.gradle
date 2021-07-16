@@ -1,0 +1,18 @@
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+subprojects {
+    configurations {
+        ktlint
+    }
+
+    apply from: "$project.rootDir/ktlint.gradle"
+
+    dependencies {
+        ktlint "com.pinterest:ktlint:0.40.0"
+    }
+}
