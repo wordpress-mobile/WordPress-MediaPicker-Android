@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
 import org.wordpress.android.BuildConfig
 import org.wordpress.android.R
@@ -53,7 +54,7 @@ import org.wordpress.android.util.WPMediaUtils
 import java.io.File
 import javax.inject.Inject
 
-class MediaPickerActivity : LocaleAwareActivity(), MediaPickerListener {
+class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
     private var mediaCapturePath: String? = null
     private lateinit var mediaPickerSetup: MediaPickerSetup
 
