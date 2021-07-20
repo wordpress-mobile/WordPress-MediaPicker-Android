@@ -216,6 +216,7 @@ class MediaPickerActivity : LocaleAwareActivity(), MediaPickerListener {
             IMAGE_EDITOR_EDIT_IMAGE -> {
                 data?.let {
                     val intent = Intent()
+                    // TODO: 20/07/2021 There's a whole ImageEditor module in WPAndroid. Should we import it?
                     val uris = WPMediaUtils.retrieveImageEditorResult(data)
                     if (mediaPickerSetup.queueResults) {
                         intent.putQueuedUris(uris)
