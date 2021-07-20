@@ -37,6 +37,7 @@ import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.GIF_LIBRARY
 import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.STOCK_LIBRARY
 import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.WP_LIBRARY
+import org.wordpress.android.mediapicker.databinding.PhotoPickerActivityBinding
 import org.wordpress.android.ui.photopicker.MediaPickerConstants
 import org.wordpress.android.ui.photopicker.MediaPickerConstants.EXTRA_LAUNCH_WPSTORIES_CAMERA_REQUESTED
 import org.wordpress.android.ui.photopicker.MediaPickerConstants.EXTRA_MEDIA_ID
@@ -57,12 +58,6 @@ import javax.inject.Inject
 class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
     private var mediaCapturePath: String? = null
     private lateinit var mediaPickerSetup: MediaPickerSetup
-
-    // note that the site isn't required and may be null
-    private var site: SiteModel? = null
-
-    // note that the local post id isn't required (default value is EMPTY_LOCAL_POST_ID)
-    private var localPostId: Int = EMPTY_LOCAL_POST_ID
 
     @Inject lateinit var dispatcher: Dispatcher
 
@@ -114,16 +109,12 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
         }
         if (savedInstanceState == null) {
             mediaPickerSetup = MediaPickerSetup.fromIntent(intent)
-            site = intent.getSerializableExtra(WordPress.SITE) as? SiteModel
-            localPostId = intent.getIntExtra(LOCAL_POST_ID, EMPTY_LOCAL_POST_ID)
         } else {
             mediaPickerSetup = MediaPickerSetup.fromBundle(savedInstanceState)
-            site = savedInstanceState.getSerializable(WordPress.SITE) as? SiteModel
-            localPostId = savedInstanceState.getInt(LOCAL_POST_ID, EMPTY_LOCAL_POST_ID)
         }
         var fragment = pickerFragment
         if (fragment == null) {
-            fragment = newInstance(this, mediaPickerSetup, site)
+            fragment = newInstance(this, mediaPickerSetup)
             supportFragmentManager.beginTransaction()
                     .replace(
                             R.id.fragment_container,
@@ -151,10 +142,6 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         mediaPickerSetup.toBundle(outState)
-        outState.putInt(LOCAL_POST_ID, localPostId)
-        if (site != null) {
-            outState.putSerializable(WordPress.SITE, site)
-        }
         if (!TextUtils.isEmpty(mediaCapturePath)) {
             outState.putString(KEY_MEDIA_CAPTURE_PATH, mediaCapturePath)
         }
@@ -315,7 +302,7 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
             }
             is OpenCameraForWPStories -> launchWPStoriesCamera()
             is SwitchMediaPicker -> {
-                startActivityForResult(buildIntent(this, action.mediaPickerSetup, site, localPostId), PHOTO_PICKER)
+                startActivityForResult(buildIntent(this, action.mediaPickerSetup), PHOTO_PICKER)
             }
             OpenCameraForPhotos -> {
                 WPMediaUtils.launchCamera(this, BuildConfig.APPLICATION_ID) { mediaCapturePath = it }
@@ -331,18 +318,10 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
 
         fun buildIntent(
             context: Context,
-            mediaPickerSetup: MediaPickerSetup,
-            site: SiteModel? = null,
-            localPostId: Int? = null
+            mediaPickerSetup: MediaPickerSetup
         ): Intent {
             val intent = Intent(context, MediaPickerActivity::class.java)
             mediaPickerSetup.toIntent(intent)
-            if (site != null) {
-                intent.putExtra(WordPress.SITE, site)
-            }
-            if (localPostId != null) {
-                intent.putExtra(LOCAL_POST_ID, localPostId)
-            }
             return intent
         }
     }
