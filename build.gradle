@@ -16,3 +16,8 @@ subprojects {
         ktlint "com.pinterest:ktlint:0.40.0"
     }
 }
+
+ext {
+    daggerVersion = '2.35.1'
+    wordpressUtilsVersion = '1.40.0'
+}
