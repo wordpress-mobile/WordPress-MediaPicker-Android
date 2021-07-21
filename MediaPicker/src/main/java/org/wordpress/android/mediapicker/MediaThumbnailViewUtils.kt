@@ -3,7 +3,6 @@ package org.wordpress.android.mediapicker
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import com.bumptech.glide.Glide
 import org.wordpress.android.mediapicker.MediaPickerUiItem.ClickAction
 import org.wordpress.android.mediapicker.MediaPickerUiItem.ToggleAction
 import org.wordpress.android.util.*
@@ -39,7 +38,7 @@ class MediaThumbnailViewUtils {
         toggleAction: ToggleAction,
         animateSelection: Boolean
     ) {
-        Glide.with(imgThumbnail.context).clear(imgThumbnail)
+        imgThumbnail.cancelRequestAndClearImageView()
 
         // not an image or video, so show file name and file type
         val placeholderResId = WPMediaUtils.getPlaceholder(fileName)
