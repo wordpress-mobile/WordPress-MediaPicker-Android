@@ -13,13 +13,12 @@ import androidx.lifecycle.Lifecycle.Event.ON_STOP
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.Observer
-import org.wordpress.android.R
 import org.wordpress.android.mediapicker.MediaPickerViewModel.ActionModeUiModel
-import org.wordpress.android.ui.utils.UiString.UiStringRes
-import org.wordpress.android.ui.utils.UiString.UiStringText
+import org.wordpress.android.util.UiString.UiStringText
+import org.wordpress.android.util.UiString.UiStringRes
 
 class MediaPickerActionModeCallback(private val viewModel: MediaPickerViewModel) : Callback,
-        LifecycleOwner {
+    LifecycleOwner {
     private lateinit var lifecycleRegistry: LifecycleRegistry
     override fun onCreateActionMode(
         actionMode: ActionMode,

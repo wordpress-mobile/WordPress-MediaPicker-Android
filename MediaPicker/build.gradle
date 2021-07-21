@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.plugin.parcelize'
 }
 
 android {
@@ -12,6 +13,10 @@ android {
         targetSdkVersion 30
         versionCode 1
         versionName "0.1"
+    }
+
+    buildFeatures {
+        viewBinding true
     }
 
     compileOptions {

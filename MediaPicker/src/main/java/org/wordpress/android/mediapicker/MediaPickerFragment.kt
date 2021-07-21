@@ -659,14 +659,10 @@ class MediaPickerFragment : Fragment() {
         const val NUM_COLUMNS = 3
         @JvmStatic fun newInstance(
             listener: MediaPickerListener,
-            mediaPickerSetup: MediaPickerSetup,
-            site: SiteModel?
+            mediaPickerSetup: MediaPickerSetup
         ): MediaPickerFragment {
             val args = Bundle()
             mediaPickerSetup.toBundle(args)
-            if (site != null) {
-                args.putSerializable(WordPress.SITE, site)
-            }
             val fragment = MediaPickerFragment()
             fragment.setMediaPickerListener(listener)
             fragment.arguments = args
