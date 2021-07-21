@@ -8,7 +8,6 @@ import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.STOCK_LIBRA
 import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.WP_LIBRARY
 import org.wordpress.android.mediapicker.loader.DeviceListBuilder.DeviceListBuilderFactory
 import org.wordpress.android.mediapicker.loader.MediaLibraryDataSource.MediaLibraryDataSourceFactory
-import org.wordpress.android.util.LocaleManagerWrapper
 import org.wordpress.android.util.NetworkUtilsWrapper
 import javax.inject.Inject
 
@@ -18,7 +17,6 @@ class MediaLoaderFactory
     private val mediaLibraryDataSourceFactory: MediaLibraryDataSourceFactory,
     private val stockMediaDataSource: StockMediaDataSource,
     private val gifMediaDataSource: GifMediaDataSource,
-    private val localeManagerWrapper: LocaleManagerWrapper,
     private val networkUtilsWrapper: NetworkUtilsWrapper
 ) {
     fun build(mediaPickerSetup: MediaPickerSetup, siteModel: SiteModel?): MediaLoader {
@@ -32,5 +30,5 @@ class MediaLoaderFactory
         }.toMediaLoader()
     }
 
-    private fun MediaSource.toMediaLoader() = MediaLoader(this, localeManagerWrapper, networkUtilsWrapper)
+    private fun MediaSource.toMediaLoader() = MediaLoader(this, networkUtilsWrapper)
 }

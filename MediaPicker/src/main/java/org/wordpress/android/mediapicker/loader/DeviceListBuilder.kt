@@ -18,14 +18,12 @@ import org.wordpress.android.mediapicker.MediaType.VIDEO
 import org.wordpress.android.mediapicker.loader.MediaSource.MediaLoadingResult
 import org.wordpress.android.mediapicker.loader.MediaSource.MediaLoadingResult.Empty
 import org.wordpress.android.ui.utils.UiString.UiStringRes
-import org.wordpress.android.util.LocaleManagerWrapper
 import org.wordpress.android.util.MediaUtilsWrapper
 import javax.inject.Inject
 import javax.inject.Named
 
 @Suppress("LongParameterList")
 class DeviceListBuilder(
-    private val localeManagerWrapper: LocaleManagerWrapper,
     private val deviceMediaLoader: DeviceMediaLoader,
     private val mediaUtilsWrapper: MediaUtilsWrapper,
     private val site: SiteModel?,
@@ -44,7 +42,7 @@ class DeviceListBuilder(
         if (!loadMore) {
             cache.clear()
         }
-        val lowerCaseFilter = filter?.toLowerCase(localeManagerWrapper.getLocale())
+        val lowerCaseFilter = filter?.lowercase()
         return withContext(bgDispatcher) {
             val mediaItems = mutableListOf<MediaItem>()
             val deferredJobs = mediaTypes.map { mediaType ->
@@ -173,14 +171,12 @@ class DeviceListBuilder(
 
     class DeviceListBuilderFactory
     @Inject constructor(
-        private val localeManagerWrapper: LocaleManagerWrapper,
         private val deviceMediaLoader: DeviceMediaLoader,
         private val mediaUtilsWrapper: MediaUtilsWrapper,
         @param:Named(BG_THREAD) private val bgDispatcher: CoroutineDispatcher
     ) {
         fun build(mediaTypes: Set<MediaType>, site: SiteModel?): DeviceListBuilder {
             return DeviceListBuilder(
-                    localeManagerWrapper,
                     deviceMediaLoader,
                     mediaUtilsWrapper,
                     site,
