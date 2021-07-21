@@ -16,11 +16,14 @@ import androidx.core.content.FileProvider;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import org.wordpress.android.mediapicker.MediaPickerFragment;
 import org.wordpress.android.mediapicker.R;
+import org.wordpress.android.mediapicker.model.EditImageData;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.wordpress.android.mediapicker.MediaPickerConstants.ARG_EDIT_IMAGE_DATA;
 
 public class WPMediaUtils {
 
@@ -151,7 +154,7 @@ public class WPMediaUtils {
     public static void scanMediaFile(@NonNull Context context, @NonNull String localMediaPath) {
         MediaScannerConnection.scanFile(context,
                 new String[]{localMediaPath}, null,
-                (path, uri) -> AppLog.d(T.MEDIA, "Media scanner finished scanning " + path));
+                (path, uri) -> Log.d(TAG, "Media scanner finished scanning " + path));
     }
 
 
@@ -184,22 +187,23 @@ public class WPMediaUtils {
         }
     }
 
-//    public static List<Uri> retrieveImageEditorResult(Intent data) {
-//        if (data != null && data.hasExtra(PreviewImageFragment.ARG_EDIT_IMAGE_DATA)) {
-//            return convertEditImageOutputToListOfUris(data.getParcelableArrayListExtra(
-//                    PreviewImageFragment.ARG_EDIT_IMAGE_DATA));
-//        } else {
-//            return new ArrayList<Uri>();
-//        }
-//    }
+    public static List<Uri> retrieveImageEditorResult(Intent data) {
+        if (data != null && data.hasExtra(ARG_EDIT_IMAGE_DATA)) {
+            return convertEditImageOutputToListOfUris(
+                    data.getParcelableArrayListExtra(ARG_EDIT_IMAGE_DATA)
+            );
+        } else {
+            return new ArrayList<>();
+        }
+    }
 
-//    private static List<Uri> convertEditImageOutputToListOfUris(List<EditImageData.OutputData> data) {
-//        List<Uri> uris = new ArrayList<>(data.size());
-//        for (EditImageData.OutputData item : data) {
-//            uris.add(Uri.parse(item.getOutputFilePath()));
-//        }
-//        return uris;
-//    }
+    private static List<Uri> convertEditImageOutputToListOfUris(List<EditImageData.OutputData> data) {
+        List<Uri> uris = new ArrayList<>(data.size());
+        for (EditImageData.OutputData item : data) {
+            uris.add(Uri.parse(item.getOutputFilePath()));
+        }
+        return uris;
+    }
 
     public static List<Uri> retrieveMediaUris(Intent data) {
         ClipData clipData = data.getClipData();
