@@ -1,6 +1,7 @@
 package org.wordpress.android.mediapicker.model
 
 import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
 sealed class EditImageData : Parcelable {
     @Parcelize
