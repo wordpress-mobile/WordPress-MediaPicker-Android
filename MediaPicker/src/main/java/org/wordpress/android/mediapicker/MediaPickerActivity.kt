@@ -35,18 +35,14 @@ import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.GIF_LIBRARY
 import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.STOCK_LIBRARY
 import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.WP_LIBRARY
 import org.wordpress.android.mediapicker.databinding.PhotoPickerActivityBinding
-import org.wordpress.android.ui.utils.UiHelpers
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T.MEDIA
 import org.wordpress.android.util.WPMediaUtils
 import java.io.File
-import javax.inject.Inject
 
 class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
     private var mediaCapturePath: String? = null
     private lateinit var mediaPickerSetup: MediaPickerSetup
-
-    @Inject lateinit var uiHelpers: UiHelpers
 
     enum class MediaPickerMediaSource {
         ANDROID_CAMERA, ANDROID_PICKER, APP_PICKER, WP_MEDIA_PICKER, STOCK_MEDIA_PICKER;
@@ -206,8 +202,8 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
         }
     }
 
-    private fun launchChooserWithContext(openSystemPicker: OpenSystemPicker, uiHelpers: UiHelpers) {
-        WPMediaUtils.launchChooserWithContext(this, openSystemPicker, uiHelpers, MEDIA_LIBRARY)
+    private fun launchChooserWithContext(openSystemPicker: OpenSystemPicker) {
+        WPMediaUtils.launchChooserWithContext(this, openSystemPicker, MEDIA_LIBRARY)
     }
 
     private fun launchWPStoriesCamera() {
@@ -277,14 +273,14 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
     override fun onIconClicked(action: MediaPickerAction) {
         when (action) {
             is OpenSystemPicker -> {
-                launchChooserWithContext(action, uiHelpers)
+                launchChooserWithContext(action)
             }
             is OpenCameraForWPStories -> launchWPStoriesCamera()
             is SwitchMediaPicker -> {
                 startActivityForResult(buildIntent(this, action.mediaPickerSetup), PHOTO_PICKER)
             }
             OpenCameraForPhotos -> {
-                WPMediaUtils.launchCamera(this, BuildConfig.APPLICATION_ID) { mediaCapturePath = it }
+                WPMediaUtils.launchCamera(this, applicationContext.packageName) { mediaCapturePath = it }
             }
         }
     }
