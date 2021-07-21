@@ -2,4 +2,7 @@
 <resources>
     <string name="sdcard_title">SD Card Required</string>
     <string name="sdcard_message">A mounted SD card is required to upload media</string>
+    <string name="photo_picker_image_selected">,Selected</string>
+    <string name="photo_picker_image_thumbnail_selected">Image selected</string>
+    <string name="photo_picker_image_thumbnail_unselected">Image unselected</string>
 </resources>
