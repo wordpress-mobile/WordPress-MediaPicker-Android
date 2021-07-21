@@ -3,21 +3,13 @@ package org.wordpress.android.mediapicker
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import org.wordpress.android.R
+import com.bumptech.glide.Glide
 import org.wordpress.android.mediapicker.MediaPickerUiItem.ClickAction
 import org.wordpress.android.mediapicker.MediaPickerUiItem.ToggleAction
-import org.wordpress.android.util.AccessibilityUtils
-import org.wordpress.android.util.AniUtils
-import org.wordpress.android.util.AniUtils.Duration.SHORT
-import org.wordpress.android.util.ColorUtils.setImageResourceWithTint
-import org.wordpress.android.util.PhotoPickerUtils
-import org.wordpress.android.util.ViewUtils
-import org.wordpress.android.util.WPMediaUtils
-import org.wordpress.android.util.image.ImageManager
-import org.wordpress.android.util.redirectContextClickToLongPressListener
+import org.wordpress.android.util.*
 import java.util.Locale
 
-class MediaThumbnailViewUtils(val imageManager: ImageManager) {
+class MediaThumbnailViewUtils {
     fun setupListeners(
         imgThumbnail: ImageView,
         isSelected: Boolean,
@@ -28,10 +20,7 @@ class MediaThumbnailViewUtils(val imageManager: ImageManager) {
         addImageSelectedToAccessibilityFocusedEvent(imgThumbnail, isSelected)
         imgThumbnail.setOnClickListener {
             toggleAction.toggle()
-            PhotoPickerUtils.announceSelectedImageForAccessibility(
-                    imgThumbnail,
-                    isSelected
-            )
+            imgThumbnail.announceSelectedImageForAccessibility(isSelected)
         }
         imgThumbnail.setOnLongClickListener {
             clickAction.click()
@@ -50,22 +39,16 @@ class MediaThumbnailViewUtils(val imageManager: ImageManager) {
         toggleAction: ToggleAction,
         animateSelection: Boolean
     ) {
-        imageManager.cancelRequestAndClearImageView(imgThumbnail)
+        Glide.with(imgThumbnail.context).clear(imgThumbnail)
 
         // not an image or video, so show file name and file type
         val placeholderResId = WPMediaUtils.getPlaceholder(fileName)
-        setImageResourceWithTint(
-                imgThumbnail, placeholderResId,
-                R.color.neutral_30
-        )
+        imgThumbnail.setImageResourceWithTint(placeholderResId, R.color.neutral_30)
 
         addImageSelectedToAccessibilityFocusedEvent(imgThumbnail, isSelected)
         container.setOnClickListener {
             toggleAction.toggle()
-            PhotoPickerUtils.announceSelectedImageForAccessibility(
-                    imgThumbnail,
-                    isSelected
-            )
+            imgThumbnail.announceSelectedImageForAccessibility(isSelected)
         }
         container.setOnLongClickListener {
             clickAction.click()
@@ -100,20 +83,11 @@ class MediaThumbnailViewUtils(val imageManager: ImageManager) {
 
     private fun displaySelection(animate: Boolean, isSelected: Boolean, view: View) {
         if (animate) {
+            val duration = view.context.resources.getInteger(ANI_DURATION).toLong()
             if (isSelected) {
-                AniUtils.scale(
-                        view,
-                        SCALE_NORMAL,
-                        SCALE_SELECTED,
-                        ANI_DURATION
-                )
+                view.scale(SCALE_NORMAL, SCALE_SELECTED, duration)
             } else {
-                AniUtils.scale(
-                        view,
-                        SCALE_SELECTED,
-                        SCALE_NORMAL,
-                        ANI_DURATION
-                )
+                view.scale(SCALE_SELECTED, SCALE_NORMAL, duration)
             }
         } else {
             val scale = if (isSelected) SCALE_SELECTED else SCALE_NORMAL
@@ -131,25 +105,11 @@ class MediaThumbnailViewUtils(val imageManager: ImageManager) {
         txtSelectionCount: TextView
     ) {
         if (animate) {
+            val duration = txtSelectionCount.context.resources.getInteger(ANI_DURATION).toLong()
             when {
-                showOrderCounter -> {
-                    AniUtils.startAnimation(
-                            txtSelectionCount,
-                            R.anim.pop
-                    )
-                }
-                isSelected -> {
-                    AniUtils.fadeIn(
-                            txtSelectionCount,
-                            ANI_DURATION
-                    )
-                }
-                else -> {
-                    AniUtils.fadeOut(
-                            txtSelectionCount,
-                            ANI_DURATION
-                    )
-                }
+                showOrderCounter -> txtSelectionCount.startAnimation(R.anim.pop)
+                isSelected -> txtSelectionCount.fadeIn(duration)
+                else -> txtSelectionCount.fadeOut(duration)
             }
         } else {
             txtSelectionCount.visibility = if (showOrderCounter || isSelected) View.VISIBLE else View.GONE
@@ -198,6 +158,6 @@ class MediaThumbnailViewUtils(val imageManager: ImageManager) {
     companion object {
         private const val SCALE_NORMAL = 1.0f
         private const val SCALE_SELECTED = .8f
-        private val ANI_DURATION = SHORT
+        private val ANI_DURATION = R.integer.config_shortAnimTime
     }
 }

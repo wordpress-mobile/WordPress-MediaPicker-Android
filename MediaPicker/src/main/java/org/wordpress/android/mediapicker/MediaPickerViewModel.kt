@@ -72,7 +72,6 @@ import org.wordpress.android.ui.utils.UiString
 import org.wordpress.android.ui.utils.UiString.UiStringRes
 import org.wordpress.android.ui.utils.UiString.UiStringResWithParams
 import org.wordpress.android.ui.utils.UiString.UiStringText
-import org.wordpress.android.util.LocaleManagerWrapper
 import org.wordpress.android.util.MediaUtilsWrapper
 import org.wordpress.android.util.UriWrapper
 import org.wordpress.android.util.WPPermissionUtils
@@ -91,7 +90,6 @@ class MediaPickerViewModel @Inject constructor(
     private val mediaInsertHandlerFactory: MediaInsertHandlerFactory,
     private val mediaPickerTracker: MediaPickerTracker,
     private val permissionsHandler: PermissionsHandler,
-    private val localeManagerWrapper: LocaleManagerWrapper,
     private val mediaUtilsWrapper: MediaUtilsWrapper,
     private val mediaStore: MediaStore,
     private val resourceProvider: ResourceProvider
@@ -193,7 +191,7 @@ class MediaPickerViewModel @Inject constructor(
                 }
 
                 val fileExtension = it.mimeType?.let { mimeType ->
-                    mediaUtilsWrapper.getExtensionForMimeType(mimeType).toUpperCase(localeManagerWrapper.getLocale())
+                    mediaUtilsWrapper.getExtensionForMimeType(mimeType).uppercase()
                 }
                 when (it.type) {
                     IMAGE -> PhotoItem(
