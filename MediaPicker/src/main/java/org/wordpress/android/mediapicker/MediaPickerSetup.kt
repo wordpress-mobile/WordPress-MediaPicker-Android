@@ -3,7 +3,6 @@ package org.wordpress.android.mediapicker
 import android.content.Intent
 import android.os.Bundle
 import androidx.annotation.StringRes
-import org.wordpress.android.R
 
 data class MediaPickerSetup(
     val primaryDataSource: DataSource,
@@ -19,7 +18,10 @@ data class MediaPickerSetup(
     @StringRes val title: Int
 ) {
     enum class DataSource {
-        DEVICE, WP_LIBRARY, STOCK_LIBRARY, GIF_LIBRARY
+        DEVICE,
+        WP_LIBRARY,
+//        STOCK_LIBRARY,
+//        GIF_LIBRARY
     }
 
     enum class CameraSetup {
