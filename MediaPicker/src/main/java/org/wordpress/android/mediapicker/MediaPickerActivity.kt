@@ -9,19 +9,12 @@ import android.text.TextUtils
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
-import org.wordpress.android.BuildConfig
-import org.wordpress.android.R
-import org.wordpress.android.WordPress
-import org.wordpress.android.databinding.PhotoPickerActivityBinding
-import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.store.MediaStore
-import org.wordpress.android.ui.LocaleAwareActivity
-import org.wordpress.android.ui.RequestCodes.IMAGE_EDITOR_EDIT_IMAGE
-import org.wordpress.android.ui.RequestCodes.MEDIA_LIBRARY
-import org.wordpress.android.ui.RequestCodes.PHOTO_PICKER
-import org.wordpress.android.ui.RequestCodes.TAKE_PHOTO
-import org.wordpress.android.ui.media.MediaBrowserActivity
+import org.wordpress.android.mediapicker.MediaPickerRequestCodes.IMAGE_EDITOR_EDIT_IMAGE
+import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_LAUNCH_WPSTORIES_CAMERA_REQUESTED
+import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_MEDIA_ID
+import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_MEDIA_QUEUED_URIS
+import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_MEDIA_SOURCE
+import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_MEDIA_URIS
 import org.wordpress.android.mediapicker.MediaItem.Identifier
 import org.wordpress.android.mediapicker.MediaPickerActivity.MediaPickerMediaSource.ANDROID_CAMERA
 import org.wordpress.android.mediapicker.MediaPickerActivity.MediaPickerMediaSource.APP_PICKER
@@ -32,40 +25,24 @@ import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerAction.O
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerAction.OpenSystemPicker
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerAction.SwitchMediaPicker
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerListener
+import org.wordpress.android.mediapicker.MediaPickerRequestCodes.MEDIA_LIBRARY
+import org.wordpress.android.mediapicker.MediaPickerRequestCodes.PHOTO_PICKER
+import org.wordpress.android.mediapicker.MediaPickerRequestCodes.TAKE_PHOTO
 import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource
 import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.GIF_LIBRARY
 import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.STOCK_LIBRARY
 import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.WP_LIBRARY
 import org.wordpress.android.mediapicker.databinding.PhotoPickerActivityBinding
-import org.wordpress.android.ui.photopicker.MediaPickerConstants
-import org.wordpress.android.ui.photopicker.MediaPickerConstants.EXTRA_LAUNCH_WPSTORIES_CAMERA_REQUESTED
-import org.wordpress.android.ui.photopicker.MediaPickerConstants.EXTRA_MEDIA_ID
-import org.wordpress.android.ui.photopicker.MediaPickerConstants.EXTRA_MEDIA_QUEUED_URIS
-import org.wordpress.android.ui.photopicker.MediaPickerConstants.EXTRA_MEDIA_SOURCE
-import org.wordpress.android.ui.photopicker.MediaPickerConstants.EXTRA_MEDIA_URIS
-import org.wordpress.android.ui.photopicker.MediaPickerConstants.LOCAL_POST_ID
-import org.wordpress.android.ui.posts.EMPTY_LOCAL_POST_ID
-import org.wordpress.android.ui.posts.FeaturedImageHelper
-import org.wordpress.android.ui.posts.editor.ImageEditorTracker
 import org.wordpress.android.ui.utils.UiHelpers
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T.MEDIA
-import org.wordpress.android.util.WPMediaUtils
 import java.io.File
 import javax.inject.Inject
 
 class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
     private var mediaCapturePath: String? = null
     private lateinit var mediaPickerSetup: MediaPickerSetup
-
-    @Inject lateinit var dispatcher: Dispatcher
-
-    @Inject lateinit var mediaStore: MediaStore
-
-    @Inject lateinit var featuredImageHelper: FeaturedImageHelper
-
-    @Inject lateinit var imageEditorTracker: ImageEditorTracker
 
     @Inject lateinit var uiHelpers: UiHelpers
 
@@ -97,7 +74,6 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (application as WordPress).component().inject(this)
         val binding = PhotoPickerActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.toolbarMain.setNavigationIcon(R.drawable.ic_close_white_24dp)
