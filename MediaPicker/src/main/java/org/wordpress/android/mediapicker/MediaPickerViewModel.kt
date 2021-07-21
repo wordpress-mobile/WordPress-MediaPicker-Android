@@ -10,10 +10,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
-import org.wordpress.android.R
-import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.store.MediaStore
 import org.wordpress.android.fluxc.utils.MimeTypes
 import org.wordpress.android.modules.BG_THREAD
 import org.wordpress.android.modules.UI_THREAD
@@ -93,7 +90,6 @@ class MediaPickerViewModel @Inject constructor(
     private val permissionsHandler: PermissionsHandler,
     private val localeManagerWrapper: LocaleManagerWrapper,
     private val mediaUtilsWrapper: MediaUtilsWrapper,
-    private val mediaStore: MediaStore,
     private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(mainDispatcher) {
     private lateinit var mediaLoader: MediaLoader
@@ -407,8 +403,7 @@ class MediaPickerViewModel @Inject constructor(
             is RemoteId -> {
                 site?.let {
                     launch {
-                        val media: MediaModel = mediaStore.getSiteMediaWithId(it, identifier.value)
-                        _onNavigate.postValue(Event(PreviewMedia(media)))
+                        _onNavigate.postValue(Event(PreviewMedia(identifier.value)))
                     }
                 }
             }
