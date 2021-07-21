@@ -64,7 +64,6 @@ import org.wordpress.android.ui.photopicker.PermissionsHandler
 import org.wordpress.android.ui.utils.UiString
 import org.wordpress.android.ui.utils.UiString.UiStringRes
 import org.wordpress.android.ui.utils.UiString.UiStringText
-import org.wordpress.android.util.LocaleManagerWrapper
 import org.wordpress.android.util.MediaUtilsWrapper
 import org.wordpress.android.util.UriWrapper
 import org.wordpress.android.viewmodel.Event
@@ -81,7 +80,6 @@ class MediaPickerViewModelTest : BaseUnitTest() {
     @Mock lateinit var uriWrapper2: UriWrapper
     @Mock lateinit var permissionsHandler: PermissionsHandler
     @Mock lateinit var context: Context
-    @Mock lateinit var localeManagerWrapper: LocaleManagerWrapper
     @Mock lateinit var mediaUtilsWrapper: MediaUtilsWrapper
     @Mock lateinit var resourceProvider: ResourceProvider
     @Mock lateinit var mediaStore: MediaStore
@@ -111,7 +109,6 @@ class MediaPickerViewModelTest : BaseUnitTest() {
                 mediaInsertHandlerFactory,
                 mediaPickerTracker,
                 permissionsHandler,
-                localeManagerWrapper,
                 mediaUtilsWrapper,
                 mediaStore,
                 resourceProvider
@@ -130,7 +127,6 @@ class MediaPickerViewModelTest : BaseUnitTest() {
         whenever(mediaUtilsWrapper.getExtensionForMimeType("video/mpeg")).thenReturn("mpg")
         whenever(mediaUtilsWrapper.getExtensionForMimeType("application/pdf")).thenReturn("pdf")
         whenever(mediaUtilsWrapper.getSitePlanForMimeTypes(site)).thenReturn(MimeTypes.Plan.NO_PLAN_SPECIFIED)
-        whenever(localeManagerWrapper.getLocale()).thenReturn(Locale.US)
     }
 
     @Test

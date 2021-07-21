@@ -17,7 +17,6 @@ import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.STOCK_LIBRA
 import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.WP_LIBRARY
 import org.wordpress.android.mediapicker.loader.DeviceListBuilder.DeviceListBuilderFactory
 import org.wordpress.android.mediapicker.loader.MediaLibraryDataSource.MediaLibraryDataSourceFactory
-import org.wordpress.android.util.LocaleManagerWrapper
 import org.wordpress.android.util.NetworkUtilsWrapper
 
 @RunWith(MockitoJUnitRunner::class)
@@ -28,7 +27,6 @@ class MediaLoaderFactoryTest {
     @Mock lateinit var mediaLibraryDataSource: MediaLibraryDataSource
     @Mock lateinit var stockMediaDataSource: StockMediaDataSource
     @Mock lateinit var gifMediaDataSource: GifMediaDataSource
-    @Mock lateinit var localeManagerWrapper: LocaleManagerWrapper
     @Mock lateinit var networkUtilsWrapper: NetworkUtilsWrapper
     @Mock lateinit var site: SiteModel
     private lateinit var mediaLoaderFactory: MediaLoaderFactory
@@ -40,7 +38,6 @@ class MediaLoaderFactoryTest {
                 mediaLibraryDataSourceFactory,
                 stockMediaDataSource,
                 gifMediaDataSource,
-                localeManagerWrapper,
                 networkUtilsWrapper
         )
     }
@@ -66,7 +63,6 @@ class MediaLoaderFactoryTest {
         assertThat(mediaLoader).isEqualTo(
                 MediaLoader(
                         deviceListBuilder,
-                        localeManagerWrapper,
                         networkUtilsWrapper
                 )
         )
@@ -94,7 +90,6 @@ class MediaLoaderFactoryTest {
         assertThat(mediaLoader).isEqualTo(
                 MediaLoader(
                         mediaLibraryDataSource,
-                        localeManagerWrapper,
                         networkUtilsWrapper
                 )
         )
@@ -121,7 +116,6 @@ class MediaLoaderFactoryTest {
         assertThat(mediaLoader).isEqualTo(
                 MediaLoader(
                         stockMediaDataSource,
-                        localeManagerWrapper,
                         networkUtilsWrapper
                 )
         )
@@ -148,7 +142,6 @@ class MediaLoaderFactoryTest {
         assertThat(mediaLoader).isEqualTo(
                 MediaLoader(
                         gifMediaDataSource,
-                        localeManagerWrapper,
                         networkUtilsWrapper
                 )
         )

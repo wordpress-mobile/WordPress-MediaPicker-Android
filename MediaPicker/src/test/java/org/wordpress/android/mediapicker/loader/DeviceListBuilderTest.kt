@@ -18,13 +18,11 @@ import org.wordpress.android.mediapicker.MediaType.IMAGE
 import org.wordpress.android.mediapicker.loader.DeviceMediaLoader.DeviceMediaItem
 import org.wordpress.android.mediapicker.loader.DeviceMediaLoader.DeviceMediaList
 import org.wordpress.android.mediapicker.loader.MediaSource.MediaLoadingResult
-import org.wordpress.android.util.LocaleManagerWrapper
 import org.wordpress.android.util.MediaUtilsWrapper
 import org.wordpress.android.util.UriWrapper
 
 @InternalCoroutinesApi
 class DeviceListBuilderTest : BaseUnitTest() {
-    @Mock lateinit var localeManagerWrapper: LocaleManagerWrapper
     @Mock lateinit var deviceMediaLoader: DeviceMediaLoader
     @Mock lateinit var mediaUtilsWrapper: MediaUtilsWrapper
     @Mock lateinit var site: SiteModel
@@ -309,7 +307,6 @@ class DeviceListBuilderTest : BaseUnitTest() {
 
     private fun setUp(allowedTypes: Set<MediaType>) {
         deviceListBuilder = DeviceListBuilder(
-                localeManagerWrapper,
                 deviceMediaLoader,
                 mediaUtilsWrapper,
                 site,
