@@ -7,4 +7,6 @@ interface MimeTypeSupportProvider {
     fun isSupportedApplicationType(mimeType: String): Boolean
 
     fun isSupportedMimeType(mimeType: String): Boolean
+
+    fun getMimeTypeForExtension(fileExtension: String): String
 }

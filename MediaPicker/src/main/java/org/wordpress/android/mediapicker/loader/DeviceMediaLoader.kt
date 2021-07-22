@@ -10,19 +10,19 @@ import android.provider.MediaStore.Images.Media
 import android.provider.MediaStore.MediaColumns
 import android.provider.MediaStore.Video
 import android.webkit.MimeTypeMap
-import org.wordpress.android.fluxc.utils.MimeTypes
 import org.wordpress.android.mediapicker.MediaType
 import org.wordpress.android.mediapicker.MediaType.AUDIO
 import org.wordpress.android.mediapicker.MediaType.IMAGE
 import org.wordpress.android.mediapicker.MediaType.VIDEO
+import org.wordpress.android.mediapicker.api.MimeTypeSupportProvider
 import org.wordpress.android.util.SqlUtils
 import org.wordpress.android.util.UriWrapper
 import java.io.File
-import javax.inject.Inject
 
-class DeviceMediaLoader
-@Inject constructor(private val context: Context) {
-    private val mimeTypes = MimeTypes()
+class DeviceMediaLoader(
+        private val context: Context,
+        private val mimeTypeSupportProvider: MimeTypeSupportProvider,
+) {
     fun loadMedia(
         mediaType: MediaType,
         filter: String?,
@@ -116,7 +116,7 @@ class DeviceMediaLoader
             context.contentResolver.getType(uri.uri)
         } else {
             val fileExtension: String = MimeTypeMap.getFileExtensionFromUrl(uri.uri.toString())
-            mimeTypes.getMimeTypeForExtension(fileExtension)
+            mimeTypeSupportProvider.getMimeTypeForExtension(fileExtension)
         }
     }
 
