@@ -10,8 +10,7 @@ import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.WP_LIBRARY
 //import org.wordpress.android.mediapicker.insert.StockMediaInsertUseCase.StockMediaInsertUseCaseFactory
 import javax.inject.Inject
 
-class MediaInsertHandlerFactory
-@Inject constructor(
+class MediaInsertHandlerFactory(
     private val deviceListInsertUseCaseFactory: DeviceListInsertUseCaseFactory,
 //    private val stockMediaInsertUseCaseFactory: StockMediaInsertUseCaseFactory,
 //    private val gifMediaInsertUseCaseFactory: GifMediaInsertUseCaseFactory
@@ -19,7 +18,7 @@ class MediaInsertHandlerFactory
     fun build(mediaPickerSetup: MediaPickerSetup): MediaInsertHandler {
         return when (mediaPickerSetup.primaryDataSource) {
             DEVICE -> deviceListInsertUseCaseFactory.build(mediaPickerSetup.queueResults)
-            WP_LIBRARY -> DefaultMediaInsertUseCase
+//            WP_LIBRARY -> DefaultMediaInsertUseCase
 //            STOCK_LIBRARY -> stockMediaInsertUseCaseFactory.build(requireNotNull(siteModel) {
 //                "Site is necessary when inserting into stock media library "
 //            })
