@@ -6,18 +6,10 @@ import org.wordpress.android.mediapicker.loader.DeviceListBuilder.DeviceListBuil
 
 class MediaLoaderFactory(
     private val deviceListBuilderFactory: DeviceListBuilderFactory,
-//    private val mediaLibraryDataSourceFactory: MediaLibraryDataSourceFactory,
-//    private val stockMediaDataSource: StockMediaDataSource,
-//    private val gifMediaDataSource: GifMediaDataSource,
 ) {
     fun build(mediaPickerSetup: MediaPickerSetup, siteId: Long): MediaLoader {
         return when (mediaPickerSetup.primaryDataSource) {
             DEVICE -> deviceListBuilderFactory.build(siteId, mediaPickerSetup.allowedTypes)
-//            WP_LIBRARY -> mediaLibraryDataSourceFactory.build(requireNotNull(siteModel) {
-//                "Site is necessary when loading WP media library "
-//            }, mediaPickerSetup.allowedTypes)
-//            STOCK_LIBRARY -> stockMediaDataSource
-//            GIF_LIBRARY -> gifMediaDataSource
         }.toMediaLoader()
     }
 

@@ -19,9 +19,6 @@ data class MediaPickerSetup(
 ) {
     enum class DataSource {
         DEVICE,
-//        WP_LIBRARY,
-//        STOCK_LIBRARY,
-//        GIF_LIBRARY
     }
 
     enum class CameraSetup {
