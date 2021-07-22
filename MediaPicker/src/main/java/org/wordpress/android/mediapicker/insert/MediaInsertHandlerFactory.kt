@@ -1,14 +1,12 @@
 package org.wordpress.android.mediapicker.insert
 
-import org.wordpress.android.mediapicker.MediaPickerSetup
-import org.wordpress.android.mediapicker.insert.DeviceListInsertUseCase.DeviceListInsertUseCaseFactory
-import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.DEVICE
 //import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.GIF_LIBRARY
 //import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.STOCK_LIBRARY
-import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.WP_LIBRARY
 //import org.wordpress.android.mediapicker.insert.GifMediaInsertUseCase.GifMediaInsertUseCaseFactory
 //import org.wordpress.android.mediapicker.insert.StockMediaInsertUseCase.StockMediaInsertUseCaseFactory
-import javax.inject.Inject
+import org.wordpress.android.mediapicker.MediaPickerSetup
+import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.DEVICE
+import org.wordpress.android.mediapicker.insert.DeviceListInsertUseCase.DeviceListInsertUseCaseFactory
 
 class MediaInsertHandlerFactory(
     private val deviceListInsertUseCaseFactory: DeviceListInsertUseCaseFactory,
