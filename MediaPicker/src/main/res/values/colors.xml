@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="neutral_30">#8c8f94</color>
+
+    <color name="blue_5">#bbe0fa</color>
+    <color name="blue_10">#91caf2</color>
+    <color name="blue_20">#68b3e8</color>
+    <color name="blue_30">#399ce3</color>
+    <color name="blue_50">#0675c4</color>
 </resources>
