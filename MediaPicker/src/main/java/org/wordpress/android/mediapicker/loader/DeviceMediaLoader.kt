@@ -10,20 +10,19 @@ import android.provider.MediaStore.Images.Media
 import android.provider.MediaStore.MediaColumns
 import android.provider.MediaStore.Video
 import android.webkit.MimeTypeMap
-import org.wordpress.android.fluxc.utils.MimeTypes
 import org.wordpress.android.mediapicker.MediaType
 import org.wordpress.android.mediapicker.MediaType.AUDIO
 import org.wordpress.android.mediapicker.MediaType.IMAGE
 import org.wordpress.android.mediapicker.MediaType.VIDEO
-import org.wordpress.android.util.LocaleManagerWrapper
+import org.wordpress.android.mediapicker.api.MimeTypeSupportProvider
 import org.wordpress.android.util.SqlUtils
 import org.wordpress.android.util.UriWrapper
 import java.io.File
-import javax.inject.Inject
 
-class DeviceMediaLoader
-@Inject constructor(private val context: Context, private val localeManagerWrapper: LocaleManagerWrapper) {
-    private val mimeTypes = MimeTypes()
+class DeviceMediaLoader(
+        private val context: Context,
+        private val mimeTypeSupportProvider: MimeTypeSupportProvider,
+) {
     fun loadMedia(
         mediaType: MediaType,
         filter: String?,
@@ -91,9 +90,7 @@ class DeviceMediaLoader
     fun loadDocuments(filter: String?, pageSize: Int, limitDate: Long? = null): DeviceMediaList {
         val storagePublicDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
         val nextPage = (storagePublicDirectory?.listFiles() ?: arrayOf()).filter {
-            (limitDate == null || it.lastModifiedInSecs() <= limitDate) && (filter == null || it.name?.toLowerCase(
-                    localeManagerWrapper.getLocale()
-            )?.contains(filter) == true)
+            (limitDate == null || it.lastModifiedInSecs() <= limitDate) && (filter == null || it.name?.lowercase()?.contains(filter) == true)
         }.sortedByDescending { it.lastModified() }.take(pageSize + 1)
 
         val nextItem = if (nextPage.size > pageSize) {
@@ -119,7 +116,7 @@ class DeviceMediaLoader
             context.contentResolver.getType(uri.uri)
         } else {
             val fileExtension: String = MimeTypeMap.getFileExtensionFromUrl(uri.uri.toString())
-            mimeTypes.getMimeTypeForExtension(fileExtension)
+            mimeTypeSupportProvider.getMimeTypeForExtension(fileExtension)
         }
     }
 

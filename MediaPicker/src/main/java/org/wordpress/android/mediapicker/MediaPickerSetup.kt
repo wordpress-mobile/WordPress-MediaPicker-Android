@@ -18,7 +18,7 @@ data class MediaPickerSetup(
     @StringRes val title: Int
 ) {
     enum class DataSource {
-        DEVICE, WP_LIBRARY, STOCK_LIBRARY, GIF_LIBRARY
+        DEVICE,
     }
 
     enum class CameraSetup {
