@@ -16,7 +16,6 @@ import org.wordpress.android.mediapicker.loader.MediaSource.MediaLoadingResult
 import org.wordpress.android.mediapicker.loader.MediaSource.MediaLoadingResult.Empty
 import org.wordpress.android.mediapicker.loader.MediaSource.MediaLoadingResult.Failure
 import org.wordpress.android.mediapicker.loader.MediaSource.MediaLoadingResult.Success
-import org.wordpress.android.util.UiString
 
 data class MediaLoader(private val mediaSource: MediaSource) {
     suspend fun loadMedia(actions: Channel<LoadAction>): Flow<DomainModel> {
@@ -53,8 +52,8 @@ data class MediaLoader(private val mediaSource: MediaSource) {
             is Start -> {
                 if (state.domainItems.isEmpty()) {
                     buildDomainModel(
-                            mediaSource.load(filter = loadAction.filter),
-                            state.copy(filter = loadAction.filter)
+                        mediaSource.load(filter = loadAction.filter),
+                        state.copy(filter = loadAction.filter)
                     )
                 } else {
                     state
@@ -63,10 +62,11 @@ data class MediaLoader(private val mediaSource: MediaSource) {
             is Refresh -> {
                 if (loadAction.forced || state.domainItems.isEmpty()) {
                     buildDomainModel(
-                            mediaSource.load(
-                                    filter = state.filter,
-                                    forced = loadAction.forced
-                            ), state
+                        mediaSource.load(
+                            filter = state.filter,
+                            forced = loadAction.forced
+                        ),
+                        state
                     )
                 } else {
                     state
@@ -103,34 +103,34 @@ data class MediaLoader(private val mediaSource: MediaSource) {
     ): DomainModel {
         return when (partialResult) {
             is Success -> state.copy(
-                    isLoading = false,
-                    hasMore = partialResult.hasMore,
-                    domainItems = partialResult.data,
-                    emptyState = null
+                isLoading = false,
+                hasMore = partialResult.hasMore,
+                domainItems = partialResult.data,
+                emptyState = null
             )
             is Empty -> state.copy(
-                    isLoading = false,
-                    hasMore = false,
-                    domainItems = listOf(),
-                    emptyState = EmptyState(
-                            partialResult.title,
-                            partialResult.htmlSubtitle,
-                            partialResult.image,
-                            partialResult.bottomImage,
-                            partialResult.bottomImageContentDescription,
-                            isError = false
-                    )
+                isLoading = false,
+                hasMore = false,
+                domainItems = listOf(),
+                emptyState = EmptyState(
+                    partialResult.title,
+                    partialResult.htmlSubtitle,
+                    partialResult.image,
+                    partialResult.bottomImage,
+                    partialResult.bottomImageContentDescription,
+                    isError = false
+                )
             )
             is Failure -> state.copy(
-                    isLoading = false,
-                    hasMore = partialResult.data.isNotEmpty(),
-                    domainItems = partialResult.data,
-                    emptyState = EmptyState(
-                            partialResult.title,
-                            partialResult.htmlSubtitle,
-                            partialResult.image,
-                            isError = true
-                    )
+                isLoading = false,
+                hasMore = partialResult.data.isNotEmpty(),
+                domainItems = partialResult.data,
+                emptyState = EmptyState(
+                    partialResult.title,
+                    partialResult.htmlSubtitle,
+                    partialResult.image,
+                    isError = true
+                )
             )
         }
     }
@@ -153,11 +153,11 @@ data class MediaLoader(private val mediaSource: MediaSource) {
         val emptyState: EmptyState? = null
     ) {
         data class EmptyState(
-            val title: UiString,
-            val htmlSubtitle: UiString? = null,
+            val title: String,
+            val htmlSubtitle: String? = null,
             val image: Int? = null,
             val bottomImage: Int? = null,
-            val bottomImageDescription: UiString? = null,
+            val bottomImageDescription: String? = null,
             val isError: Boolean = false
         )
     }
