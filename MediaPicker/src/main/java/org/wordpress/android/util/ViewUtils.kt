@@ -9,13 +9,6 @@ import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AnimationUtils
 import android.view.animation.LinearInterpolator
-import android.widget.ImageView
-import androidx.annotation.ColorRes
-import androidx.annotation.DrawableRes
-import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContextCompat
-import androidx.core.widget.ImageViewCompat
-import org.wordpress.android.mediapicker.R
 
 fun View.redirectContextClickToLongPressListener() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -68,28 +61,5 @@ fun View?.fadeOut(duration: Long) {
                 }
             })
         }.start()
-    }
-}
-
-fun ImageView.setImageResourceWithTint(
-    @DrawableRes drawableResId: Int,
-    @ColorRes colorResId: Int
-) {
-    setImageDrawable(ContextCompat.getDrawable(context, drawableResId))
-    ImageViewCompat.setImageTintList(
-        this,
-        AppCompatResources.getColorStateList(context, colorResId)
-    )
-}
-
-fun ImageView.announceSelectedImageForAccessibility(itemSelected: Boolean) {
-    if (itemSelected) {
-        announceForAccessibility(
-            context.getString(R.string.photo_picker_image_thumbnail_selected)
-        )
-    } else {
-        announceForAccessibility(
-            context.getString(R.string.photo_picker_image_thumbnail_unselected)
-        )
     }
 }
