@@ -14,8 +14,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.Observer
 import org.wordpress.android.mediapicker.MediaPickerViewModel.ActionModeUiModel
-import org.wordpress.android.util.UiString.UiStringText
-import org.wordpress.android.util.UiString.UiStringRes
 
 class MediaPickerActionModeCallback(private val viewModel: MediaPickerViewModel) : Callback,
     LifecycleOwner {
@@ -59,11 +57,7 @@ class MediaPickerActionModeCallback(private val viewModel: MediaPickerViewModel)
                         editItem.isVisible = false
                     }
 
-                    if (uiModel.actionModeTitle is UiStringText) {
-                        actionMode.title = uiModel.actionModeTitle.text
-                    } else if (uiModel.actionModeTitle is UiStringRes) {
-                        actionMode.setTitle(uiModel.actionModeTitle.stringRes)
-                    }
+                    actionMode.title = uiModel.actionModeTitle
                 }
             }
         })

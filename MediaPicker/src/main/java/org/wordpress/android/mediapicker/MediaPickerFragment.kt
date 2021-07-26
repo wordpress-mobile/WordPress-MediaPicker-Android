@@ -95,14 +95,14 @@ class MediaPickerFragment : Fragment() {
 
     enum class ChooserContext(
         val intentAction: String,
-        val title: UiStringRes,
+        val title: Int,
         val mediaTypeFilter: String
     ) {
-        PHOTO(ACTION_GET_CONTENT, UiStringRes(R.string.pick_photo), "image/*"),
-        VIDEO(ACTION_GET_CONTENT, UiStringRes(R.string.pick_video), "video/*"),
-        PHOTO_OR_VIDEO(ACTION_GET_CONTENT, UiStringRes(R.string.pick_media), "*/*"),
-        AUDIO(ACTION_GET_CONTENT, UiStringRes(R.string.pick_audio), "*/*"),
-        MEDIA_FILE(ACTION_OPEN_DOCUMENT, UiStringRes(R.string.pick_file), "*/*");
+        PHOTO(ACTION_GET_CONTENT, R.string.pick_photo, "image/*"),
+        VIDEO(ACTION_GET_CONTENT, R.string.pick_video, "video/*"),
+        PHOTO_OR_VIDEO(ACTION_GET_CONTENT, R.string.pick_media, "*/*"),
+        AUDIO(ACTION_GET_CONTENT, R.string.pick_audio, "*/*"),
+        MEDIA_FILE(ACTION_OPEN_DOCUMENT, R.string.pick_file, "*/*");
     }
 
     sealed class MediaPickerAction {

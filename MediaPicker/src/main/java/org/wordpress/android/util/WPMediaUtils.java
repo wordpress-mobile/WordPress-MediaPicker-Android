@@ -63,7 +63,7 @@ public class WPMediaUtils {
         if (openSystemPicker.getAllowMultipleSelection()) {
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         }
-        return Intent.createChooser(intent, UiHelper.INSTANCE.getTextOfUiString(context, chooserContext.getTitle()));
+        return Intent.createChooser(intent, context.getString(chooserContext.getTitle()));
     }
 
     public static void launchCamera(Activity activity, String applicationId, LaunchCameraCallback callback) {
