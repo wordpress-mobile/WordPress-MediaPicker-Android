@@ -3,7 +3,6 @@ package org.wordpress.android.mediapicker.loader
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.isNull
 import com.nhaarman.mockitokotlin2.whenever
-import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
@@ -25,9 +24,12 @@ import org.wordpress.android.mediapicker.loader.MediaSource.MediaLoadingResult
 
 @RunWith(MockitoJUnitRunner::class)
 class MediaLoaderTest {
-    @Mock lateinit var mediaSource: MediaSource
-    @Mock lateinit var identifier1: Identifier
-    @Mock lateinit var identifier2: Identifier
+    @Mock
+    lateinit var mediaSource: MediaSource
+    @Mock
+    lateinit var identifier1: Identifier
+    @Mock
+    lateinit var identifier2: Identifier
     private lateinit var mediaLoader: MediaLoader
     private lateinit var firstMediaItem: MediaItem
     private lateinit var secondMediaItem: MediaItem
@@ -35,18 +37,20 @@ class MediaLoaderTest {
     @Before
     fun setUp() {
         mediaLoader = MediaLoader(mediaSource)
-        firstMediaItem = MediaItem(identifier1, "url://first_item", "first item", IMAGE, "image/jpeg", 1)
-        secondMediaItem = MediaItem(identifier2, "url://second_item", "second item", VIDEO, "video/mpeg", 2)
+        firstMediaItem =
+            MediaItem(identifier1, "url://first_item", "first item", IMAGE, "image/jpeg", 1)
+        secondMediaItem =
+            MediaItem(identifier2, "url://second_item", "second item", VIDEO, "video/mpeg", 2)
     }
 
     @Test
     fun `loads media items on start`() = withMediaLoader { resultModel, performAction ->
         val mediaItems = listOf(firstMediaItem)
         whenever(
-                mediaSource.load(
-                        forced = false,
-                        loadMore = false
-                )
+            mediaSource.load(
+                forced = false,
+                loadMore = false
+            )
         ).thenReturn(MediaLoadingResult.Success(mediaItems, hasMore = false))
 
         performAction(LoadAction.Start(), true)
@@ -120,13 +124,18 @@ class MediaLoaderTest {
     fun `filters out media item`() = withMediaLoader { resultModel, performAction ->
         val mediaItems = listOf(firstMediaItem, secondMediaItem)
         val filter = "second"
-        whenever(mediaSource.load(forced = false, loadMore = false)).thenReturn(MediaLoadingResult.Success(mediaItems))
         whenever(
-                mediaSource.load(
-                        forced = false,
-                        loadMore = false,
-                        filter = filter
-                )
+            mediaSource.load(
+                forced = false,
+                loadMore = false
+            )
+        ).thenReturn(MediaLoadingResult.Success(mediaItems))
+        whenever(
+            mediaSource.load(
+                forced = false,
+                loadMore = false,
+                filter = filter
+            )
         ).thenReturn(MediaLoadingResult.Success(listOf(secondMediaItem)))
 
         performAction(LoadAction.Start(), true)
@@ -145,17 +154,17 @@ class MediaLoaderTest {
         val mediaItems = listOf(firstMediaItem, secondMediaItem)
         val filter = "second"
         whenever(
-                mediaSource.load(
-                        forced = false,
-                        loadMore = false,
-                        filter = filter
-                )
+            mediaSource.load(
+                forced = false,
+                loadMore = false,
+                filter = filter
+            )
         ).thenReturn(MediaLoadingResult.Success(listOf(secondMediaItem)))
         whenever(
-                mediaSource.load(
-                        forced = false,
-                        loadMore = false
-                )
+            mediaSource.load(
+                forced = false,
+                loadMore = false
+            )
         ).thenReturn(MediaLoadingResult.Success(mediaItems))
 
         performAction(LoadAction.Start(), true)
@@ -183,7 +192,6 @@ class MediaLoaderTest {
         }
     }
 
-    @OptIn(InternalCoroutinesApi::class)
     private fun withMediaLoader(
         assertFunction: suspend (
             domainModels: List<DomainModel>,
