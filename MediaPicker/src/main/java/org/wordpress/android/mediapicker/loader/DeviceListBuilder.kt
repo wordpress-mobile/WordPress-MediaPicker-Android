@@ -3,11 +3,6 @@ package org.wordpress.android.mediapicker.loader
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
-import org.wordpress.android.R
-import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.utils.MediaUtils
-import org.wordpress.android.fluxc.utils.MimeTypes
-import org.wordpress.android.modules.BG_THREAD
 import org.wordpress.android.mediapicker.MediaItem
 import org.wordpress.android.mediapicker.MediaItem.Identifier.LocalUri
 import org.wordpress.android.mediapicker.MediaType
@@ -15,23 +10,20 @@ import org.wordpress.android.mediapicker.MediaType.AUDIO
 import org.wordpress.android.mediapicker.MediaType.DOCUMENT
 import org.wordpress.android.mediapicker.MediaType.IMAGE
 import org.wordpress.android.mediapicker.MediaType.VIDEO
+import org.wordpress.android.mediapicker.R
+import org.wordpress.android.mediapicker.api.MimeTypeSupportProvider
 import org.wordpress.android.mediapicker.loader.MediaSource.MediaLoadingResult
 import org.wordpress.android.mediapicker.loader.MediaSource.MediaLoadingResult.Empty
-import org.wordpress.android.ui.utils.UiString.UiStringRes
-import org.wordpress.android.util.MediaUtilsWrapper
-import javax.inject.Inject
-import javax.inject.Named
+import org.wordpress.android.util.UiString.*
 
-@Suppress("LongParameterList")
 class DeviceListBuilder(
     private val deviceMediaLoader: DeviceMediaLoader,
-    private val mediaUtilsWrapper: MediaUtilsWrapper,
-    private val site: SiteModel?,
-    @param:Named(BG_THREAD) private val bgDispatcher: CoroutineDispatcher,
+    private val siteId: Long,
+    private val bgDispatcher: CoroutineDispatcher,
     private val mediaTypes: Set<MediaType>,
-    private val pageSize: Int
+    private val pageSize: Int,
+    private val mimeTypeSupportProvider: MimeTypeSupportProvider,
 ) : MediaSource {
-    private val mimeTypes = MimeTypes()
     private val cache = mutableMapOf<MediaType, Result>()
 
     override suspend fun load(
@@ -101,14 +93,9 @@ class DeviceListBuilder(
         val deviceMediaList = deviceMediaLoader.loadMedia(mediaType, filter, pageSize, lastDateModified)
         val result = deviceMediaList.items.mapNotNull {
             val mimeType = deviceMediaLoader.getMimeType(it.uri)
-            val isMimeTypeSupported = mimeType != null && site?.let {
-                mediaUtilsWrapper.isMimeTypeSupportedBySitePlan(
-                        site,
-                        mimeType
-                )
-            } ?: true && MediaUtils.isSupportedMimeType(
-                    mimeType
-            )
+            val isMimeTypeSupported = mimeType != null
+                    && mimeTypeSupportProvider.isMimeTypeSupportedBySitePlan(siteId, mimeType)
+                    && mimeTypeSupportProvider.isSupportedMimeType(mimeType)
 
             if (isMimeTypeSupported) {
                 MediaItem(LocalUri(it.uri), it.uri.toString(), it.title, mediaType, mimeType, it.dateModified)
@@ -129,15 +116,11 @@ class DeviceListBuilder(
 
         val filteredPage = documentsList.items.mapNotNull { document ->
             val mimeType = deviceMediaLoader.getMimeType(document.uri)
-            val isMimeTypeSupported = mimeType != null && site?.let {
-                mediaUtilsWrapper.isMimeTypeSupportedBySitePlan(
-                        site,
-                        mimeType
-                )
-            } ?: true && MediaUtils.isSupportedMimeType(
-                    mimeType
-            )
-            val isSupportedApplicationType = mimeType != null && mimeTypes.isSupportedApplicationType(mimeType)
+            val isMimeTypeSupported = mimeType != null
+                    && mimeTypeSupportProvider.isMimeTypeSupportedBySitePlan(siteId, mimeType)
+                    && mimeTypeSupportProvider.isSupportedMimeType(mimeType)
+
+            val isSupportedApplicationType = mimeType != null && mimeTypeSupportProvider.isSupportedApplicationType(mimeType)
 
             if (isSupportedApplicationType && isMimeTypeSupported) {
                 MediaItem(
@@ -169,20 +152,19 @@ class DeviceListBuilder(
         return this == null || (nextTimestamp != null && this.items.size <= (visibleItems + pageSize))
     }
 
-    class DeviceListBuilderFactory
-    @Inject constructor(
+    class DeviceListBuilderFactory (
         private val deviceMediaLoader: DeviceMediaLoader,
-        private val mediaUtilsWrapper: MediaUtilsWrapper,
-        @param:Named(BG_THREAD) private val bgDispatcher: CoroutineDispatcher
+        private val bgDispatcher: CoroutineDispatcher,
+        private val mimeTypeSupportProvider: MimeTypeSupportProvider,
     ) {
-        fun build(mediaTypes: Set<MediaType>, site: SiteModel?): DeviceListBuilder {
+        fun build(siteId: Long, mediaTypes: Set<MediaType>): DeviceListBuilder {
             return DeviceListBuilder(
                     deviceMediaLoader,
-                    mediaUtilsWrapper,
-                    site,
+                    siteId,
                     bgDispatcher,
                     mediaTypes,
-                    PAGE_SIZE
+                    PAGE_SIZE,
+                    mimeTypeSupportProvider
             )
         }
 

@@ -6,7 +6,6 @@ import org.wordpress.android.mediapicker.MediaItem.Identifier.LocalUri
 import org.wordpress.android.mediapicker.insert.MediaInsertHandler.InsertModel
 import org.wordpress.android.util.UriWrapper
 import org.wordpress.android.util.WPMediaUtilsWrapper
-import javax.inject.Inject
 
 class DeviceListInsertUseCase(
     private val wpMediaUtilsWrapper: WPMediaUtilsWrapper,
@@ -30,8 +29,7 @@ class DeviceListInsertUseCase(
         }
     }
 
-    class DeviceListInsertUseCaseFactory
-    @Inject constructor(
+    class DeviceListInsertUseCaseFactory(
         private val wpMediaUtilsWrapper: WPMediaUtilsWrapper
     ) {
         fun build(queueResults: Boolean): DeviceListInsertUseCase {

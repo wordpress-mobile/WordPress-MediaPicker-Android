@@ -16,13 +16,9 @@ import org.wordpress.android.mediapicker.loader.MediaSource.MediaLoadingResult
 import org.wordpress.android.mediapicker.loader.MediaSource.MediaLoadingResult.Empty
 import org.wordpress.android.mediapicker.loader.MediaSource.MediaLoadingResult.Failure
 import org.wordpress.android.mediapicker.loader.MediaSource.MediaLoadingResult.Success
-import org.wordpress.android.ui.utils.UiString
-import org.wordpress.android.util.NetworkUtilsWrapper
+import org.wordpress.android.util.UiString
 
-data class MediaLoader(
-    private val mediaSource: MediaSource,
-    private val networkUtilsWrapper: NetworkUtilsWrapper
-) {
+data class MediaLoader(private val mediaSource: MediaSource) {
     suspend fun loadMedia(actions: Channel<LoadAction>): Flow<DomainModel> {
         return flow {
             var state = DomainModel()
