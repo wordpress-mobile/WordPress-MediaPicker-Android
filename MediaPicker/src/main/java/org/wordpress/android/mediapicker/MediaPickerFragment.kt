@@ -69,7 +69,6 @@ import org.wordpress.android.util.SnackbarItem
 import org.wordpress.android.util.SnackbarItem.Action
 import org.wordpress.android.util.SnackbarItem.Info
 import org.wordpress.android.util.SnackbarSequencer
-import org.wordpress.android.util.UriWrapper
 import org.wordpress.android.util.WPLinkMovementMethod
 import org.wordpress.android.util.WPMediaUtils
 import org.wordpress.android.util.WPPermissionUtils

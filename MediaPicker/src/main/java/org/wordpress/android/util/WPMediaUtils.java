@@ -17,6 +17,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import org.wordpress.android.mediapicker.MediaPickerFragment;
 import org.wordpress.android.mediapicker.R;
 import org.wordpress.android.mediapicker.model.EditImageData;
+import org.wordpress.android.mediapicker.util.MediaUri;
 
 import java.io.File;
 import java.io.IOException;
@@ -187,7 +188,7 @@ public class WPMediaUtils {
         }
     }
 
-    public static List<Uri> retrieveImageEditorResult(Intent data) {
+    public static List<MediaUri> retrieveImageEditorResult(Intent data) {
         if (data != null && data.hasExtra(ARG_EDIT_IMAGE_DATA)) {
             return convertEditImageOutputToListOfUris(
                     data.getParcelableArrayListExtra(ARG_EDIT_IMAGE_DATA)
@@ -197,10 +198,12 @@ public class WPMediaUtils {
         }
     }
 
-    private static List<Uri> convertEditImageOutputToListOfUris(List<EditImageData.OutputData> data) {
-        List<Uri> uris = new ArrayList<>(data.size());
+    private static List<MediaUri> convertEditImageOutputToListOfUris(List<EditImageData.OutputData> data) {
+        List<MediaUri> uris = new ArrayList<>(data.size());
         for (EditImageData.OutputData item : data) {
-            uris.add(Uri.parse(item.getOutputFilePath()));
+            final Uri uri = Uri.parse(item.getOutputFilePath());
+            final String s = MediaUriExtKt.asMediaUri(uri);
+            uris.add(new MediaUri(s));
         }
         return uris;
     }

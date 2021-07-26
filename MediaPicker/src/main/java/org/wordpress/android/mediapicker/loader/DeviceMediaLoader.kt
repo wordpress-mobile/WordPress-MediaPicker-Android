@@ -15,8 +15,10 @@ import org.wordpress.android.mediapicker.MediaType.AUDIO
 import org.wordpress.android.mediapicker.MediaType.IMAGE
 import org.wordpress.android.mediapicker.MediaType.VIDEO
 import org.wordpress.android.mediapicker.api.MimeTypeSupportProvider
+import org.wordpress.android.mediapicker.util.MediaUri
 import org.wordpress.android.util.SqlUtils
-import org.wordpress.android.util.UriWrapper
+import org.wordpress.android.util.asAndroidUri
+import org.wordpress.android.util.asMediaUri
 import java.io.File
 
 class DeviceMediaLoader(
@@ -69,7 +71,7 @@ class DeviceMediaLoader(
                 val title = cursor.getString(titleIndex)
                 val uri = Uri.withAppendedPath(baseUri, "" + id)
                 val item = DeviceMediaItem(
-                        UriWrapper(uri),
+                        uri.asMediaUri(),
                         title,
                         dateModified
                 )
@@ -101,7 +103,7 @@ class DeviceMediaLoader(
         val result = nextPage.take(pageSize).map { file ->
             val uri = Uri.parse(file.toURI().toString())
             DeviceMediaItem(
-                    UriWrapper(uri),
+                    uri.asMediaUri(),
                     file.name,
                     file.lastModifiedInSecs()
             )
@@ -111,18 +113,19 @@ class DeviceMediaLoader(
 
     private fun File.lastModifiedInSecs() = this.lastModified() / 1000
 
-    fun getMimeType(uri: UriWrapper): String? {
-        return if (uri.uri.scheme == ContentResolver.SCHEME_CONTENT) {
-            context.contentResolver.getType(uri.uri)
+    fun getMimeType(mediaUri: MediaUri): String? {
+        val uri = mediaUri.asAndroidUri()
+        return if (uri.scheme == ContentResolver.SCHEME_CONTENT) {
+            context.contentResolver.getType(uri)
         } else {
-            val fileExtension: String = MimeTypeMap.getFileExtensionFromUrl(uri.uri.toString())
+            val fileExtension: String = MimeTypeMap.getFileExtensionFromUrl(uri.toString())
             mimeTypeSupportProvider.getMimeTypeForExtension(fileExtension)
         }
     }
 
     data class DeviceMediaList(val items: List<DeviceMediaItem>, val next: Long? = null)
 
-    data class DeviceMediaItem(val uri: UriWrapper, val title: String, val dateModified: Long)
+    data class DeviceMediaItem(val uri: MediaUri, val title: String, val dateModified: Long)
 
     companion object {
         private const val ID_COL = Media._ID

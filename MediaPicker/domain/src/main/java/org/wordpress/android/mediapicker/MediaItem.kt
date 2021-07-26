@@ -3,7 +3,7 @@ package org.wordpress.android.mediapicker
 import org.wordpress.android.mediapicker.MediaItem.IdentifierType.LOCAL_ID
 import org.wordpress.android.mediapicker.MediaItem.IdentifierType.LOCAL_URI
 import org.wordpress.android.mediapicker.MediaItem.IdentifierType.REMOTE_ID
-import org.wordpress.android.mediapicker.util.Uri
+import org.wordpress.android.mediapicker.util.MediaUri
 
 data class MediaItem(
     val identifier: Identifier,
@@ -20,7 +20,7 @@ data class MediaItem(
     }
 
     sealed class Identifier(val type: IdentifierType) {
-        data class LocalUri(val value: Uri, val queued: Boolean = false) : Identifier(LOCAL_URI)
+        data class LocalUri(val value: MediaUri, val queued: Boolean = false) : Identifier(LOCAL_URI)
 
         data class RemoteId(val value: Long) : Identifier(REMOTE_ID)
 
