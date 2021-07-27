@@ -31,9 +31,6 @@ import org.wordpress.android.mediapicker.MediaPickerRequestCodes.PHOTO_PICKER
 import org.wordpress.android.mediapicker.MediaPickerRequestCodes.TAKE_PHOTO
 import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource
 import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.DEVICE
-import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.GIF_LIBRARY
-import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.STOCK_LIBRARY
-import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.WP_LIBRARY
 import org.wordpress.android.mediapicker.databinding.PhotoPickerActivityBinding
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T.MEDIA
@@ -62,9 +59,6 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
             fun fromDataSource(dataSource: DataSource): MediaPickerMediaSource {
                 return when (dataSource) {
                     DEVICE -> APP_PICKER
-                    WP_LIBRARY -> WP_MEDIA_PICKER
-                    STOCK_LIBRARY -> STOCK_MEDIA_PICKER
-                    GIF_LIBRARY -> APP_PICKER
                 }
             }
         }
