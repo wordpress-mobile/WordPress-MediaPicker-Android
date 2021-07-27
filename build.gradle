@@ -20,6 +20,6 @@ subprojects {
     apply from: "$project.rootDir/ktlint.gradle"
 
     dependencies {
-        ktlint "com.pinterest:ktlint:0.40.0"
+        ktlint "com.pinterest:ktlint:0.41.0"
     }
 }

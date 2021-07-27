@@ -32,9 +32,12 @@ import org.wordpress.android.mediapicker.MediaPickerRequestCodes.TAKE_PHOTO
 import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource
 import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.databinding.PhotoPickerActivityBinding
+import org.wordpress.android.mediapicker.util.MediaUri
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T.MEDIA
 import org.wordpress.android.util.WPMediaUtils
+import org.wordpress.android.util.asAndroidUri
+import org.wordpress.android.util.asMediaUri
 import java.io.File
 
 class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
@@ -152,7 +155,7 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
                     mediaCapturePath!!.let {
                         WPMediaUtils.scanMediaFile(this, it)
                         val f = File(it)
-                        val capturedImageUri = listOf(Uri.fromFile(f))
+                        val capturedImageUri = listOf(Uri.fromFile(f).asMediaUri())
                         if (mediaPickerSetup.queueResults) {
                             intent.putQueuedUris(capturedImageUri)
                         } else {
@@ -208,15 +211,15 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
     }
 
     private fun Intent.putUris(
-        mediaUris: List<Uri>
+        mediaUris: List<MediaUri>
     ) {
-        this.putExtra(EXTRA_MEDIA_URIS, mediaUris.toStringArray())
+        this.putExtra(EXTRA_MEDIA_URIS, mediaUris.map(MediaUri::asAndroidUri).toStringArray())
     }
 
     private fun Intent.putQueuedUris(
-        mediaUris: List<Uri>
+        mediaUris: List<MediaUri>
     ) {
-        this.putExtra(EXTRA_MEDIA_QUEUED_URIS, mediaUris.toStringArray())
+        this.putExtra(EXTRA_MEDIA_QUEUED_URIS, mediaUris.map(MediaUri::asAndroidUri).toStringArray())
     }
 
     private fun Intent.putMediaIds(
@@ -237,8 +240,8 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
 
     override fun onItemsChosen(identifiers: List<Identifier>) {
         val chosenLocalUris = identifiers.mapNotNull { (it as? Identifier.LocalUri) }
-        val chosenUris = chosenLocalUris.filter { !it.queued }.map { it.value.uri }
-        val queuedUris = chosenLocalUris.filter { it.queued }.map { it.value.uri }
+        val chosenUris = chosenLocalUris.filter { !it.queued }.map { it.value }
+        val queuedUris = chosenLocalUris.filter { it.queued }.map { it.value }
         val chosenIds = identifiers.mapNotNull { (it as? Identifier.RemoteId)?.value }
         val chosenLocalIds = identifiers.mapNotNull { (it as? Identifier.LocalId)?.value }
 

@@ -629,7 +629,7 @@ class MediaPickerViewModel constructor(
 
     sealed class ActionModeUiModel {
         data class Visible(
-            val actionModeTitle: UiString? = null,
+            val actionModeTitle: String? = null,
             val editActionUiModel: EditActionUiModel = EditActionUiModel()
         ) : ActionModeUiModel()
 
