@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.wordpress.android.mediapicker.MediaPickerConstants.ARG_EDIT_IMAGE_DATA;
+import static org.wordpress.android.mediapicker.MediaPickerRequestCodes.TAKE_PHOTO;
 
 public class WPMediaUtils {
 
@@ -68,8 +69,7 @@ public class WPMediaUtils {
     public static void launchCamera(Activity activity, String applicationId, LaunchCameraCallback callback) {
         Intent intent = prepareLaunchCamera(activity, applicationId, callback);
         if (intent != null) {
-            // wzieba TODO: 20/07/2021 Sync request code with library consumer
-            activity.startActivityForResult(intent, 2100);
+            activity.startActivityForResult(intent, TAKE_PHOTO);
         }
     }
 
