@@ -522,16 +522,10 @@ class MediaPickerViewModel constructor(
             mediaPickerTracker.trackShowPermissionsScreen(mediaPickerSetup, softAskRequest.isAlwaysDenied)
             val label = if (softAskRequest.isAlwaysDenied) {
                 val writePermission = ("<strong>${
-                    WPPermissionUtils.getPermissionName(
-                            resourceProvider,
-                            permission.WRITE_EXTERNAL_STORAGE
-                    )
+                    permissionsHandler.getPermissionName(permission.WRITE_EXTERNAL_STORAGE)
                 }</strong>")
                 val readPermission = ("<strong>${
-                    WPPermissionUtils.getPermissionName(
-                            resourceProvider,
-                            permission.READ_EXTERNAL_STORAGE
-                    )
+                    permissionsHandler.getPermissionName(permission.READ_EXTERNAL_STORAGE)
                 }</strong>")
                 String.format(
                         resourceProvider.getString(R.string.media_picker_soft_ask_permissions_denied),
