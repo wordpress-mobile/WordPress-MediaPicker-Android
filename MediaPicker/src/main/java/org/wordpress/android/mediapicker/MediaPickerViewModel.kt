@@ -1,6 +1,7 @@
 package org.wordpress.android.mediapicker
 
 import android.Manifest.permission
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -31,11 +32,11 @@ import org.wordpress.android.mediapicker.loader.MediaLoader.DomainModel
 import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction
 import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction.NextPage
 import org.wordpress.android.mediapicker.loader.MediaLoaderFactory
+import org.wordpress.android.mediapicker.util.MediaUri
 import org.wordpress.android.mediapicker.viewmodel.Event
 import org.wordpress.android.mediapicker.viewmodel.ResourceProvider
 import org.wordpress.android.mediapicker.viewmodel.ScopedViewModel
 import org.wordpress.android.util.*
-import org.wordpress.android.util.UiString.*
 
 class MediaPickerViewModel constructor(
     savedState: SavedStateHandle,
@@ -195,13 +196,13 @@ class MediaPickerViewModel constructor(
             }
         } else if (domainModel?.emptyState != null) {
             PhotoListUiModel.Empty(
-                    domainModel.emptyState.title,
-                    domainModel.emptyState.htmlSubtitle,
-                    domainModel.emptyState.image,
-                    domainModel.emptyState.bottomImage,
-                    domainModel.emptyState.bottomImageDescription,
+                    domainModel.emptyState?.title,
+                    domainModel.emptyState?.htmlSubtitle,
+                    domainModel.emptyState?.image,
+                    domainModel.emptyState?.bottomImage,
+                    domainModel.emptyState?.bottomImageDescription,
                     isSearching == true,
-                    retryAction = if (domainModel.emptyState.isError) {
+                    retryAction = if (domainModel.emptyState?.isError == true) {
                         this::retry
                     } else {
                         null
@@ -211,9 +212,9 @@ class MediaPickerViewModel constructor(
             PhotoListUiModel.Loading
         } else {
             PhotoListUiModel.Empty(
-                UiStringRes(R.string.media_empty_list),
-                    image = R.drawable.img_illustration_media_105dp,
-                    isSearching = isSearching == true
+                resourceProvider.getString(R.string.media_empty_list),
+                image = R.drawable.img_illustration_media_105dp,
+                isSearching = isSearching == true
             )
         }
     }
@@ -226,24 +227,23 @@ class MediaPickerViewModel constructor(
         if (selectedIds.isNullOrEmpty()) {
             return ActionModeUiModel.Hidden
         }
-        val title: UiString? = when {
+        val title: String? = when {
             numSelected == 0 -> null
             mediaPickerSetup.canMultiselect -> {
-                UiStringText(String.format(resourceProvider.getString(R.string.cab_selected),
-                    numSelected))
+                String.format(resourceProvider.getString(R.string.cab_selected), numSelected)
             }
             else -> {
                 val isImagePicker = mediaPickerSetup.allowedTypes.contains(IMAGE)
                 val isVideoPicker = mediaPickerSetup.allowedTypes.contains(VIDEO)
                 val isAudioPicker = mediaPickerSetup.allowedTypes.contains(AUDIO)
                 if (isImagePicker && isVideoPicker) {
-                    UiStringRes(R.string.photo_picker_use_media)
+                    resourceProvider.getString(R.string.photo_picker_use_media)
                 } else if (isVideoPicker) {
-                    UiStringRes(R.string.photo_picker_use_video)
+                    resourceProvider.getString(R.string.photo_picker_use_video)
                 } else if (isAudioPicker) {
-                    UiStringRes(R.string.photo_picker_use_audio)
+                    resourceProvider.getString(R.string.photo_picker_use_audio)
                 } else {
-                    UiStringRes(R.string.photo_picker_use_photo)
+                    resourceProvider.getString(R.string.photo_picker_use_photo)
                 }
             }
         }
@@ -347,20 +347,12 @@ class MediaPickerViewModel constructor(
             is LocalUri -> {
                 _onNavigate.postValue(Event(PreviewUrl(identifier.value.toString())))
             }
-            is StockMediaIdentifier -> {
-                if (identifier.url != null) {
-                    _onNavigate.postValue(Event(PreviewUrl(identifier.url)))
-                }
-            }
             is RemoteId -> {
                 siteId?.let {
                     launch {
                         _onNavigate.postValue(Event(PreviewMedia(identifier.value)))
                     }
                 }
-            }
-            is GifMediaIdentifier -> {
-                _onNavigate.postValue(Event(PreviewUrl(identifier.largeImageUri.toString())))
             }
         }
     }
@@ -387,12 +379,12 @@ class MediaPickerViewModel constructor(
                     }
                     is InsertModel.Error -> {
                         val message = if (it.error.isNotEmpty()) {
-                            UiStringResWithParams(
-                                    R.string.media_insert_failed_with_reason,
-                                    listOf(UiStringText(it.error))
+                            resourceProvider.getString(
+                                R.string.media_insert_failed_with_reason,
+                                it.error
                             )
                         } else {
-                            UiStringRes(R.string.media_insert_failed)
+                            resourceProvider.getString(R.string.media_insert_failed)
                         }
                         _onSnackbarMessage.value = Event(
                                 SnackbarMessageHolder(
@@ -540,7 +532,7 @@ class MediaPickerViewModel constructor(
             } else {
                 R.string.photo_picker_soft_ask_allow
             }
-            return SoftAskViewUiModel.Visible(label, UiStringRes(allowId), softAskRequest.isAlwaysDenied)
+            return SoftAskViewUiModel.Visible(label, allowId, softAskRequest.isAlwaysDenied)
         } else {
             return SoftAskViewUiModel.Hidden
         }
@@ -582,7 +574,7 @@ class MediaPickerViewModel constructor(
         searchJob?.cancel()
     }
 
-    fun urisSelectedFromSystemPicker(uris: List<UriWrapper>) {
+    fun urisSelectedFromSystemPicker(uris: List<MediaUri>) {
         launch {
             delay(100)
             insertIdentifiers(uris.map { LocalUri(it) })
@@ -605,11 +597,11 @@ class MediaPickerViewModel constructor(
                 PhotoListUiModel()
 
         data class Empty(
-            val title: UiString,
-            val htmlSubtitle: UiString? = null,
+            val title: String? = null,
+            val htmlSubtitle: String? = null,
             val image: Int? = null,
             val bottomImage: Int? = null,
-            val bottomImageDescription: UiString? = null,
+            val bottomImageDescription: String? = null,
             val isSearching: Boolean = false,
             val retryAction: (() -> Unit)? = null
         ) : PhotoListUiModel()
@@ -619,8 +611,11 @@ class MediaPickerViewModel constructor(
     }
 
     sealed class SoftAskViewUiModel {
-        data class Visible(val label: String, val allowId: UiStringRes, val isAlwaysDenied: Boolean) :
-                SoftAskViewUiModel()
+        data class Visible(
+            val label: String,
+            @StringRes val allowId: Int,
+            val isAlwaysDenied: Boolean
+            ) : SoftAskViewUiModel()
 
         object Hidden : SoftAskViewUiModel()
     }
@@ -661,8 +656,8 @@ class MediaPickerViewModel constructor(
     )
 
     data class SnackbarMessageHolder(
-        val message: UiString,
-        val buttonTitle: UiString? = null,
+        val message: String,
+        val buttonTitle: String? = null,
         val buttonAction: () -> Unit = {},
         val onDismissAction: () -> Unit = {}
     )
