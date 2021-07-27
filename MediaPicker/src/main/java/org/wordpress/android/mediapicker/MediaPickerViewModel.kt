@@ -31,6 +31,7 @@ import org.wordpress.android.mediapicker.loader.MediaLoader.DomainModel
 import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction
 import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction.NextPage
 import org.wordpress.android.mediapicker.loader.MediaLoaderFactory
+import org.wordpress.android.mediapicker.viewmodel.Event
 import org.wordpress.android.mediapicker.viewmodel.ResourceProvider
 import org.wordpress.android.mediapicker.viewmodel.ScopedViewModel
 import org.wordpress.android.util.*
@@ -660,6 +661,13 @@ class MediaPickerViewModel constructor(
         val isVisible: Boolean = false,
         val isCounterBadgeVisible: Boolean = false,
         val counterBadgeValue: Int = 1
+    )
+
+    data class SnackbarMessageHolder(
+        val message: UiString,
+        val buttonTitle: UiString? = null,
+        val buttonAction: () -> Unit = {},
+        val onDismissAction: () -> Unit = {}
     )
 
     sealed class ProgressDialogUiModel {
