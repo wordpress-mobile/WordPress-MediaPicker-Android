@@ -100,7 +100,7 @@ class MediaPickerViewModel constructor(
         return if (showActions && (showSystemPicker || mediaPickerSetup.availableDataSources.isNotEmpty())) {
             val actions = mutableSetOf<BrowseAction>()
             if (showSystemPicker) {
-                actions.add(SYSTEM_PICKER)
+                actions.add(BrowseAction.SYSTEM_PICKER)
             }
             actions.addAll(mediaPickerSetup.availableDataSources.map {
                 when (it) {
@@ -176,13 +176,13 @@ class MediaPickerViewModel constructor(
             if (domainModel.hasMore) {
                 val updatedItems = uiItems.toMutableList()
                 val loaderItem = if (domainModel.emptyState?.isError == true) {
-                    MediaPickerUiItem.NextPageLoader(false) {
+                    NextPageLoader(false) {
                         launch {
                             retry()
                         }
                     }
                 } else {
-                    MediaPickerUiItem.NextPageLoader(true) {
+                    NextPageLoader(true) {
                         launch {
                             loadActions.send(NextPage)
                         }
@@ -413,7 +413,7 @@ class MediaPickerViewModel constructor(
                         if (_searchExpanded.value == true) {
                             _searchExpanded.value = false
                         }
-                        _onNavigate.value = Event(MediaNavigationEvent.InsertMedia(it.identifiers))
+                        _onNavigate.value = Event(InsertMedia(it.identifiers))
                     }
                 }
             }
