@@ -31,6 +31,7 @@ import org.wordpress.android.mediapicker.loader.MediaLoader.DomainModel
 import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction
 import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction.NextPage
 import org.wordpress.android.mediapicker.loader.MediaLoaderFactory
+import org.wordpress.android.mediapicker.viewmodel.ResourceProvider
 import org.wordpress.android.mediapicker.viewmodel.ScopedViewModel
 import org.wordpress.android.util.*
 import org.wordpress.android.util.UiString.*
@@ -515,7 +516,6 @@ class MediaPickerViewModel constructor(
     private fun buildSoftAskView(softAskRequest: SoftAskRequest?): SoftAskViewUiModel {
         if (softAskRequest != null && softAskRequest.show) {
             mediaPickerTracker.trackShowPermissionsScreen(mediaPickerSetup, softAskRequest.isAlwaysDenied)
-            val appName = "<strong>${resourceProvider.getString(R.string.app_name)}</strong>"
             val label = if (softAskRequest.isAlwaysDenied) {
                 val writePermission = ("<strong>${
                     WPPermissionUtils.getPermissionName(
@@ -531,15 +531,11 @@ class MediaPickerViewModel constructor(
                 }</strong>")
                 String.format(
                         resourceProvider.getString(R.string.media_picker_soft_ask_permissions_denied),
-                        appName,
                         writePermission,
                         readPermission
                 )
             } else {
-                String.format(
-                        resourceProvider.getString(R.string.photo_picker_soft_ask_label),
-                        appName
-                )
+                resourceProvider.getString(R.string.photo_picker_soft_ask_label)
             }
             val allowId = if (softAskRequest.isAlwaysDenied) {
                 R.string.button_edit_permissions
