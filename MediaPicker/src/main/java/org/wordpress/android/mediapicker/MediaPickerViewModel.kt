@@ -47,6 +47,7 @@ import org.wordpress.android.mediapicker.MediaType.AUDIO
 import org.wordpress.android.mediapicker.MediaType.DOCUMENT
 import org.wordpress.android.mediapicker.MediaType.IMAGE
 import org.wordpress.android.mediapicker.MediaType.VIDEO
+import org.wordpress.android.mediapicker.api.MimeTypeSupportProvider
 import org.wordpress.android.mediapicker.insert.MediaInsertHandler
 import org.wordpress.android.mediapicker.insert.MediaInsertHandler.InsertModel
 import org.wordpress.android.mediapicker.insert.MediaInsertHandlerFactory
@@ -67,8 +68,8 @@ class MediaPickerViewModel constructor(
     private val mediaInsertHandlerFactory: MediaInsertHandlerFactory,
     private val mediaPickerTracker: MediaPickerTracker,
     private val permissionsHandler: PermissionsHandler,
-    private val mediaUtilsWrapper: MediaUtilsWrapper,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val mimeTypeSupportProvider: MimeTypeSupportProvider
 ) : ScopedViewModel(mainDispatcher) {
     private lateinit var mediaLoader: MediaLoader
     private lateinit var mediaInsertHandler: MediaInsertHandler
@@ -164,7 +165,7 @@ class MediaPickerViewModel constructor(
                 }
 
                 val fileExtension = it.mimeType?.let { mimeType ->
-                    mediaUtilsWrapper.getExtensionForMimeType(mimeType).uppercase()
+                    mimeTypeSupportProvider.getExtensionForMimeType(mimeType).uppercase()
                 }
                 when (it.type) {
                     IMAGE -> PhotoItem(
@@ -481,25 +482,19 @@ class MediaPickerViewModel constructor(
                 val allowedTypes = icon.allowedTypes
                 val (context, types) = when {
                     listOf(IMAGE).containsAll(allowedTypes) -> {
-                        Pair(ChooserContext.PHOTO, MimeTypes().getImageTypesOnly())
+                        Pair(ChooserContext.PHOTO, mimeTypeSupportProvider.getImageTypesOnly())
                     }
                     listOf(VIDEO).containsAll(allowedTypes) -> {
-                        Pair(ChooserContext.VIDEO, MimeTypes().getVideoTypesOnly())
+                        Pair(ChooserContext.VIDEO, mimeTypeSupportProvider.getVideoTypesOnly())
                     }
                     listOf(IMAGE, VIDEO).containsAll(allowedTypes) -> {
-                        Pair(ChooserContext.PHOTO_OR_VIDEO, MimeTypes().getVideoAndImageTypesOnly())
+                        Pair(ChooserContext.PHOTO_OR_VIDEO, mimeTypeSupportProvider.getVideoAndImagesTypes())
                     }
                     listOf(AUDIO).containsAll(allowedTypes) -> {
-                        Pair(
-                                ChooserContext.AUDIO,
-                                MimeTypes().getAudioTypesOnly(mediaUtilsWrapper.getSitePlanForMimeTypes(site))
-                        )
+                        Pair(ChooserContext.AUDIO, mimeTypeSupportProvider.getAudioTypesOnly())
                     }
                     else -> {
-                        Pair(
-                                ChooserContext.MEDIA_FILE,
-                                MimeTypes().getAllTypes(mediaUtilsWrapper.getSitePlanForMimeTypes(site))
-                        )
+                        Pair(ChooserContext.MEDIA_FILE, mimeTypeSupportProvider.getAllTypes())
                     }
                 }
                 OpenSystemPicker(context, types.toList(), canMultiselect)
@@ -512,7 +507,7 @@ class MediaPickerViewModel constructor(
                                 primaryDataSource = icon.dataSource,
                                 availableDataSources = setOf(),
                                 systemPickerEnabled = icon.dataSource == DEVICE,
-                                defaultSearchView = icon.dataSource == STOCK_LIBRARY || icon.dataSource == GIF_LIBRARY,
+                                defaultSearchView = false,
                                 cameraSetup = HIDDEN
                         )
                 )
