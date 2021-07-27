@@ -115,7 +115,7 @@ class MediaPickerViewModel constructor(
 
     var lastTappedIcon: MediaPickerIcon? = null
     private lateinit var mediaPickerSetup: MediaPickerSetup
-    private var site: SiteModel? = null
+    private var siteId: Long? = null
 
     private fun buildUiModel(
         domainModel: DomainModel?,
@@ -290,16 +290,16 @@ class MediaPickerViewModel constructor(
         selectedIds: List<Identifier>?,
         mediaPickerSetup: MediaPickerSetup,
         lastTappedIcon: MediaPickerIcon?,
-        site: SiteModel?
+        siteId: Long
     ) {
         _selectedIds.value = selectedIds
         this.mediaPickerSetup = mediaPickerSetup
         this.lastTappedIcon = lastTappedIcon
-        this.site = site
+        this.siteId = siteId
         if (_domainModel.value == null) {
             mediaPickerTracker.trackMediaPickerOpened(mediaPickerSetup)
-            this.mediaLoader = mediaLoaderFactory.build(mediaPickerSetup, site)
-            this.mediaInsertHandler = mediaInsertHandlerFactory.build(mediaPickerSetup, site)
+            this.mediaLoader = mediaLoaderFactory.build(mediaPickerSetup, siteId)
+            this.mediaInsertHandler = mediaInsertHandlerFactory.build(mediaPickerSetup)
             launch {
                 mediaLoader.loadMedia(loadActions).collect { domainModel ->
                     _domainModel.value = domainModel
@@ -353,7 +353,7 @@ class MediaPickerViewModel constructor(
                 }
             }
             is RemoteId -> {
-                site?.let {
+                siteId?.let {
                     launch {
                         _onNavigate.postValue(Event(PreviewMedia(identifier.value)))
                     }
@@ -510,6 +510,9 @@ class MediaPickerViewModel constructor(
         val icon = when (action) {
             BrowseAction.DEVICE -> SwitchSource(DEVICE)
             BrowseAction.SYSTEM_PICKER -> ChooseFromAndroidDevice(mediaPickerSetup.allowedTypes)
+            BrowseAction.WP_MEDIA_LIBRARY -> TODO()
+            BrowseAction.STOCK_LIBRARY -> TODO()
+            BrowseAction.GIF_LIBRARY -> TODO()
         }
         clickIcon(icon)
     }
