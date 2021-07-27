@@ -3,50 +3,25 @@ package org.wordpress.android.mediapicker
 import android.Manifest.permission
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import kotlinx.coroutines.CoroutineDispatcher
+import androidx.lifecycle.SavedStateHandle
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import org.wordpress.android.mediapicker.MediaItem.Identifier
-import org.wordpress.android.mediapicker.MediaItem.Identifier.GifMediaIdentifier
-import org.wordpress.android.mediapicker.MediaItem.Identifier.LocalUri
-import org.wordpress.android.mediapicker.MediaItem.Identifier.RemoteId
-import org.wordpress.android.mediapicker.MediaItem.Identifier.StockMediaIdentifier
-import org.wordpress.android.mediapicker.MediaNavigationEvent.EditMedia
-import org.wordpress.android.mediapicker.MediaNavigationEvent.Exit
-import org.wordpress.android.mediapicker.MediaNavigationEvent.IconClickEvent
-import org.wordpress.android.mediapicker.MediaNavigationEvent.PreviewMedia
-import org.wordpress.android.mediapicker.MediaNavigationEvent.PreviewUrl
-import org.wordpress.android.mediapicker.MediaPickerFragment.ChooserContext
-import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerAction
-import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerAction.OpenCameraForPhotos
-import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerAction.OpenCameraForWPStories
-import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerAction.OpenSystemPicker
-import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerAction.SwitchMediaPicker
-import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIcon
-import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIcon.CapturePhoto
-import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIcon.ChooseFromAndroidDevice
-import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIcon.SwitchSource
-import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIcon.WpStoriesCapture
-import org.wordpress.android.mediapicker.MediaPickerSetup.CameraSetup.ENABLED
-import org.wordpress.android.mediapicker.MediaPickerSetup.CameraSetup.HIDDEN
-import org.wordpress.android.mediapicker.MediaPickerSetup.CameraSetup.STORIES
+import org.wordpress.android.mediapicker.MediaItem.Identifier.*
+import org.wordpress.android.mediapicker.MediaNavigationEvent.*
+import org.wordpress.android.mediapicker.MediaPickerFragment.*
+import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerAction.*
+import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIcon.*
+import org.wordpress.android.mediapicker.MediaPickerSetup.CameraSetup.*
 import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.DEVICE
-import org.wordpress.android.mediapicker.MediaPickerUiItem.ClickAction
-import org.wordpress.android.mediapicker.MediaPickerUiItem.FileItem
-import org.wordpress.android.mediapicker.MediaPickerUiItem.PhotoItem
-import org.wordpress.android.mediapicker.MediaPickerUiItem.ToggleAction
-import org.wordpress.android.mediapicker.MediaPickerUiItem.VideoItem
+import org.wordpress.android.mediapicker.MediaPickerUiItem.*
 import org.wordpress.android.mediapicker.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction
 import org.wordpress.android.mediapicker.MediaPickerViewModel.ProgressDialogUiModel.Hidden
 import org.wordpress.android.mediapicker.MediaPickerViewModel.ProgressDialogUiModel.Visible
-import org.wordpress.android.mediapicker.MediaType.AUDIO
-import org.wordpress.android.mediapicker.MediaType.DOCUMENT
-import org.wordpress.android.mediapicker.MediaType.IMAGE
-import org.wordpress.android.mediapicker.MediaType.VIDEO
+import org.wordpress.android.mediapicker.MediaType.*
 import org.wordpress.android.mediapicker.api.MimeTypeSupportProvider
 import org.wordpress.android.mediapicker.insert.MediaInsertHandler
 import org.wordpress.android.mediapicker.insert.MediaInsertHandler.InsertModel
@@ -56,21 +31,19 @@ import org.wordpress.android.mediapicker.loader.MediaLoader.DomainModel
 import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction
 import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction.NextPage
 import org.wordpress.android.mediapicker.loader.MediaLoaderFactory
+import org.wordpress.android.mediapicker.viewmodel.ScopedViewModel
 import org.wordpress.android.util.*
-import org.wordpress.android.util.UiString.UiStringRes
-import org.wordpress.android.util.UiString.UiStringText
-import org.wordpress.android.util.UiString.UiStringResWithParams
+import org.wordpress.android.util.UiString.*
 
 class MediaPickerViewModel constructor(
-    @Named(UI_THREAD) private val mainDispatcher: CoroutineDispatcher,
-    @Named(BG_THREAD) private val bgDispatcher: CoroutineDispatcher,
+    savedState: SavedStateHandle,
     private val mediaLoaderFactory: MediaLoaderFactory,
     private val mediaInsertHandlerFactory: MediaInsertHandlerFactory,
     private val mediaPickerTracker: MediaPickerTracker,
     private val permissionsHandler: PermissionsHandler,
     private val resourceProvider: ResourceProvider,
     private val mimeTypeSupportProvider: MimeTypeSupportProvider
-) : ScopedViewModel(mainDispatcher) {
+) : ScopedViewModel(savedState) {
     private lateinit var mediaLoader: MediaLoader
     private lateinit var mediaInsertHandler: MediaInsertHandler
     private val loadActions = Channel<LoadAction>()
@@ -293,13 +266,13 @@ class MediaPickerViewModel constructor(
         if (!permissionsHandler.hasStoragePermission()) {
             return
         }
-        launch(bgDispatcher) {
+        launch {
             loadActions.send(LoadAction.Refresh(forceReload))
         }
     }
 
     private fun retry() {
-        launch(bgDispatcher) {
+        launch {
             loadActions.send(LoadAction.Retry)
         }
     }
@@ -326,12 +299,12 @@ class MediaPickerViewModel constructor(
             this.mediaLoader = mediaLoaderFactory.build(mediaPickerSetup, site)
             this.mediaInsertHandler = mediaInsertHandlerFactory.build(mediaPickerSetup, site)
             launch {
-                mediaLoader.loadMedia(loadActions).flowOn(bgDispatcher).collect { domainModel ->
+                mediaLoader.loadMedia(loadActions).collect { domainModel ->
                     _domainModel.value = domainModel
                 }
             }
             if (!mediaPickerSetup.requiresStoragePermissions || permissionsHandler.hasStoragePermission()) {
-                launch(bgDispatcher) {
+                launch {
                     loadActions.send(LoadAction.Start())
                 }
             }
@@ -399,7 +372,7 @@ class MediaPickerViewModel constructor(
         var job: Job? = null
         job = launch {
             var progressDialogJob: Job? = null
-            mediaInsertHandler.insertMedia(ids).flowOn(bgDispatcher).collect {
+            mediaInsertHandler.insertMedia(ids).collect {
                 when (it) {
                     is InsertModel.Progress -> {
                         progressDialogJob = launch {
@@ -581,7 +554,7 @@ class MediaPickerViewModel constructor(
 
     fun onSearch(query: String) {
         searchJob?.cancel()
-        searchJob = launch(bgDispatcher) {
+        searchJob = launch {
             delay(300)
             mediaPickerTracker.trackSearch(mediaPickerSetup)
             loadActions.send(LoadAction.Filter(query))
@@ -597,7 +570,7 @@ class MediaPickerViewModel constructor(
         if (!mediaPickerSetup.defaultSearchView) {
             _searchExpanded.value = false
             searchJob?.cancel()
-            searchJob = launch(bgDispatcher) {
+            searchJob = launch {
                 mediaPickerTracker.trackSearchCollapsed(mediaPickerSetup)
                 loadActions.send(LoadAction.ClearFilter)
             }
