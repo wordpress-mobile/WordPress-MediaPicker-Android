@@ -6,6 +6,8 @@ import android.content.Intent.ACTION_OPEN_DOCUMENT
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
+import android.text.Html
+import android.text.method.LinkMovementMethod
 import android.view.*
 import android.view.MenuItem.OnActionExpandListener
 import androidx.appcompat.app.AlertDialog
@@ -15,6 +17,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -26,6 +29,9 @@ import org.wordpress.android.mediapicker.MediaPickerViewModel.*
 import org.wordpress.android.mediapicker.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction.*
 import org.wordpress.android.mediapicker.MediaPickerViewModel.ProgressDialogUiModel.Visible
 import org.wordpress.android.mediapicker.databinding.MediaPickerFragmentBinding
+import org.wordpress.android.mediapicker.util.MediaUri
+import org.wordpress.android.mediapicker.viewmodel.observeEvent
+import org.wordpress.android.util.fadeOut
 
 class MediaPickerFragment : Fragment() {
     enum class MediaPickerIconType {
@@ -132,11 +138,8 @@ class MediaPickerFragment : Fragment() {
     }
 
     private var listener: MediaPickerListener? = null
-
-    lateinit var imageManager: ImageManager
     lateinit var viewModelFactory: ViewModelProvider.Factory
     lateinit var snackbarSequencer: SnackbarSequencer
-    lateinit var uiHelpers: UiHelpers
     private lateinit var viewModel: MediaPickerViewModel
     private var binding: MediaPickerFragmentBinding? = null
 
@@ -248,8 +251,8 @@ class MediaPickerFragment : Fragment() {
 
             viewModel.onPermissionsRequested.observeEvent(viewLifecycleOwner, {
                 when (it) {
-                    CAMERA -> requestCameraPermission()
-                    STORAGE -> requestStoragePermission()
+                    PermissionsRequested.CAMERA -> requestCameraPermission()
+                    PermissionsRequested.STORAGE -> requestStoragePermission()
                 }
             })
             viewModel.onSnackbarMessage.observeEvent(viewLifecycleOwner, { messageHolder ->
@@ -336,7 +339,7 @@ class MediaPickerFragment : Fragment() {
     }
 
     fun urisSelectedFromSystemPicker(uris: List<Uri>) {
-        viewModel.urisSelectedFromSystemPicker(uris.map { UriWrapper(it) })
+        viewModel.urisSelectedFromSystemPicker(uris.map { MediaUri(it) })
     }
 
     private fun initializeSearchView(actionMenuItem: MenuItem) {
@@ -374,7 +377,7 @@ class MediaPickerFragment : Fragment() {
         when (uiModel) {
             is SoftAskViewUiModel.Visible -> {
                 softAskView.title.text = Html.fromHtml(uiModel.label)
-                softAskView.button.setText(uiModel.allowId.stringRes)
+                softAskView.button.setText(uiModel.allowId)
                 softAskView.button.setOnClickListener {
                     if (uiModel.isAlwaysDenied) {
                         WPPermissionUtils.showAppSettings(requireActivity())
@@ -387,7 +390,12 @@ class MediaPickerFragment : Fragment() {
             }
             is SoftAskViewUiModel.Hidden -> {
                 if (softAskView.visibility == View.VISIBLE) {
-                    AniUtils.fadeOut(softAskView, MEDIUM)
+                    softAskView.fadeOut(
+                        requireContext()
+                            .resources
+                            .getInteger(android.R.integer.config_mediumAnimTime)
+                            .toLong()
+                    )
                 }
             }
         }
@@ -404,16 +412,11 @@ class MediaPickerFragment : Fragment() {
             is PhotoListUiModel.Empty -> {
                 setupAdapter(listOf())
                 actionableEmptyView.updateLayoutForSearch(uiModel.isSearching, 0)
-                actionableEmptyView.title.text = uiHelpers.getTextOfUiString(requireContext(), uiModel.title)
+                actionableEmptyView.title.text = uiModel.title
 
                 actionableEmptyView.subtitle.applyOrHide(uiModel.htmlSubtitle) { htmlSubtitle ->
-                    actionableEmptyView.subtitle.text = Html.fromHtml(
-                            uiHelpers.getTextOfUiString(
-                                    requireContext(),
-                                    htmlSubtitle
-                            ).toString()
-                    )
-                    actionableEmptyView.subtitle.movementMethod = WPLinkMovementMethod.getInstance()
+                    actionableEmptyView.subtitle.text = Html.fromHtml(htmlSubtitle)
+                    actionableEmptyView.subtitle.movementMethod = LinkMovementMethod.getInstance()
                 }
                 actionableEmptyView.image.applyOrHide(uiModel.image) { image ->
                     this.setImageResource(image)
@@ -421,10 +424,7 @@ class MediaPickerFragment : Fragment() {
                 actionableEmptyView.bottomImage.applyOrHide(uiModel.bottomImage) { bottomImage ->
                     this.setImageResource(bottomImage)
                     if (uiModel.bottomImageDescription != null) {
-                        this.contentDescription = uiHelpers.getTextOfUiString(
-                                requireContext(),
-                                uiModel.bottomImageDescription
-                        ).toString()
+                        this.contentDescription = uiModel.bottomImageDescription
                     }
                 }
                 actionableEmptyView.button.applyOrHide(uiModel.retryAction) { action ->
@@ -447,10 +447,7 @@ class MediaPickerFragment : Fragment() {
 
     private fun MediaPickerFragmentBinding.setupAdapter(items: List<MediaPickerUiItem>) {
         if (recycler.adapter == null) {
-            recycler.adapter = MediaPickerAdapter(
-                    imageManager,
-                    viewModel.viewModelScope
-            )
+            recycler.adapter = MediaPickerAdapter(viewModel.viewModelScope)
         }
         val adapter = recycler.adapter as MediaPickerAdapter
 
