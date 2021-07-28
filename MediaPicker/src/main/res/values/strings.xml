@@ -24,4 +24,6 @@
     <string name="permission_camera">Camera</string>
     <string name="permission_microphone">Microphone</string>
     <string name="unknown">Unknown</string>
+    <string name="loading">Loading…</string>
+    <string name="retry">Retry</string>
 </resources>

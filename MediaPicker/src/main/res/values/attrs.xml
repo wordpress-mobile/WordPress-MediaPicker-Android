@@ -1,4 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <attr name="wpColorOnSurfaceMedium" format="reference|color" />
+
+    <!--
+    Media picker Empty View
+-->
+    <declare-styleable name="MediaPickerEmptyView">
+        <!-- Optional: string text of button -->
+        <attr name="mpevButton" format="string"/>
+        <!-- Optional: resource id of image -->
+        <attr name="mpevImage" format="reference"/>
+        <!-- Optional: defines if image should be hidden in landscape mode -->
+        <attr name="mpevImageHiddenInLandscape" format="boolean" />
+        <!-- Optional: string text of subtitle -->
+        <attr name="mpevSubtitle" format="string"/>
+        <!-- Required: string text of title -->
+        <attr name="mpevTitle" format="string"/>
+    </declare-styleable>
 </resources>

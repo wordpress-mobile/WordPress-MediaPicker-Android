@@ -21,28 +21,27 @@
         android:id="@+id/pullToRefresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/toolbar"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <org.wordpress.android.ui.prefs.EmptyViewRecyclerView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:fadeScrollbars="true"
                 android:scrollbars="vertical" />
 
-            <org.wordpress.android.ui.ActionableEmptyView
+            <org.wordpress.android.mediapicker.ui.MediaPickerEmptyView
                 android:id="@+id/actionable_empty_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:visibility="gone"
-                app:aevImage="@drawable/img_illustration_media_105dp"
-                app:aevButton="@string/retry"
-                app:aevTitle="@string/media_empty_list"
+                app:mpevImage="@drawable/img_illustration_media_105dp"
+                app:mpevButton="@string/retry"
+                app:mpevTitle="@string/media_empty_list"
                 tools:visibility="visible" />
 
             <LinearLayout
@@ -69,14 +68,14 @@
                     android:textSize="@dimen/text_sz_double_extra_large" />
             </LinearLayout>
 
-            <org.wordpress.android.ui.ActionableEmptyView
+            <org.wordpress.android.mediapicker.ui.MediaPickerEmptyView
                 android:id="@+id/soft_ask_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:visibility="gone"
-                app:aevButton="@string/photo_picker_soft_ask_allow"
-                app:aevImage="@drawable/img_illustration_add_media_150dp"
-                app:aevTitle="@string/photo_picker_soft_ask_label"
+                app:mpevButton="@string/photo_picker_soft_ask_allow"
+                app:mpevImage="@drawable/img_illustration_add_media_150dp"
+                app:mpvTitle="@string/photo_picker_soft_ask_label"
                 tools:visibility="visible" />
 
         </RelativeLayout>

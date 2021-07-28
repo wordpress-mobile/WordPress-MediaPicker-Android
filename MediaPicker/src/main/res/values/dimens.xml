@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="margin_none">0dp</dimen>
+    <dimen name="margin_dialog">24dp</dimen>
+    <dimen name="margin_extra_extra_small">1dp</dimen>
+    <dimen name="margin_extra_small">2dp</dimen>
+    <dimen name="margin_small">4dp</dimen>
+    <dimen name="margin_small_medium">6dp</dimen>
+    <dimen name="margin_medium">8dp</dimen>
+    <dimen name="margin_medium_large">10dp</dimen>
+    <dimen name="margin_large">12dp</dimen>
+    <dimen name="margin_extra_large">16dp</dimen>
+    <dimen name="margin_extra_medium_large">24dp</dimen>
+    <dimen name="margin_extra_extra_medium_large">32dp</dimen>
+    <dimen name="margin_extra_extra_large">48dp</dimen>
+
+    <dimen name="text_sz_extra_extra_small">7sp</dimen>
+    <dimen name="text_sz_extra_small">10sp</dimen>
+    <dimen name="text_sz_small">12sp</dimen>
+    <dimen name="text_sz_medium">14sp</dimen>
+    <dimen name="text_sz_large">16sp</dimen>
+    <dimen name="text_sz_larger">18sp</dimen>
+    <dimen name="text_sz_extra_large">20sp</dimen>
+    <dimen name="text_sz_double_extra_large">24sp</dimen>
+    <dimen name="text_sz_extra_extra_large">32sp</dimen>
+
+    <dimen name="fab_margin">@dimen/fab_margin_default</dimen>
+    <dimen name="fab_margin_default">16dp</dimen>
+    <dimen name="fab_margin_stories">64dp</dimen>
+    <dimen name="fab_margin_tablet">24dp</dimen>
+    <dimen name="design_fab_size">56dp</dimen>
+
+    <dimen name="mediapicker_empty_view_text_margin_horizontal">30dp</dimen>
+    <dimen name="mediapicker_empty_view_text_maximum_width">440dp</dimen>
+</resources>

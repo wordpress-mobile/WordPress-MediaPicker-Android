@@ -1,20 +1,13 @@
 package org.wordpress.android.mediapicker
 
 import android.Manifest.permission
-import android.app.Activity
 import android.content.Intent.ACTION_GET_CONTENT
 import android.content.Intent.ACTION_OPEN_DOCUMENT
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
-import android.text.Html
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
+import android.view.*
 import android.view.MenuItem.OnActionExpandListener
-import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AlertDialog.Builder
 import androidx.appcompat.app.AppCompatActivity
@@ -22,60 +15,17 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
-import org.wordpress.android.R
-import org.wordpress.android.WordPress
-import org.wordpress.android.databinding.MediaPickerFragmentBinding
-import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.ui.ActivityLauncher
-import org.wordpress.android.ui.media.MediaPreviewActivity
 import org.wordpress.android.mediapicker.MediaItem.Identifier
-import org.wordpress.android.mediapicker.MediaNavigationEvent.EditMedia
-import org.wordpress.android.mediapicker.MediaNavigationEvent.Exit
-import org.wordpress.android.mediapicker.MediaNavigationEvent.IconClickEvent
-import org.wordpress.android.mediapicker.MediaNavigationEvent.InsertMedia
-import org.wordpress.android.mediapicker.MediaNavigationEvent.PreviewMedia
-import org.wordpress.android.mediapicker.MediaNavigationEvent.PreviewUrl
-import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIconType.ANDROID_CHOOSE_FROM_DEVICE
-import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIconType.CAPTURE_PHOTO
-import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIconType.SWITCH_SOURCE
-import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIconType.WP_STORIES_CAPTURE
+import org.wordpress.android.mediapicker.MediaNavigationEvent.*
+import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIconType.*
 import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource
-import org.wordpress.android.mediapicker.MediaPickerViewModel.ActionModeUiModel
-import org.wordpress.android.mediapicker.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction.DEVICE
-import org.wordpress.android.mediapicker.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction.GIF_LIBRARY
-import org.wordpress.android.mediapicker.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction.STOCK_LIBRARY
-import org.wordpress.android.mediapicker.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction.SYSTEM_PICKER
-import org.wordpress.android.mediapicker.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction.WP_MEDIA_LIBRARY
-import org.wordpress.android.mediapicker.MediaPickerViewModel.FabUiModel
-import org.wordpress.android.mediapicker.MediaPickerViewModel.PermissionsRequested.CAMERA
-import org.wordpress.android.mediapicker.MediaPickerViewModel.PermissionsRequested.STORAGE
-import org.wordpress.android.mediapicker.MediaPickerViewModel.PhotoListUiModel
-import org.wordpress.android.mediapicker.MediaPickerViewModel.ProgressDialogUiModel
+import org.wordpress.android.mediapicker.MediaPickerViewModel.*
+import org.wordpress.android.mediapicker.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction.*
 import org.wordpress.android.mediapicker.MediaPickerViewModel.ProgressDialogUiModel.Visible
-import org.wordpress.android.mediapicker.MediaPickerViewModel.SearchUiModel
-import org.wordpress.android.mediapicker.MediaPickerViewModel.SoftAskViewUiModel
-import org.wordpress.android.ui.pages.SnackbarMessageHolder
-import org.wordpress.android.ui.utils.UiHelpers
-import org.wordpress.android.ui.utils.UiString.UiStringRes
-import org.wordpress.android.util.AccessibilityUtils
-import org.wordpress.android.util.AniUtils
-import org.wordpress.android.util.AniUtils.Duration.MEDIUM
-import org.wordpress.android.util.SnackbarItem
-import org.wordpress.android.util.SnackbarItem.Action
-import org.wordpress.android.util.SnackbarItem.Info
-import org.wordpress.android.util.SnackbarSequencer
-import org.wordpress.android.util.WPLinkMovementMethod
-import org.wordpress.android.util.WPMediaUtils
-import org.wordpress.android.util.WPPermissionUtils
-import org.wordpress.android.util.WPSwipeToRefreshHelper
-import org.wordpress.android.util.image.ImageManager
-import org.wordpress.android.viewmodel.observeEvent
-import javax.inject.Inject
+import org.wordpress.android.mediapicker.databinding.MediaPickerFragmentBinding
 
 class MediaPickerFragment : Fragment() {
     enum class MediaPickerIconType {
@@ -183,16 +133,15 @@ class MediaPickerFragment : Fragment() {
 
     private var listener: MediaPickerListener? = null
 
-    @Inject lateinit var imageManager: ImageManager
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
-    @Inject lateinit var snackbarSequencer: SnackbarSequencer
-    @Inject lateinit var uiHelpers: UiHelpers
+    lateinit var imageManager: ImageManager
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    lateinit var snackbarSequencer: SnackbarSequencer
+    lateinit var uiHelpers: UiHelpers
     private lateinit var viewModel: MediaPickerViewModel
     private var binding: MediaPickerFragmentBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (requireActivity().application as WordPress).component().inject(this)
         viewModel = ViewModelProvider(this, viewModelFactory).get(MediaPickerViewModel::class.java)
         setHasOptionsMenu(true)
     }
@@ -213,7 +162,6 @@ class MediaPickerFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val mediaPickerSetup = MediaPickerSetup.fromBundle(requireArguments())
-        val site = requireArguments().getSerializable(WordPress.SITE) as? SiteModel
         var selectedIds: List<Identifier>? = null
         var lastTappedIcon: MediaPickerIcon? = null
         if (savedInstanceState != null) {
@@ -261,42 +209,42 @@ class MediaPickerFragment : Fragment() {
                 }
             })
 
-            viewModel.onNavigate.observeEvent(viewLifecycleOwner,
-                    { navigationEvent ->
-                        when (navigationEvent) {
-                            is PreviewUrl -> {
-                                MediaPreviewActivity.showPreview(
-                                        requireContext(),
-                                        null,
-                                        navigationEvent.url
-                                )
-                                AccessibilityUtils.setActionModeDoneButtonContentDescription(
-                                        activity,
-                                        getString(R.string.cancel)
-                                )
-                            }
-                            is PreviewMedia -> MediaPreviewActivity.showPreview(
-                                    requireContext(),
-                                    null,
-                                    navigationEvent.media,
-                                    null
-                            )
-                            is EditMedia -> {
-                                val inputData = WPMediaUtils.createListOfEditImageInputData(
-                                        requireContext(),
-                                        navigationEvent.uris.map { wrapper -> wrapper.uri }
-                                )
-                                ActivityLauncher.openImageEditor(activity, inputData)
-                            }
-                            is InsertMedia -> listener?.onItemsChosen(navigationEvent.identifiers)
-                            is IconClickEvent -> listener?.onIconClicked(navigationEvent.action)
-                            Exit -> {
-                                val activity = requireActivity()
-                                activity.setResult(Activity.RESULT_CANCELED)
-                                activity.finish()
-                            }
-                        }
-                    })
+            viewModel.onNavigate.observeEvent(viewLifecycleOwner
+            ) { navigationEvent ->
+                when (navigationEvent) {
+                    is PreviewUrl -> {
+                        MediaPreviewActivity.showPreview(
+                            requireContext(),
+                            null,
+                            navigationEvent.url
+                        )
+                        AccessibilityUtils.setActionModeDoneButtonContentDescription(
+                            activity,
+                            getString(R.string.cancel)
+                        )
+                    }
+                    is PreviewMedia -> MediaPreviewActivity.showPreview(
+                        requireContext(),
+                        null,
+                        navigationEvent.media,
+                        null
+                    )
+                    is EditMedia -> {
+                        val inputData = WPMediaUtils.createListOfEditImageInputData(
+                            requireContext(),
+                            navigationEvent.uris.map { wrapper -> wrapper.uri }
+                        )
+                        ActivityLauncher.openImageEditor(activity, inputData)
+                    }
+                    is InsertMedia -> listener?.onItemsChosen(navigationEvent.identifiers)
+                    is IconClickEvent -> listener?.onIconClicked(navigationEvent.action)
+                    Exit -> {
+                        val activity = requireActivity()
+                        activity.setResult(Activity.RESULT_CANCELED)
+                        activity.finish()
+                    }
+                }
+            }
 
             viewModel.onPermissionsRequested.observeEvent(viewLifecycleOwner, {
                 when (it) {
