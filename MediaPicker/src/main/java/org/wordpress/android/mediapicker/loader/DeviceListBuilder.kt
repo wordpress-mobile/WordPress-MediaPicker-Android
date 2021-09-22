@@ -3,18 +3,18 @@ package org.wordpress.android.mediapicker.loader
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
-import org.wordpress.android.mediapicker.MediaItem
-import org.wordpress.android.mediapicker.MediaItem.Identifier.LocalUri
-import org.wordpress.android.mediapicker.MediaType
-import org.wordpress.android.mediapicker.MediaType.AUDIO
-import org.wordpress.android.mediapicker.MediaType.DOCUMENT
-import org.wordpress.android.mediapicker.MediaType.IMAGE
-import org.wordpress.android.mediapicker.MediaType.VIDEO
+import org.wordpress.android.mediapicker.model.MediaType
+import org.wordpress.android.mediapicker.model.MediaType.AUDIO
+import org.wordpress.android.mediapicker.model.MediaType.DOCUMENT
+import org.wordpress.android.mediapicker.model.MediaType.IMAGE
+import org.wordpress.android.mediapicker.model.MediaType.VIDEO
 import org.wordpress.android.mediapicker.R
 import org.wordpress.android.mediapicker.api.MimeTypeSupportProvider
 import org.wordpress.android.mediapicker.loader.MediaSource.MediaLoadingResult
 import org.wordpress.android.mediapicker.loader.MediaSource.MediaLoadingResult.Empty
-import org.wordpress.android.util.UiString.*
+import org.wordpress.android.mediapicker.model.MediaItem
+import org.wordpress.android.mediapicker.model.MediaItem.Identifier.LocalUri
+import javax.inject.Inject
 
 class DeviceListBuilder(
     private val deviceMediaLoader: DeviceMediaLoader,
@@ -78,7 +78,8 @@ class DeviceListBuilder(
                 MediaLoadingResult.Success(mediaItems, lastShownTimestamp > 0L)
             } else {
                 Empty(
-                        UiStringRes(R.string.media_empty_search_list),
+                    // FIXME
+                    "No media matching your search",
                         image = R.drawable.img_illustration_empty_results_216dp
                 )
             }
@@ -92,13 +93,13 @@ class DeviceListBuilder(
         val lastDateModified = cache[mediaType]?.nextTimestamp
         val deviceMediaList = deviceMediaLoader.loadMedia(mediaType, filter, pageSize, lastDateModified)
         val result = deviceMediaList.items.mapNotNull {
-            val mimeType = deviceMediaLoader.getMimeType(it.uri)
+            val mimeType = deviceMediaLoader.getMimeType(it.mediaUri)
             val isMimeTypeSupported = mimeType != null
                     && mimeTypeSupportProvider.isMimeTypeSupportedBySitePlan(siteId, mimeType)
                     && mimeTypeSupportProvider.isSupportedMimeType(mimeType)
 
             if (isMimeTypeSupported) {
-                MediaItem(LocalUri(it.uri), it.uri.toString(), it.title, mediaType, mimeType, it.dateModified)
+                MediaItem(LocalUri(it.mediaUri), it.mediaUri.uri, it.title, mediaType, mimeType, it.dateModified)
             } else {
                 null
             }
@@ -115,7 +116,7 @@ class DeviceListBuilder(
         val documentsList = deviceMediaLoader.loadDocuments(filter, pageSize, lastDateModified)
 
         val filteredPage = documentsList.items.mapNotNull { document ->
-            val mimeType = deviceMediaLoader.getMimeType(document.uri)
+            val mimeType = deviceMediaLoader.getMimeType(document.mediaUri)
             val isMimeTypeSupported = mimeType != null
                     && mimeTypeSupportProvider.isMimeTypeSupportedBySitePlan(siteId, mimeType)
                     && mimeTypeSupportProvider.isSupportedMimeType(mimeType)
@@ -124,8 +125,8 @@ class DeviceListBuilder(
 
             if (isSupportedApplicationType && isMimeTypeSupported) {
                 MediaItem(
-                        LocalUri(document.uri),
-                        document.uri.toString(),
+                        LocalUri(document.mediaUri),
+                        document.mediaUri.toString(),
                         document.title,
                         DOCUMENT,
                         mimeType,
@@ -152,7 +153,7 @@ class DeviceListBuilder(
         return this == null || (nextTimestamp != null && this.items.size <= (visibleItems + pageSize))
     }
 
-    class DeviceListBuilderFactory (
+    class DeviceListBuilderFactory @Inject constructor(
         private val deviceMediaLoader: DeviceMediaLoader,
         private val bgDispatcher: CoroutineDispatcher,
         private val mimeTypeSupportProvider: MimeTypeSupportProvider,

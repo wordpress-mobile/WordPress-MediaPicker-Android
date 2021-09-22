@@ -1,7 +1,7 @@
 package org.wordpress.android.mediapicker.insert
 
 import kotlinx.coroutines.flow.Flow
-import org.wordpress.android.mediapicker.MediaItem.Identifier
+import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 
 class MediaInsertHandler(private val mediaInsertUseCase: MediaInsertUseCase) {
     suspend fun insertMedia(identifiers: List<Identifier>): Flow<InsertModel> {

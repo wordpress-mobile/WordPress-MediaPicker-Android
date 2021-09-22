@@ -3,8 +3,9 @@ package org.wordpress.android.mediapicker.insert
 import org.wordpress.android.mediapicker.MediaPickerSetup
 import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.insert.DeviceListInsertUseCase.DeviceListInsertUseCaseFactory
+import javax.inject.Inject
 
-class MediaInsertHandlerFactory(
+class MediaInsertHandlerFactory @Inject constructor(
     private val deviceListInsertUseCaseFactory: DeviceListInsertUseCaseFactory,
 ) {
     fun build(mediaPickerSetup: MediaPickerSetup): MediaInsertHandler {

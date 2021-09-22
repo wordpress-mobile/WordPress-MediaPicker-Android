@@ -1,6 +1,7 @@
 package org.wordpress.android.mediapicker
 
-import android.Manifest.permission
+import android.Manifest.permission.CAMERA
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.app.Activity
 import android.content.Intent.ACTION_GET_CONTENT
 import android.content.Intent.ACTION_OPEN_DOCUMENT
@@ -9,8 +10,6 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.text.Html
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
 import android.view.View
@@ -20,25 +19,17 @@ import androidx.appcompat.app.AlertDialog.Builder
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import org.wordpress.android.R
-import org.wordpress.android.WordPress
-import org.wordpress.android.databinding.MediaPickerFragmentBinding
-import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.ui.ActivityLauncher
-import org.wordpress.android.ui.media.MediaPreviewActivity
-import org.wordpress.android.mediapicker.MediaItem.Identifier
-import org.wordpress.android.mediapicker.MediaNavigationEvent.EditMedia
-import org.wordpress.android.mediapicker.MediaNavigationEvent.Exit
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.DelicateCoroutinesApi
 import org.wordpress.android.mediapicker.MediaNavigationEvent.IconClickEvent
 import org.wordpress.android.mediapicker.MediaNavigationEvent.InsertMedia
-import org.wordpress.android.mediapicker.MediaNavigationEvent.PreviewMedia
 import org.wordpress.android.mediapicker.MediaNavigationEvent.PreviewUrl
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIconType.ANDROID_CHOOSE_FROM_DEVICE
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIconType.CAPTURE_PHOTO
@@ -46,37 +37,24 @@ import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIconType
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIconType.WP_STORIES_CAPTURE
 import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource
 import org.wordpress.android.mediapicker.MediaPickerViewModel.ActionModeUiModel
-import org.wordpress.android.mediapicker.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction.DEVICE
-import org.wordpress.android.mediapicker.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction.GIF_LIBRARY
-import org.wordpress.android.mediapicker.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction.STOCK_LIBRARY
-import org.wordpress.android.mediapicker.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction.SYSTEM_PICKER
-import org.wordpress.android.mediapicker.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction.WP_MEDIA_LIBRARY
 import org.wordpress.android.mediapicker.MediaPickerViewModel.FabUiModel
-import org.wordpress.android.mediapicker.MediaPickerViewModel.PermissionsRequested.CAMERA
-import org.wordpress.android.mediapicker.MediaPickerViewModel.PermissionsRequested.STORAGE
 import org.wordpress.android.mediapicker.MediaPickerViewModel.PhotoListUiModel
 import org.wordpress.android.mediapicker.MediaPickerViewModel.ProgressDialogUiModel
 import org.wordpress.android.mediapicker.MediaPickerViewModel.ProgressDialogUiModel.Visible
-import org.wordpress.android.mediapicker.MediaPickerViewModel.SearchUiModel
 import org.wordpress.android.mediapicker.MediaPickerViewModel.SoftAskViewUiModel
-import org.wordpress.android.ui.pages.SnackbarMessageHolder
-import org.wordpress.android.ui.utils.UiHelpers
-import org.wordpress.android.ui.utils.UiString.UiStringRes
-import org.wordpress.android.util.AccessibilityUtils
-import org.wordpress.android.util.AniUtils
-import org.wordpress.android.util.AniUtils.Duration.MEDIUM
-import org.wordpress.android.util.SnackbarItem
-import org.wordpress.android.util.SnackbarItem.Action
-import org.wordpress.android.util.SnackbarItem.Info
-import org.wordpress.android.util.SnackbarSequencer
-import org.wordpress.android.util.WPLinkMovementMethod
-import org.wordpress.android.util.WPMediaUtils
-import org.wordpress.android.util.WPPermissionUtils
-import org.wordpress.android.util.WPSwipeToRefreshHelper
-import org.wordpress.android.util.image.ImageManager
-import org.wordpress.android.viewmodel.observeEvent
+import org.wordpress.android.mediapicker.databinding.MediaPickerFragmentBinding
+import org.wordpress.android.mediapicker.model.MediaItem.Identifier
+import org.wordpress.android.mediapicker.model.MediaType
+import org.wordpress.android.mediapicker.model.MediaUri
+import org.wordpress.android.mediapicker.viewmodel.observeEvent
+import org.wordpress.android.util.*
+import org.wordpress.android.util.AnimUtils.Duration.MEDIUM
+import org.wordpress.android.util.MediaPickerPermissionUtils.Companion.PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE
+import org.wordpress.android.util.MediaPickerPermissionUtils.Companion.PHOTO_PICKER_STORAGE_PERMISSION_REQUEST_CODE
 import javax.inject.Inject
 
+@DelicateCoroutinesApi
+@AndroidEntryPoint
 class MediaPickerFragment : Fragment() {
     enum class MediaPickerIconType {
         ANDROID_CHOOSE_FROM_DEVICE,
@@ -183,17 +161,14 @@ class MediaPickerFragment : Fragment() {
 
     private var listener: MediaPickerListener? = null
 
-    @Inject lateinit var imageManager: ImageManager
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
-    @Inject lateinit var snackbarSequencer: SnackbarSequencer
-    @Inject lateinit var uiHelpers: UiHelpers
-    private lateinit var viewModel: MediaPickerViewModel
+//    @Inject lateinit var imageManager: ImageManager
+    @Inject lateinit var permissionUtils: MediaPickerPermissionUtils
+
+    private val viewModel: MediaPickerViewModel by viewModels()
     private var binding: MediaPickerFragmentBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (requireActivity().application as WordPress).component().inject(this)
-        viewModel = ViewModelProvider(this, viewModelFactory).get(MediaPickerViewModel::class.java)
         setHasOptionsMenu(true)
     }
 
@@ -213,13 +188,14 @@ class MediaPickerFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val mediaPickerSetup = MediaPickerSetup.fromBundle(requireArguments())
-        val site = requireArguments().getSerializable(WordPress.SITE) as? SiteModel
-        var selectedIds: List<Identifier>? = null
+        var selectedIds: List<Identifier> = emptyList()
         var lastTappedIcon: MediaPickerIcon? = null
         if (savedInstanceState != null) {
             lastTappedIcon = MediaPickerIcon.fromBundle(savedInstanceState)
             if (savedInstanceState.containsKey(KEY_SELECTED_IDS)) {
-                selectedIds = savedInstanceState.getParcelableArrayList<Identifier>(KEY_SELECTED_IDS)?.map { it }
+                selectedIds = savedInstanceState.getParcelableArrayList<Identifier>(
+                    KEY_SELECTED_IDS
+                )?.map { it } ?: emptyList()
             }
         }
 
@@ -265,32 +241,32 @@ class MediaPickerFragment : Fragment() {
                     { navigationEvent ->
                         when (navigationEvent) {
                             is PreviewUrl -> {
-                                MediaPreviewActivity.showPreview(
-                                        requireContext(),
-                                        null,
-                                        navigationEvent.url
-                                )
+//                                MediaPreviewActivity.showPreview(
+//                                        requireContext(),
+//                                        null,
+//                                        navigationEvent.url
+//                                )
                                 AccessibilityUtils.setActionModeDoneButtonContentDescription(
                                         activity,
                                         getString(R.string.cancel)
                                 )
                             }
-                            is PreviewMedia -> MediaPreviewActivity.showPreview(
-                                    requireContext(),
-                                    null,
-                                    navigationEvent.media,
-                                    null
-                            )
-                            is EditMedia -> {
-                                val inputData = WPMediaUtils.createListOfEditImageInputData(
-                                        requireContext(),
-                                        navigationEvent.uris.map { wrapper -> wrapper.uri }
-                                )
-                                ActivityLauncher.openImageEditor(activity, inputData)
-                            }
+//                            is PreviewMedia -> MediaPreviewActivity.showPreview(
+//                                    requireContext(),
+//                                    null,
+//                                    navigationEvent.media,
+//                                    null
+//                            )
+//                            is EditMedia -> {
+//                                val inputData = WPMediaUtils.createListOfEditImageInputData(
+//                                        requireContext(),
+//                                        navigationEvent.uris.map { wrapper -> wrapper.uri }
+//                                )
+//                                ActivityLauncher.openImageEditor(activity, inputData)
+//                            }
                             is InsertMedia -> listener?.onItemsChosen(navigationEvent.identifiers)
                             is IconClickEvent -> listener?.onIconClicked(navigationEvent.action)
-                            Exit -> {
+                            MediaNavigationEvent.Exit -> {
                                 val activity = requireActivity()
                                 activity.setResult(Activity.RESULT_CANCELED)
                                 activity.finish()
@@ -300,8 +276,8 @@ class MediaPickerFragment : Fragment() {
 
             viewModel.onPermissionsRequested.observeEvent(viewLifecycleOwner, {
                 when (it) {
-                    CAMERA -> requestCameraPermission()
-                    STORAGE -> requestStoragePermission()
+                    MediaPickerViewModel.PermissionsRequested.CAMERA -> requestCameraPermission()
+                    MediaPickerViewModel.PermissionsRequested.STORAGE -> requestStoragePermission()
                 }
             })
             viewModel.onSnackbarMessage.observeEvent(viewLifecycleOwner, { messageHolder ->
@@ -310,7 +286,8 @@ class MediaPickerFragment : Fragment() {
 
             setupProgressDialog()
 
-            viewModel.start(selectedIds, mediaPickerSetup, lastTappedIcon, site)
+            // FIXME: Site
+            viewModel.start(selectedIds, mediaPickerSetup, lastTappedIcon, 0)
         }
     }
 
@@ -319,76 +296,76 @@ class MediaPickerFragment : Fragment() {
         binding = null
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu_media_picker, menu)
+//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+//        super.onCreateOptionsMenu(menu, inflater)
+//        inflater.inflate(R.menu.menu_media_picker, menu)
+//
+//        val searchMenuItem = checkNotNull(menu.findItem(R.id.action_search)) {
+//            "Menu does not contain mandatory search item"
+//        }
+//        val browseMenuItem = checkNotNull(menu.findItem(R.id.mnu_browse_item)) {
+//            "Menu does not contain mandatory browse item"
+//        }
+//        val mediaLibraryMenuItem = checkNotNull(menu.findItem(R.id.mnu_choose_from_media_library)) {
+//            "Menu does not contain mandatory media library item"
+//        }
+//        val deviceMenuItem = checkNotNull(menu.findItem(R.id.mnu_choose_from_device)) {
+//            "Menu does not contain device library item"
+//        }
+//        val stockLibraryMenuItem = checkNotNull(menu.findItem(R.id.mnu_choose_from_stock_library)) {
+//            "Menu does not contain mandatory stock library item"
+//        }
+//        val tenorLibraryMenuItem = checkNotNull(menu.findItem(R.id.mnu_choose_from_tenor_library)) {
+//            "Menu does not contain mandatory tenor library item"
+//        }
 
-        val searchMenuItem = checkNotNull(menu.findItem(R.id.action_search)) {
-            "Menu does not contain mandatory search item"
-        }
-        val browseMenuItem = checkNotNull(menu.findItem(R.id.mnu_browse_item)) {
-            "Menu does not contain mandatory browse item"
-        }
-        val mediaLibraryMenuItem = checkNotNull(menu.findItem(R.id.mnu_choose_from_media_library)) {
-            "Menu does not contain mandatory media library item"
-        }
-        val deviceMenuItem = checkNotNull(menu.findItem(R.id.mnu_choose_from_device)) {
-            "Menu does not contain device library item"
-        }
-        val stockLibraryMenuItem = checkNotNull(menu.findItem(R.id.mnu_choose_from_stock_library)) {
-            "Menu does not contain mandatory stock library item"
-        }
-        val tenorLibraryMenuItem = checkNotNull(menu.findItem(R.id.mnu_choose_from_tenor_library)) {
-            "Menu does not contain mandatory tenor library item"
-        }
+//        initializeSearchView(searchMenuItem)
+//        viewModel.uiState.observe(viewLifecycleOwner, Observer { uiState ->
+//            val searchView = searchMenuItem.actionView as SearchView
+//
+//            if (uiState.searchUiModel is SearchUiModel.Expanded && !searchMenuItem.isActionViewExpanded) {
+//                searchMenuItem.expandActionView()
+//                searchView.maxWidth = Integer.MAX_VALUE
+//                searchView.setQuery(uiState.searchUiModel.filter, true)
+//                searchView.setOnCloseListener { !uiState.searchUiModel.closeable }
+//            } else if (uiState.searchUiModel is SearchUiModel.Collapsed && searchMenuItem.isActionViewExpanded) {
+//                searchMenuItem.collapseActionView()
+//            }
+//
+//            searchMenuItem.isVisible = uiState.searchUiModel !is SearchUiModel.Hidden
+//
+//            val shownActions = uiState.browseMenuUiModel.shownActions
+//            browseMenuItem.isVisible = shownActions.contains(SYSTEM_PICKER)
+//            mediaLibraryMenuItem.isVisible = shownActions.contains(WP_MEDIA_LIBRARY)
+//            deviceMenuItem.isVisible = shownActions.contains(DEVICE)
+//            stockLibraryMenuItem.isVisible = shownActions.contains(STOCK_LIBRARY)
+//            tenorLibraryMenuItem.isVisible = shownActions.contains(GIF_LIBRARY)
+//        })
+//    }
 
-        initializeSearchView(searchMenuItem)
-        viewModel.uiState.observe(viewLifecycleOwner, Observer { uiState ->
-            val searchView = searchMenuItem.actionView as SearchView
-
-            if (uiState.searchUiModel is SearchUiModel.Expanded && !searchMenuItem.isActionViewExpanded) {
-                searchMenuItem.expandActionView()
-                searchView.maxWidth = Integer.MAX_VALUE
-                searchView.setQuery(uiState.searchUiModel.filter, true)
-                searchView.setOnCloseListener { !uiState.searchUiModel.closeable }
-            } else if (uiState.searchUiModel is SearchUiModel.Collapsed && searchMenuItem.isActionViewExpanded) {
-                searchMenuItem.collapseActionView()
-            }
-
-            searchMenuItem.isVisible = uiState.searchUiModel !is SearchUiModel.Hidden
-
-            val shownActions = uiState.browseMenuUiModel.shownActions
-            browseMenuItem.isVisible = shownActions.contains(SYSTEM_PICKER)
-            mediaLibraryMenuItem.isVisible = shownActions.contains(WP_MEDIA_LIBRARY)
-            deviceMenuItem.isVisible = shownActions.contains(DEVICE)
-            stockLibraryMenuItem.isVisible = shownActions.contains(STOCK_LIBRARY)
-            tenorLibraryMenuItem.isVisible = shownActions.contains(GIF_LIBRARY)
-        })
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.mnu_browse_item -> {
-                viewModel.onMenuItemClicked(SYSTEM_PICKER)
-            }
-            R.id.mnu_choose_from_media_library -> {
-                viewModel.onMenuItemClicked(WP_MEDIA_LIBRARY)
-            }
-            R.id.mnu_choose_from_device -> {
-                viewModel.onMenuItemClicked(DEVICE)
-            }
-            R.id.mnu_choose_from_stock_library -> {
-                viewModel.onMenuItemClicked(STOCK_LIBRARY)
-            }
-            R.id.mnu_choose_from_tenor_library -> {
-                viewModel.onMenuItemClicked(GIF_LIBRARY)
-            }
-        }
-        return true
-    }
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        when (item.itemId) {
+//            R.id.mnu_browse_item -> {
+//                viewModel.onMenuItemClicked(SYSTEM_PICKER)
+//            }
+//            R.id.mnu_choose_from_media_library -> {
+//                viewModel.onMenuItemClicked(WP_MEDIA_LIBRARY)
+//            }
+//            R.id.mnu_choose_from_device -> {
+//                viewModel.onMenuItemClicked(DEVICE)
+//            }
+//            R.id.mnu_choose_from_stock_library -> {
+//                viewModel.onMenuItemClicked(STOCK_LIBRARY)
+//            }
+//            R.id.mnu_choose_from_tenor_library -> {
+//                viewModel.onMenuItemClicked(GIF_LIBRARY)
+//            }
+//        }
+//        return true
+//    }
 
     fun urisSelectedFromSystemPicker(uris: List<Uri>) {
-        viewModel.urisSelectedFromSystemPicker(uris.map { UriWrapper(it) })
+        viewModel.urisSelectedFromSystemPicker(uris.map { MediaUri(it.toString()) })
     }
 
     private fun initializeSearchView(actionMenuItem: MenuItem) {
@@ -425,11 +402,11 @@ class MediaPickerFragment : Fragment() {
     private fun MediaPickerFragmentBinding.setupSoftAskView(uiModel: SoftAskViewUiModel) {
         when (uiModel) {
             is SoftAskViewUiModel.Visible -> {
-                softAskView.title.text = Html.fromHtml(uiModel.label)
-                softAskView.button.setText(uiModel.allowId.stringRes)
-                softAskView.button.setOnClickListener {
+                softAskView.setTextSpan(Html.fromHtml(uiModel.label))
+                softAskView.setButtonTitleRes(uiModel.allowId.stringRes)
+                softAskView.setOnClickListener {
                     if (uiModel.isAlwaysDenied) {
-                        WPPermissionUtils.showAppSettings(requireActivity())
+                        permissionUtils.showAppSettings(requireActivity())
                     } else {
                         requestStoragePermission()
                     }
@@ -439,7 +416,7 @@ class MediaPickerFragment : Fragment() {
             }
             is SoftAskViewUiModel.Hidden -> {
                 if (softAskView.visibility == View.VISIBLE) {
-                    AniUtils.fadeOut(softAskView, MEDIUM)
+                    AnimUtils.fadeOut(softAskView, MEDIUM)
                 }
             }
         }
@@ -455,34 +432,32 @@ class MediaPickerFragment : Fragment() {
             }
             is PhotoListUiModel.Empty -> {
                 setupAdapter(listOf())
-                actionableEmptyView.updateLayoutForSearch(uiModel.isSearching, 0)
-                actionableEmptyView.title.text = uiHelpers.getTextOfUiString(requireContext(), uiModel.title)
+//                actionableEmptyView.updateLayoutForSearch(uiModel.isSearching, 0)
+//                actionableEmptyView.setText(UiHelpers.getTextOfUiString(requireContext(), uiModel.title))
 
-                actionableEmptyView.subtitle.applyOrHide(uiModel.htmlSubtitle) { htmlSubtitle ->
-                    actionableEmptyView.subtitle.text = Html.fromHtml(
-                            uiHelpers.getTextOfUiString(
-                                    requireContext(),
-                                    htmlSubtitle
-                            ).toString()
-                    )
-                    actionableEmptyView.subtitle.movementMethod = WPLinkMovementMethod.getInstance()
-                }
-                actionableEmptyView.image.applyOrHide(uiModel.image) { image ->
-                    this.setImageResource(image)
-                }
-                actionableEmptyView.bottomImage.applyOrHide(uiModel.bottomImage) { bottomImage ->
-                    this.setImageResource(bottomImage)
-                    if (uiModel.bottomImageDescription != null) {
-                        this.contentDescription = uiHelpers.getTextOfUiString(
-                                requireContext(),
-                                uiModel.bottomImageDescription
-                        ).toString()
-                    }
-                }
-                actionableEmptyView.button.applyOrHide(uiModel.retryAction) { action ->
-                    this.setOnClickListener {
-                        action()
-                    }
+//                actionableEmptyView.subtitle.applyOrHide(uiModel.htmlSubtitle) { htmlSubtitle ->
+//                    actionableEmptyView.subtitle.text = Html.fromHtml(
+//                            uiHelpers.getTextOfUiString(
+//                                    requireContext(),
+//                                    htmlSubtitle
+//                            ).toString()
+//                    )
+//                    actionableEmptyView.subtitle.movementMethod = WPLinkMovementMethod.getInstance()
+//                }
+//                actionableEmptyView.image.applyOrHide(uiModel.image) { image ->
+//                    this.setImageResource(image)
+//                }
+//                actionableEmptyView.bottomImage.applyOrHide(uiModel.bottomImage) { bottomImage ->
+//                    this.setImageResource(bottomImage)
+//                    if (uiModel.bottomImageDescription != null) {
+//                        this.contentDescription = uiHelpers.getTextOfUiString(
+//                                requireContext(),
+//                                uiModel.bottomImageDescription
+//                        ).toString()
+//                    }
+//                }
+                actionableEmptyView.setOnClickListener {
+                    uiModel.retryAction?.invoke()
                 }
             }
         }
@@ -499,10 +474,7 @@ class MediaPickerFragment : Fragment() {
 
     private fun MediaPickerFragmentBinding.setupAdapter(items: List<MediaPickerUiItem>) {
         if (recycler.adapter == null) {
-            recycler.adapter = MediaPickerAdapter(
-                    imageManager,
-                    viewModel.viewModelScope
-            )
+            recycler.adapter = MediaPickerAdapter(lifecycleScope)
         }
         val adapter = recycler.adapter as MediaPickerAdapter
 
@@ -560,23 +532,19 @@ class MediaPickerFragment : Fragment() {
         })
     }
 
-    private fun MediaPickerFragmentBinding.showSnackbar(holder: SnackbarMessageHolder) {
-        snackbarSequencer.enqueue(
-                SnackbarItem(
-                        Info(
-                                view = coordinator,
-                                textRes = holder.message,
-                                duration = Snackbar.LENGTH_LONG
-                        ),
-                        holder.buttonTitle?.let {
-                            Action(
-                                    textRes = holder.buttonTitle,
-                                    clickListener = View.OnClickListener { holder.buttonAction() }
-                            )
-                        },
-                        dismissCallback = { _, _ -> holder.onDismissAction() }
-                )
+    private fun MediaPickerFragmentBinding.showSnackbar(holder: MediaPickerViewModel.SnackbarMessageHolder) {
+        val snackbar = Snackbar.make(
+            requireContext(),
+            coordinator,
+            UiHelpers.getTextOfUiString(requireContext(), holder.message),
+            Snackbar.LENGTH_LONG
         )
+        if (holder.buttonTitle != null) {
+            snackbar.setAction(
+                UiHelpers.getTextOfUiString(requireContext(), holder.buttonTitle)
+            ) { holder.buttonAction() }
+        }
+        snackbar.show()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -584,7 +552,10 @@ class MediaPickerFragment : Fragment() {
         viewModel.lastTappedIcon?.toBundle(outState)
         val selectedIds = viewModel.selectedIdentifiers()
         if (selectedIds.isNotEmpty()) {
-            outState.putParcelableArrayList(KEY_SELECTED_IDS, ArrayList<Identifier>(selectedIds))
+            outState.putParcelableArrayList(
+                KEY_SELECTED_IDS,
+                ArrayList<Identifier>(selectedIds)
+            )
         }
         binding!!.recycler.layoutManager?.let {
             outState.putParcelable(KEY_LIST_STATE, it.onSaveInstanceState())
@@ -601,8 +572,8 @@ class MediaPickerFragment : Fragment() {
     }
 
     private val isStoragePermissionAlwaysDenied: Boolean
-        get() = WPPermissionUtils.isPermissionAlwaysDenied(
-                requireActivity(), permission.WRITE_EXTERNAL_STORAGE
+        get() = permissionUtils.isPermissionAlwaysDenied(
+                requireActivity(), READ_EXTERNAL_STORAGE
         )
 
     /*
@@ -617,19 +588,16 @@ class MediaPickerFragment : Fragment() {
     }
 
     private fun requestStoragePermission() {
-        val permissions = arrayOf(permission.WRITE_EXTERNAL_STORAGE, permission.READ_EXTERNAL_STORAGE)
+        val permissions = arrayOf(READ_EXTERNAL_STORAGE)
         requestPermissions(
-                permissions, WPPermissionUtils.PHOTO_PICKER_STORAGE_PERMISSION_REQUEST_CODE
+                permissions, PHOTO_PICKER_STORAGE_PERMISSION_REQUEST_CODE
         )
     }
 
     private fun requestCameraPermission() {
-        // in addition to CAMERA permission we also need a storage permission, to store media from the camera
-        val permissions = arrayOf(
-                permission.CAMERA,
-                permission.WRITE_EXTERNAL_STORAGE
-        )
-        requestPermissions(permissions, WPPermissionUtils.PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE)
+//        // in addition to CAMERA permission we also need a storage permission, to store media from the camera
+        val permissions = arrayOf(CAMERA,  READ_EXTERNAL_STORAGE)
+        requestPermissions(permissions, PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE)
     }
 
     override fun onRequestPermissionsResult(
@@ -637,13 +605,13 @@ class MediaPickerFragment : Fragment() {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
-        val checkForAlwaysDenied = requestCode == WPPermissionUtils.PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE
-        val allGranted = WPPermissionUtils.setPermissionListAsked(
+        val checkForAlwaysDenied = requestCode == PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE
+        val allGranted = permissionUtils.setPermissionListAsked(
                 requireActivity(), requestCode, permissions, grantResults, checkForAlwaysDenied
         )
         when (requestCode) {
-            WPPermissionUtils.PHOTO_PICKER_STORAGE_PERMISSION_REQUEST_CODE -> checkStoragePermission()
-            WPPermissionUtils.PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE -> if (allGranted) {
+            PHOTO_PICKER_STORAGE_PERMISSION_REQUEST_CODE -> checkStoragePermission()
+            PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE -> if (allGranted) {
                 viewModel.clickOnLastTappedIcon()
             }
         }

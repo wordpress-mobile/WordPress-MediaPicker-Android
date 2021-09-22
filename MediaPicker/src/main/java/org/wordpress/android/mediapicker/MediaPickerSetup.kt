@@ -3,6 +3,7 @@ package org.wordpress.android.mediapicker
 import android.content.Intent
 import android.os.Bundle
 import androidx.annotation.StringRes
+import org.wordpress.android.mediapicker.model.MediaType
 
 data class MediaPickerSetup(
     val primaryDataSource: DataSource,

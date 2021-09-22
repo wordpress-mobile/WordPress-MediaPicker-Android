@@ -4,26 +4,31 @@ import android.content.ContentResolver
 import android.content.Context
 import android.database.Cursor
 import android.net.Uri
+import android.os.Build
+import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore.Audio
 import android.provider.MediaStore.Images.Media
 import android.provider.MediaStore.MediaColumns
 import android.provider.MediaStore.Video
 import android.webkit.MimeTypeMap
-import org.wordpress.android.mediapicker.MediaType
-import org.wordpress.android.mediapicker.MediaType.AUDIO
-import org.wordpress.android.mediapicker.MediaType.IMAGE
-import org.wordpress.android.mediapicker.MediaType.VIDEO
+import androidx.annotation.RequiresApi
+import dagger.hilt.android.qualifiers.ApplicationContext
+import org.wordpress.android.mediapicker.model.MediaType
+import org.wordpress.android.mediapicker.model.MediaType.AUDIO
+import org.wordpress.android.mediapicker.model.MediaType.IMAGE
+import org.wordpress.android.mediapicker.model.MediaType.VIDEO
 import org.wordpress.android.mediapicker.api.MimeTypeSupportProvider
-import org.wordpress.android.mediapicker.util.MediaUri
+import org.wordpress.android.mediapicker.model.MediaUri
 import org.wordpress.android.util.SqlUtils
 import org.wordpress.android.util.asAndroidUri
 import org.wordpress.android.util.asMediaUri
 import java.io.File
+import javax.inject.Inject
 
-class DeviceMediaLoader(
-        private val context: Context,
-        private val mimeTypeSupportProvider: MimeTypeSupportProvider,
+class DeviceMediaLoader @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val mimeTypeSupportProvider: MimeTypeSupportProvider,
 ) {
     fun loadMedia(
         mediaType: MediaType,
@@ -50,14 +55,27 @@ class DeviceMediaLoader(
             "$dateCondition AND $filterCondition"
         } else {
             dateCondition ?: filterCondition
-        }
-        cursor = context.contentResolver.query(
-                baseUri,
-                projection,
-                condition,
-                null,
-                "$ID_DATE_MODIFIED DESC LIMIT ${(pageSize + 1)}"
+        } ?: ""
+
+        cursor = createCursor(
+            context.contentResolver,
+            baseUri,
+            projection,
+            condition,
+            emptyArray(),
+            ID_DATE_MODIFIED,
+            false,
+            pageSize + 1
         )
+
+//
+//            context.contentResolver.query(
+//                baseUri,
+//                projection,
+//                condition,
+//                null,
+//                "$ID_DATE_MODIFIED DESC LIMIT ${(pageSize + 1)}"
+//        )
         if (cursor == null) {
             return DeviceMediaList(listOf(), null)
         }
@@ -111,6 +129,52 @@ class DeviceMediaLoader(
         return DeviceMediaList(result, nextItem)
     }
 
+    private fun createCursor(
+        contentResolver: ContentResolver,
+        collection: Uri,
+        projection: Array<String>,
+        whereCondition: String,
+        selectionArgs: Array<String>,
+        orderBy: String,
+        orderAscending: Boolean,
+        limit: Int = 20,
+        offset: Int = 0
+    ): Cursor? = when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> {
+            val selection = createSelectionBundle(whereCondition, selectionArgs, orderBy, orderAscending, limit, offset)
+            contentResolver.query(collection, projection, selection, null)
+        }
+        else -> {
+            val orderDirection = if (orderAscending) "ASC" else "DESC"
+            var order = "$orderBy $orderDirection"
+            order += " LIMIT $limit OFFSET $offset"
+            contentResolver.query(collection, projection, whereCondition, selectionArgs, order)
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun createSelectionBundle(
+        whereCondition: String,
+        selectionArgs: Array<String>,
+        orderBy: String,
+        orderAscending: Boolean,
+        limit: Int = 20,
+        offset: Int = 0
+    ): Bundle = Bundle().apply {
+        // Limit & Offset
+        putInt(ContentResolver.QUERY_ARG_LIMIT, limit)
+        putInt(ContentResolver.QUERY_ARG_OFFSET, offset)
+        // Sort function
+        putStringArray(ContentResolver.QUERY_ARG_SORT_COLUMNS, arrayOf(orderBy))
+        // Sorting direction
+        val orderDirection =
+            if (orderAscending) ContentResolver.QUERY_SORT_DIRECTION_ASCENDING else ContentResolver.QUERY_SORT_DIRECTION_DESCENDING
+        putInt(ContentResolver.QUERY_ARG_SORT_DIRECTION, orderDirection)
+        // Selection
+        putString(ContentResolver.QUERY_ARG_SQL_SELECTION, whereCondition)
+        putStringArray(ContentResolver.QUERY_ARG_SQL_SELECTION_ARGS, selectionArgs)
+    }
+
     private fun File.lastModifiedInSecs() = this.lastModified() / 1000
 
     fun getMimeType(mediaUri: MediaUri): String? {
@@ -125,7 +189,7 @@ class DeviceMediaLoader(
 
     data class DeviceMediaList(val items: List<DeviceMediaItem>, val next: Long? = null)
 
-    data class DeviceMediaItem(val uri: MediaUri, val title: String, val dateModified: Long)
+    data class DeviceMediaItem(val mediaUri: MediaUri, val title: String, val dateModified: Long)
 
     companion object {
         private const val ID_COL = Media._ID

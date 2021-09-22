@@ -9,6 +9,7 @@ import android.text.TextUtils
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
+import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.mediapicker.MediaPickerRequestCodes.IMAGE_EDITOR_EDIT_IMAGE
 import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_LAUNCH_WPSTORIES_CAMERA_REQUESTED
 import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_MEDIA_ID
@@ -16,7 +17,6 @@ import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_MEDIA_QUEUED
 import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_MEDIA_SOURCE
 import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_MEDIA_URIS
 import org.wordpress.android.mediapicker.MediaPickerConstants.RESULT_IDS
-import org.wordpress.android.mediapicker.MediaItem.Identifier
 import org.wordpress.android.mediapicker.MediaPickerActivity.MediaPickerMediaSource.ANDROID_CAMERA
 import org.wordpress.android.mediapicker.MediaPickerActivity.MediaPickerMediaSource.APP_PICKER
 import org.wordpress.android.mediapicker.MediaPickerFragment.Companion.newInstance
@@ -32,7 +32,8 @@ import org.wordpress.android.mediapicker.MediaPickerRequestCodes.TAKE_PHOTO
 import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource
 import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.databinding.PhotoPickerActivityBinding
-import org.wordpress.android.mediapicker.util.MediaUri
+import org.wordpress.android.mediapicker.model.MediaItem.Identifier
+import org.wordpress.android.mediapicker.model.MediaUri
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T.MEDIA
 import org.wordpress.android.util.WPMediaUtils
@@ -40,6 +41,7 @@ import org.wordpress.android.util.asAndroidUri
 import org.wordpress.android.util.asMediaUri
 import java.io.File
 
+@AndroidEntryPoint
 class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
     private var mediaCapturePath: String? = null
     private lateinit var mediaPickerSetup: MediaPickerSetup

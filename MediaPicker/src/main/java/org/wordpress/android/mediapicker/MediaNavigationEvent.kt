@@ -1,8 +1,8 @@
 package org.wordpress.android.mediapicker
 
-import org.wordpress.android.mediapicker.MediaItem.Identifier
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerAction
-import org.wordpress.android.mediapicker.util.MediaUri
+import org.wordpress.android.mediapicker.model.MediaItem.Identifier
+import org.wordpress.android.mediapicker.model.MediaUri
 
 sealed class MediaNavigationEvent {
     data class PreviewUrl(val url: String) : MediaNavigationEvent()

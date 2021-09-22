@@ -1,16 +1,13 @@
 package org.wordpress.android.mediapicker
 
 import android.Manifest.permission
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import org.wordpress.android.mediapicker.MediaItem.Identifier
-import org.wordpress.android.mediapicker.MediaItem.Identifier.*
 import org.wordpress.android.mediapicker.MediaNavigationEvent.*
 import org.wordpress.android.mediapicker.MediaPickerFragment.*
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerAction.*
@@ -21,7 +18,7 @@ import org.wordpress.android.mediapicker.MediaPickerUiItem.*
 import org.wordpress.android.mediapicker.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction
 import org.wordpress.android.mediapicker.MediaPickerViewModel.ProgressDialogUiModel.Hidden
 import org.wordpress.android.mediapicker.MediaPickerViewModel.ProgressDialogUiModel.Visible
-import org.wordpress.android.mediapicker.MediaType.*
+import org.wordpress.android.mediapicker.model.MediaType.*
 import org.wordpress.android.mediapicker.api.MimeTypeSupportProvider
 import org.wordpress.android.mediapicker.insert.MediaInsertHandler
 import org.wordpress.android.mediapicker.insert.MediaInsertHandler.InsertModel
@@ -31,21 +28,26 @@ import org.wordpress.android.mediapicker.loader.MediaLoader.DomainModel
 import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction
 import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction.NextPage
 import org.wordpress.android.mediapicker.loader.MediaLoaderFactory
+import org.wordpress.android.mediapicker.model.MediaItem
+import org.wordpress.android.mediapicker.model.MediaItem.Identifier
+import org.wordpress.android.mediapicker.model.MediaItem.Identifier.LocalUri
+import org.wordpress.android.mediapicker.model.MediaItem.Identifier.RemoteId
+import org.wordpress.android.mediapicker.model.UiString
+import org.wordpress.android.mediapicker.model.MediaUri
 import org.wordpress.android.mediapicker.viewmodel.Event
 import org.wordpress.android.mediapicker.viewmodel.ResourceProvider
-import org.wordpress.android.mediapicker.viewmodel.ScopedViewModel
 import org.wordpress.android.util.*
-import org.wordpress.android.util.UiString.*
+import javax.inject.Inject
 
-class MediaPickerViewModel constructor(
-    savedState: SavedStateHandle,
+@HiltViewModel
+class MediaPickerViewModel @Inject constructor(
     private val mediaLoaderFactory: MediaLoaderFactory,
     private val mediaInsertHandlerFactory: MediaInsertHandlerFactory,
     private val mediaPickerTracker: MediaPickerTracker,
     private val permissionsHandler: PermissionsHandler,
     private val resourceProvider: ResourceProvider,
     private val mimeTypeSupportProvider: MimeTypeSupportProvider
-) : ScopedViewModel(savedState) {
+) : ViewModel() {
     private lateinit var mediaLoader: MediaLoader
     private lateinit var mediaInsertHandler: MediaInsertHandler
     private val loadActions = Channel<LoadAction>()
@@ -177,13 +179,13 @@ class MediaPickerViewModel constructor(
                 val updatedItems = uiItems.toMutableList()
                 val loaderItem = if (domainModel.emptyState?.isError == true) {
                     NextPageLoader(false) {
-                        launch {
+                        viewModelScope.launch {
                             retry()
                         }
                     }
                 } else {
                     NextPageLoader(true) {
-                        launch {
+                        viewModelScope.launch {
                             loadActions.send(NextPage)
                         }
                     }
@@ -194,24 +196,27 @@ class MediaPickerViewModel constructor(
                 PhotoListUiModel.Data(items = uiItems)
             }
         } else if (domainModel?.emptyState != null) {
-            PhotoListUiModel.Empty(
-                    domainModel.emptyState.title,
-                    domainModel.emptyState.htmlSubtitle,
-                    domainModel.emptyState.image,
-                    domainModel.emptyState.bottomImage,
-                    domainModel.emptyState.bottomImageDescription,
+            with(domainModel.emptyState!!) {
+                PhotoListUiModel.Empty(
+                    UiString.UiStringText(title),
+                    htmlSubtitle?.let { UiString.UiStringText(it, true) },
+                    image,
+                    bottomImage,
+                    bottomImageDescription?.let { UiString.UiStringText(it, true) },
                     isSearching == true,
-                    retryAction = if (domainModel.emptyState.isError) {
-                        this::retry
+                    retryAction = if (isError) {
+                        { retry() }
                     } else {
                         null
                     }
-            )
+                )
+            }
+
         } else if (domainModel?.isLoading == true) {
             PhotoListUiModel.Loading
         } else {
             PhotoListUiModel.Empty(
-                UiStringRes(R.string.media_empty_list),
+                    UiString.UiStringRes(R.string.media_empty_list),
                     image = R.drawable.img_illustration_media_105dp,
                     isSearching = isSearching == true
             )
@@ -229,21 +234,25 @@ class MediaPickerViewModel constructor(
         val title: UiString? = when {
             numSelected == 0 -> null
             mediaPickerSetup.canMultiselect -> {
-                UiStringText(String.format(resourceProvider.getString(R.string.cab_selected),
-                    numSelected))
+                UiString.UiStringText(
+                    String.format(
+                        resourceProvider.getString(R.string.cab_selected),
+                        numSelected
+                    )
+                )
             }
             else -> {
                 val isImagePicker = mediaPickerSetup.allowedTypes.contains(IMAGE)
                 val isVideoPicker = mediaPickerSetup.allowedTypes.contains(VIDEO)
                 val isAudioPicker = mediaPickerSetup.allowedTypes.contains(AUDIO)
                 if (isImagePicker && isVideoPicker) {
-                    UiStringRes(R.string.photo_picker_use_media)
+                    UiString.UiStringRes(R.string.photo_picker_use_media)
                 } else if (isVideoPicker) {
-                    UiStringRes(R.string.photo_picker_use_video)
+                    UiString.UiStringRes(R.string.photo_picker_use_video)
                 } else if (isAudioPicker) {
-                    UiStringRes(R.string.photo_picker_use_audio)
+                    UiString.UiStringRes(R.string.photo_picker_use_audio)
                 } else {
-                    UiStringRes(R.string.photo_picker_use_photo)
+                    UiString.UiStringRes(R.string.photo_picker_use_photo)
                 }
             }
         }
@@ -268,13 +277,13 @@ class MediaPickerViewModel constructor(
         if (!permissionsHandler.hasStoragePermission()) {
             return
         }
-        launch {
+        viewModelScope.launch {
             loadActions.send(LoadAction.Refresh(forceReload))
         }
     }
 
     private fun retry() {
-        launch {
+        viewModelScope.launch {
             loadActions.send(LoadAction.Retry)
         }
     }
@@ -287,7 +296,7 @@ class MediaPickerViewModel constructor(
     }
 
     fun start(
-        selectedIds: List<Identifier>?,
+        selectedIds: List<Identifier>,
         mediaPickerSetup: MediaPickerSetup,
         lastTappedIcon: MediaPickerIcon?,
         siteId: Long
@@ -300,13 +309,13 @@ class MediaPickerViewModel constructor(
             mediaPickerTracker.trackMediaPickerOpened(mediaPickerSetup)
             this.mediaLoader = mediaLoaderFactory.build(mediaPickerSetup, siteId)
             this.mediaInsertHandler = mediaInsertHandlerFactory.build(mediaPickerSetup)
-            launch {
+            viewModelScope.launch {
                 mediaLoader.loadMedia(loadActions).collect { domainModel ->
                     _domainModel.value = domainModel
                 }
             }
             if (!mediaPickerSetup.requiresStoragePermissions || permissionsHandler.hasStoragePermission()) {
-                launch {
+                viewModelScope.launch {
                     loadActions.send(LoadAction.Start())
                 }
             }
@@ -340,27 +349,19 @@ class MediaPickerViewModel constructor(
     }
 
     private fun clickItem(identifier: Identifier, isVideo: Boolean) {
-        launch {
+        viewModelScope.launch {
             mediaPickerTracker.trackPreview(isVideo, identifier, mediaPickerSetup)
         }
         when (identifier) {
             is LocalUri -> {
                 _onNavigate.postValue(Event(PreviewUrl(identifier.value.toString())))
             }
-            is StockMediaIdentifier -> {
-                if (identifier.url != null) {
-                    _onNavigate.postValue(Event(PreviewUrl(identifier.url)))
-                }
-            }
             is RemoteId -> {
                 siteId?.let {
-                    launch {
+                    viewModelScope.launch {
                         _onNavigate.postValue(Event(PreviewMedia(identifier.value)))
                     }
                 }
-            }
-            is GifMediaIdentifier -> {
-                _onNavigate.postValue(Event(PreviewUrl(identifier.largeImageUri.toString())))
             }
         }
     }
@@ -372,7 +373,7 @@ class MediaPickerViewModel constructor(
 
     private fun insertIdentifiers(ids: List<Identifier>) {
         var job: Job? = null
-        job = launch {
+        job = viewModelScope.launch {
             var progressDialogJob: Job? = null
             mediaInsertHandler.insertMedia(ids).collect {
                 when (it) {
@@ -387,12 +388,16 @@ class MediaPickerViewModel constructor(
                     }
                     is InsertModel.Error -> {
                         val message = if (it.error.isNotEmpty()) {
-                            UiStringResWithParams(
-                                    R.string.media_insert_failed_with_reason,
-                                    listOf(UiStringText(it.error))
+                            UiString.UiStringText(
+                                String.format(
+                                    resourceProvider.getString(
+                                        R.string.media_insert_failed_with_reason
+                                    ),
+                                    listOf(it.error)
+                                )
                             )
                         } else {
-                            UiStringRes(R.string.media_insert_failed)
+                            UiString.UiStringRes(R.string.media_insert_failed)
                         }
                         _onSnackbarMessage.value = Event(
                                 SnackbarMessageHolder(
@@ -521,15 +526,11 @@ class MediaPickerViewModel constructor(
         if (softAskRequest != null && softAskRequest.show) {
             mediaPickerTracker.trackShowPermissionsScreen(mediaPickerSetup, softAskRequest.isAlwaysDenied)
             val label = if (softAskRequest.isAlwaysDenied) {
-                val writePermission = ("<strong>${
-                    permissionsHandler.getPermissionName(permission.WRITE_EXTERNAL_STORAGE)
-                }</strong>")
                 val readPermission = ("<strong>${
                     permissionsHandler.getPermissionName(permission.READ_EXTERNAL_STORAGE)
                 }</strong>")
                 String.format(
                         resourceProvider.getString(R.string.media_picker_soft_ask_permissions_denied),
-                        writePermission,
                         readPermission
                 )
             } else {
@@ -540,7 +541,11 @@ class MediaPickerViewModel constructor(
             } else {
                 R.string.photo_picker_soft_ask_allow
             }
-            return SoftAskViewUiModel.Visible(label, UiStringRes(allowId), softAskRequest.isAlwaysDenied)
+            return SoftAskViewUiModel.Visible(
+                label,
+                UiString.UiStringRes(allowId),
+                softAskRequest.isAlwaysDenied
+            )
         } else {
             return SoftAskViewUiModel.Hidden
         }
@@ -548,7 +553,7 @@ class MediaPickerViewModel constructor(
 
     fun onSearch(query: String) {
         searchJob?.cancel()
-        searchJob = launch {
+        searchJob = viewModelScope.launch {
             delay(300)
             mediaPickerTracker.trackSearch(mediaPickerSetup)
             loadActions.send(LoadAction.Filter(query))
@@ -564,7 +569,7 @@ class MediaPickerViewModel constructor(
         if (!mediaPickerSetup.defaultSearchView) {
             _searchExpanded.value = false
             searchJob?.cancel()
-            searchJob = launch {
+            searchJob = viewModelScope.launch {
                 mediaPickerTracker.trackSearchCollapsed(mediaPickerSetup)
                 loadActions.send(LoadAction.ClearFilter)
             }
@@ -582,8 +587,8 @@ class MediaPickerViewModel constructor(
         searchJob?.cancel()
     }
 
-    fun urisSelectedFromSystemPicker(uris: List<UriWrapper>) {
-        launch {
+    fun urisSelectedFromSystemPicker(uris: List<MediaUri>) {
+        viewModelScope.launch {
             delay(100)
             insertIdentifiers(uris.map { LocalUri(it) })
         }
@@ -619,7 +624,11 @@ class MediaPickerViewModel constructor(
     }
 
     sealed class SoftAskViewUiModel {
-        data class Visible(val label: String, val allowId: UiStringRes, val isAlwaysDenied: Boolean) :
+        data class Visible(
+            val label: String,
+            val allowId: UiString.UiStringRes,
+            val isAlwaysDenied: Boolean
+        ) :
                 SoftAskViewUiModel()
 
         object Hidden : SoftAskViewUiModel()
@@ -629,7 +638,7 @@ class MediaPickerViewModel constructor(
 
     sealed class ActionModeUiModel {
         data class Visible(
-            val actionModeTitle: String? = null,
+            val actionModeTitle: UiString? = null,
             val editActionUiModel: EditActionUiModel = EditActionUiModel()
         ) : ActionModeUiModel()
 
