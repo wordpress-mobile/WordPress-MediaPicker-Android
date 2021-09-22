@@ -7,14 +7,19 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
+        android:name=".MediaPickerApplication"
         android:theme="@style/Theme.MediaPicker">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name="org.wordpress.android.mediapicker.MediaPickerActivity"
+            android:theme="@style/MediaPicker.NoActionBar" />
     </application>
 
 </manifest>

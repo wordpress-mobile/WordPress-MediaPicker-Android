@@ -1,18 +1,24 @@
 plugins {
     id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.android' version '1.5.31'
+    id 'org.jetbrains.kotlin.kapt' version '1.5.31'
+    id 'dagger.hilt.android.plugin'
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "org.wordpress.android.sampleapp"
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
+    }
+
+    hilt {
+        enableExperimentalClasspathAggregation true
     }
 
     compileOptions {
@@ -25,7 +31,16 @@ android {
 
     lintOptions {
         warningsAsErrors true
+        checkReleaseBuilds false
         disable 'ObsoleteLintCustomCheck'
+    }
+
+    packagingOptions {
+        exclude 'META-INF/gradle/incremental.annotation.processors'
+    }
+
+    kapt {
+        correctErrorTypes true
     }
 }
 
@@ -33,7 +48,14 @@ dependencies {
     implementation project(':MediaPicker')
 
     implementation 'androidx.core:core-ktx:1.6.0'
-    implementation 'androidx.appcompat:appcompat:1.3.0'
+    implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'com.google.android.material:material:1.4.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
+
+    implementation 'com.google.dagger:hilt-android:2.38.1'
+    implementation 'com.google.dagger:hilt-android-compiler:2.38.1'
+    implementation "androidx.hilt:hilt-navigation-fragment:1.0.0"
+    kapt "com.google.dagger:hilt-compiler:2.38.1"
+
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2'
 }
