@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="placeholder">#1AFFFFFF</color>
+    <color name="color_on_surface_high">@color/white_alpha_087</color>
+    <color name="color_on_surface">@android:color/white</color>
 </resources>

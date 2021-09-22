@@ -3,9 +3,28 @@
     <color name="neutral_30">#8c8f94</color>
     <color name="neutral_20">#a7aaad</color>
     <color name="placeholder">#1A000000</color>
+
+    <color name="blue_0">#e9f0f5</color>
     <color name="blue_5">#bbe0fa</color>
     <color name="blue_10">#91caf2</color>
     <color name="blue_20">#68b3e8</color>
     <color name="blue_30">#399ce3</color>
+    <color name="blue_40">#1689db</color>
     <color name="blue_50">#0675c4</color>
+    <color name="blue_70">#044b7a</color>
+
+    <color name="gray_0">#f6f7f7</color>
+    <color name="gray_5">#dcdcde</color>
+    <color name="gray_10">#c3c4c7</color>
+    <color name="gray_70">#3c434a</color>
+
+    <color name="color_primary">@color/blue_20</color>
+    <color name="color_secondary">@color/blue_50</color>
+
+    <color name="black_90_alpha_087">#DE121212</color>
+    <color name="white_alpha_087">#DEFFFFFF</color>
+
+    <color name="color_on_surface_high">@color/black_90_alpha_087</color>
+    <color name="color_on_surface">@android:color/black</color>
+    <color name="black_translucent_50">#80000000</color>
 </resources>

@@ -5,6 +5,18 @@
         <item name="iconTint">?attr/colorOnSurface</item>
         <item name="colorControlNormal">?attr/colorOnSurface</item>
         <item name="android:editTextColor">?attr/colorOnSurface</item>
-        <item name="android:textColorHint">?attr/wpColorOnSurfaceMedium</item>
+    </style>
+
+    <style name="StatusMessage" parent="Subtitle1"/>
+
+    <style name="Subtitle1">
+        <item name="android:textColor">@color/color_on_surface_high</item>
+        <item name="android:gravity">center_vertical|start</item>
+    </style>
+
+    <style name="Button.Colored" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+        <item name="android:paddingStart">@dimen/major_100</item>
+        <item name="android:paddingEnd">@dimen/major_100</item>
+        <item name="backgroundTint">@color/button_colored_bg_selector</item>
     </style>
 </resources>
