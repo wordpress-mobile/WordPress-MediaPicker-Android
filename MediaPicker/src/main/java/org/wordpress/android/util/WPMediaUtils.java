@@ -17,7 +17,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import org.wordpress.android.mediapicker.MediaPickerFragment;
 import org.wordpress.android.mediapicker.R;
 import org.wordpress.android.mediapicker.model.EditImageData;
-import org.wordpress.android.mediapicker.util.MediaUri;
+import org.wordpress.android.mediapicker.model.MediaUri;
 
 import java.io.File;
 import java.io.IOException;
@@ -202,8 +202,7 @@ public class WPMediaUtils {
         List<MediaUri> uris = new ArrayList<>(data.size());
         for (EditImageData.OutputData item : data) {
             final Uri uri = Uri.parse(item.getOutputFilePath());
-            final String s = MediaUriExtKt.asMediaUri(uri);
-            uris.add(new MediaUri(s));
+            uris.add(MediaUriExtKt.asMediaUri(uri));
         }
         return uris;
     }

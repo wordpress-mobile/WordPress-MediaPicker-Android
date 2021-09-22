@@ -6,20 +6,18 @@ import android.content.Context
 import org.wordpress.android.mediapicker.R
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
-class PermissionsHandler constructor(private val context: Context) {
+class PermissionsHandler @Inject constructor(
+    @ApplicationContext private val context: Context
+) {
     fun hasPermissionsToAccessPhotos(): Boolean {
         return hasCameraPermission() && hasStoragePermission()
     }
 
     fun hasStoragePermission(): Boolean {
-        return hasReadStoragePermission() && hasWriteStoragePermission()
-    }
-
-    fun hasWriteStoragePermission(): Boolean {
-        return ContextCompat.checkSelfPermission(
-                context, permission.WRITE_EXTERNAL_STORAGE
-        ) == PackageManager.PERMISSION_GRANTED
+        return hasReadStoragePermission()
     }
 
     private fun hasReadStoragePermission(): Boolean {
@@ -40,7 +38,6 @@ class PermissionsHandler constructor(private val context: Context) {
      */
     fun getPermissionName(permission: String): String {
         return when (permission) {
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE -> context.getString(R.string.permission_storage)
             Manifest.permission.CAMERA -> context.getString(R.string.permission_camera)
             Manifest.permission.RECORD_AUDIO -> context.getString(R.string.permission_microphone)

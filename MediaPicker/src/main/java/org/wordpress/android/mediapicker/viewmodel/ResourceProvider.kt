@@ -6,8 +6,12 @@ import androidx.annotation.DimenRes
 import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
-class ResourceProvider constructor(private val context: Context) {
+class ResourceProvider @Inject constructor(
+    @ApplicationContext private val context: Context
+) {
     fun getString(@StringRes resourceId: Int): String {
         return context.getString(resourceId)
     }

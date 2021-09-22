@@ -2,7 +2,6 @@ package org.wordpress.android.mediapicker.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.mediapicker.MediaType
 import org.wordpress.android.mediapicker.model.MediaItem.IdentifierType.LOCAL_ID
 import org.wordpress.android.mediapicker.model.MediaItem.IdentifierType.LOCAL_URI
 import org.wordpress.android.mediapicker.model.MediaItem.IdentifierType.REMOTE_ID
