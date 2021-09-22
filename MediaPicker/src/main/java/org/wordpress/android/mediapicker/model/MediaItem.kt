@@ -1,9 +1,11 @@
-package org.wordpress.android.mediapicker
+package org.wordpress.android.mediapicker.model
 
-import org.wordpress.android.mediapicker.MediaItem.IdentifierType.LOCAL_ID
-import org.wordpress.android.mediapicker.MediaItem.IdentifierType.LOCAL_URI
-import org.wordpress.android.mediapicker.MediaItem.IdentifierType.REMOTE_ID
-import org.wordpress.android.mediapicker.util.MediaUri
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+import org.wordpress.android.mediapicker.MediaType
+import org.wordpress.android.mediapicker.model.MediaItem.IdentifierType.LOCAL_ID
+import org.wordpress.android.mediapicker.model.MediaItem.IdentifierType.LOCAL_URI
+import org.wordpress.android.mediapicker.model.MediaItem.IdentifierType.REMOTE_ID
 
 data class MediaItem(
     val identifier: Identifier,
@@ -19,11 +21,14 @@ data class MediaItem(
         LOCAL_ID,
     }
 
-    sealed class Identifier(val type: IdentifierType) {
+    sealed class Identifier(val type: IdentifierType) : Parcelable {
+        @Parcelize
         data class LocalUri(val value: MediaUri, val queued: Boolean = false) : Identifier(LOCAL_URI)
 
+        @Parcelize
         data class RemoteId(val value: Long) : Identifier(REMOTE_ID)
 
+        @Parcelize
         data class LocalId(val value: Int) : Identifier(LOCAL_ID)
     }
 }
