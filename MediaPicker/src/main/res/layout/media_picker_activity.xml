@@ -47,14 +47,14 @@
             android:scrollbars="vertical"
             tools:listitem="@layout/media_picker_thumbnail" />
 
-        <org.wordpress.android.ui.ActionableEmptyView
+        <org.wordpress.android.mediapicker.widget.ActionableEmptyView
             android:id="@+id/actionable_empty_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"
             app:aevTitle="@string/media_empty_search_list"
             tools:layout_height="wrap_content"
-            tools:layout_marginTop="@dimen/margin_extra_extra_large"
+            tools:layout_marginTop="@dimen/major_300"
             tools:visibility="visible" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -63,7 +63,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:background="?attr/colorSurface"
-            android:elevation="@dimen/message_bar_elevation"
+            android:elevation="@dimen/minor_25"
             android:visibility="gone"
             tools:visibility="visible">
 
@@ -72,8 +72,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="?android:selectableItemBackground"
-                android:minHeight="@dimen/min_touch_target_sz"
-                android:padding="@dimen/margin_large"
+                android:minHeight="@dimen/major_300"
+                android:padding="@dimen/major_75"
                 android:text="@string/button_preview"
                 android:textAppearance="?attr/textAppearanceButton"
                 android:textColor="?attr/colorPrimary"
@@ -85,8 +85,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="?android:selectableItemBackground"
-                android:minHeight="@dimen/min_touch_target_sz"
-                android:padding="@dimen/margin_large"
+                android:minHeight="@dimen/major_300"
+                android:padding="@dimen/major_75"
                 android:text="@string/add_count"
                 android:textAppearance="?attr/textAppearanceButton"
                 android:textColor="?attr/colorPrimary"

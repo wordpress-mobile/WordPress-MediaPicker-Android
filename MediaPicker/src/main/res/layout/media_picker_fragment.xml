@@ -15,27 +15,28 @@
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_photo_camera_24px"
         android:visibility="gone"
-        tools:ignore="InconsistentLayout" />
+        tools:ignore="InconsistentLayout"
+        android:contentDescription="@string/permission_camera" />
 
     <org.wordpress.android.util.widgets.CustomSwipeRefreshLayout
         android:id="@+id/pullToRefresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/toolbar"
+        android:layout_below="@id/toolbar_main"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <org.wordpress.android.ui.prefs.EmptyViewRecyclerView
+            <org.wordpress.android.mediapicker.widget.EmptyViewRecyclerView
                 android:id="@+id/recycler"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:fadeScrollbars="true"
                 android:scrollbars="vertical" />
 
-            <org.wordpress.android.ui.ActionableEmptyView
+            <org.wordpress.android.mediapicker.widget.ActionableEmptyView
                 android:id="@+id/actionable_empty_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -63,13 +64,12 @@
                     android:id="@+id/progress_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_extra_large"
+                    android:layout_marginTop="@dimen/major_100"
                     android:text="@string/loading"
-                    android:textColor="?wpColorOnSurfaceMedium"
-                    android:textSize="@dimen/text_sz_double_extra_large" />
+                    android:textSize="@dimen/text_major_50" />
             </LinearLayout>
 
-            <org.wordpress.android.ui.ActionableEmptyView
+            <org.wordpress.android.mediapicker.widget.ActionableEmptyView
                 android:id="@+id/soft_ask_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

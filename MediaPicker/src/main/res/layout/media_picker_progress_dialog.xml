@@ -9,7 +9,7 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="5dp"
-        android:layout_margin="@dimen/margin_extra_large"
+        android:layout_margin="@dimen/major_100"
         android:importantForAccessibility="no"
         android:indeterminate="true"
         android:progressDrawable="@drawable/stats_bar_background"

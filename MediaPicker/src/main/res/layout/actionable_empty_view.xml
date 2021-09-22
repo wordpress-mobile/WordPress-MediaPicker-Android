@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/empty_view_text"
+            style="@style/StatusMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_200"
+            android:layout_marginEnd="@dimen/major_200"
+            android:textAlignment="center"
+            tools:text="@string/error_generic_network" />
+
+        <ImageView
+            android:id="@+id/empty_view_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/major_200"
+            android:importantForAccessibility="no"
+            android:minWidth="@dimen/image_major_100"
+            android:minHeight="@dimen/image_major_100"
+            app:srcCompat="@drawable/ic_woo_error_state" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/empty_view_button"
+            style="@style/Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/major_200"
+            tools:text="Button" />
+    </LinearLayout>
+</ScrollView>

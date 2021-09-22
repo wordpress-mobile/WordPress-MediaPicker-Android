@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/photo_picker_item_padding">
+    android:layout_margin="@dimen/minor_25">
 
     <RelativeLayout
         android:id="@+id/media_grid_item_file_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="?attr/wpColorSurfaceSecondary"
-        android:padding="@dimen/margin_medium"
+        android:background="@color/gray_5"
+        android:padding="@dimen/minor_100"
         app:layout_constraintDimensionRatio="@string/media_grid_item_ratio"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -30,22 +30,22 @@
                 android:layout_height="24dp"
                 android:layout_gravity="center_horizontal"
                 android:contentDescription="@null"
-                app:tint="@color/neutral_70"
+                app:tint="@color/gray_70"
                 tools:src="@drawable/ic_pages_white_24dp" />
 
-            <org.wordpress.android.widgets.WPTextView
+            <TextView
                 android:id="@+id/media_item_filetype"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="@dimen/margin_medium"
+                android:layout_marginTop="@dimen/minor_100"
                 android:textAllCaps="true"
                 android:textColor="?attr/colorOnSurface"
-                android:textSize="@dimen/text_sz_small"
+                android:textSize="@dimen/text_minor_80"
                 android:textStyle="bold"
                 tools:text="PDF" />
 
-            <org.wordpress.android.widgets.WPTextView
+            <TextView
                 android:id="@+id/media_item_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -54,7 +54,7 @@
                 android:gravity="center_horizontal"
                 android:singleLine="true"
                 android:textColor="?attr/colorOnSurface"
-                android:textSize="@dimen/text_sz_extra_small"
+                android:textSize="@dimen/text_minor_80"
                 tools:text="filename" />
         </LinearLayout>
 
