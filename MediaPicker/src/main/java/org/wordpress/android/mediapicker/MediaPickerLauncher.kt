@@ -1,6 +1,8 @@
 package org.wordpress.android.mediapicker
 
-import android.app.Activity
+import android.content.Intent
+import androidx.activity.result.ActivityResultLauncher
+import androidx.appcompat.app.AppCompatActivity
 import org.wordpress.android.mediapicker.MediaPickerSetup.CameraSetup.HIDDEN
 import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.model.MediaType
@@ -9,17 +11,16 @@ import org.wordpress.android.mediapicker.model.MediaType.VIDEO
 
 class MediaPickerLauncher {
     companion object {
-        fun showMediaPickerForResult(
-            activity: Activity,
+        fun buildMediaPickerIntent(
+            activity: AppCompatActivity,
             isImagePicker: Boolean,
             isVideoPicker: Boolean,
             canMultiSelect: Boolean
-        ) {
-            val intent = MediaPickerActivity.buildIntent(
+        ): Intent {
+            return MediaPickerActivity.buildIntent(
                 activity,
                 buildLocalMediaPickerSetup(isImagePicker, isVideoPicker, canMultiSelect)
             )
-            activity.startActivityForResult(intent, MediaPickerRequestCodes.PHOTO_PICKER)
         }
 
         private fun buildLocalMediaPickerSetup(
