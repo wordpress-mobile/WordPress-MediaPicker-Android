@@ -99,7 +99,14 @@ class DeviceListBuilder(
                     && mimeTypeSupportProvider.isSupportedMimeType(mimeType)
 
             if (isMimeTypeSupported) {
-                MediaItem(LocalUri(it.mediaUri), it.mediaUri.uri, it.title, mediaType, mimeType, it.dateModified)
+                MediaItem(
+                    LocalUri(it.mediaUri),
+                    it.mediaUri.toString(),
+                    it.title,
+                    mediaType,
+                    mimeType,
+                    it.dateModified
+                )
             } else {
                 null
             }

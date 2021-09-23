@@ -10,6 +10,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.DelicateCoroutinesApi
 import org.wordpress.android.mediapicker.MediaPickerRequestCodes.IMAGE_EDITOR_EDIT_IMAGE
 import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_LAUNCH_WPSTORIES_CAMERA_REQUESTED
 import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_MEDIA_ID
@@ -41,6 +42,7 @@ import org.wordpress.android.util.asAndroidUri
 import org.wordpress.android.util.asMediaUri
 import java.io.File
 
+@DelicateCoroutinesApi
 @AndroidEntryPoint
 class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
     private var mediaCapturePath: String? = null
@@ -80,10 +82,10 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
             actionBar.setDisplayHomeAsUpEnabled(true)
             actionBar.setDisplayShowTitleEnabled(true)
         }
-        if (savedInstanceState == null) {
-            mediaPickerSetup = MediaPickerSetup.fromIntent(intent)
+        mediaPickerSetup = if (savedInstanceState == null) {
+            MediaPickerSetup.fromIntent(intent)
         } else {
-            mediaPickerSetup = MediaPickerSetup.fromBundle(savedInstanceState)
+            MediaPickerSetup.fromBundle(savedInstanceState)
         }
         var fragment = pickerFragment
         if (fragment == null) {

@@ -19,6 +19,7 @@ import androidx.appcompat.app.AlertDialog.Builder
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
@@ -28,9 +29,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.DelicateCoroutinesApi
-import org.wordpress.android.mediapicker.MediaNavigationEvent.IconClickEvent
-import org.wordpress.android.mediapicker.MediaNavigationEvent.InsertMedia
-import org.wordpress.android.mediapicker.MediaNavigationEvent.PreviewUrl
+import org.wordpress.android.mediapicker.MediaNavigationEvent.*
+import org.wordpress.android.mediapicker.MediaPickerActivity.Companion
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIconType.ANDROID_CHOOSE_FROM_DEVICE
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIconType.CAPTURE_PHOTO
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIconType.SWITCH_SOURCE
@@ -241,21 +241,18 @@ class MediaPickerFragment : Fragment() {
                     { navigationEvent ->
                         when (navigationEvent) {
                             is PreviewUrl -> {
-//                                MediaPreviewActivity.showPreview(
-//                                        requireContext(),
-//                                        null,
-//                                        navigationEvent.url
-//                                )
+                                MediaViewerFragment.previewUrl(
+                                    requireActivity(),
+                                    navigationEvent.url
+                                )
                                 AccessibilityUtils.setActionModeDoneButtonContentDescription(
                                         activity,
                                         getString(R.string.cancel)
                                 )
                             }
-//                            is PreviewMedia -> MediaPreviewActivity.showPreview(
-//                                    requireContext(),
-//                                    null,
-//                                    navigationEvent.media,
-//                                    null
+//                            is PreviewMedia -> MediaViewerFragment.previewUrl(
+//                                    requireActivity(),
+//                                    navigationEvent.mediaId
 //                            )
 //                            is EditMedia -> {
 //                                val inputData = WPMediaUtils.createListOfEditImageInputData(
@@ -266,7 +263,7 @@ class MediaPickerFragment : Fragment() {
 //                            }
                             is InsertMedia -> listener?.onItemsChosen(navigationEvent.identifiers)
                             is IconClickEvent -> listener?.onIconClicked(navigationEvent.action)
-                            MediaNavigationEvent.Exit -> {
+                            Exit -> {
                                 val activity = requireActivity()
                                 activity.setResult(Activity.RESULT_CANCELED)
                                 activity.finish()

@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentTransaction
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -22,6 +24,22 @@ class MediaViewerFragment : Fragment(R.layout.fragment_media_viewer),
     RequestListener<Drawable> {
     companion object {
         const val IMAGE_URL_KEY = "image_url_key"
+        private const val VIEWER_FRAGMENT_TAG = "viewer_fragment_tag"
+
+        fun previewUrl(activity: FragmentActivity, url: String) {
+            val fragment = activity.supportFragmentManager.findFragmentByTag(VIEWER_FRAGMENT_TAG)
+                ?: MediaViewerFragment()
+            fragment.arguments = Bundle().apply { putString(IMAGE_URL_KEY, url) }
+            activity.supportFragmentManager.beginTransaction()
+                .add(
+                    R.id.fragment_container,
+                    fragment,
+                    VIEWER_FRAGMENT_TAG
+                )
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .addToBackStack("preview")
+                .commitAllowingStateLoss()
+        }
     }
 
     private var _binding: FragmentMediaViewerBinding? = null
