@@ -15,6 +15,7 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.mediapicker.databinding.FragmentMediaViewerBinding
+import androidx.appcompat.app.AppCompatActivity
 
 /**
  * Fullscreen single image viewer
@@ -75,6 +76,16 @@ class MediaViewerFragment : Fragment(R.layout.fragment_media_viewer),
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onResume() {
+        super.onResume()
+        (activity as? AppCompatActivity)?.supportActionBar?.hide()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        (activity as? AppCompatActivity)?.supportActionBar?.show()
     }
 
     private fun loadImage() {
