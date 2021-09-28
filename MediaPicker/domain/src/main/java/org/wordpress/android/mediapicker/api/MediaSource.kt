@@ -1,5 +1,6 @@
-package org.wordpress.android.mediapicker.loader
+package org.wordpress.android.mediapicker.api
 
+import org.wordpress.android.mediapicker.loader.MediaLoader
 import org.wordpress.android.mediapicker.model.MediaItem
 
 interface MediaSource {
@@ -28,4 +29,6 @@ interface MediaSource {
             override val data: List<MediaItem> = listOf()
         ) : MediaLoadingResult(data)
     }
+
+    fun toMediaLoader() = MediaLoader(this)
 }

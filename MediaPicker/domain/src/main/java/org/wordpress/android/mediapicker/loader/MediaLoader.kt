@@ -4,6 +4,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
+import org.wordpress.android.mediapicker.api.MediaSource
 import org.wordpress.android.mediapicker.loader.MediaLoader.DomainModel.EmptyState
 import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction.ClearFilter
 import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction.Filter
@@ -11,10 +12,10 @@ import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction.NextPage
 import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction.Refresh
 import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction.Retry
 import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction.Start
-import org.wordpress.android.mediapicker.loader.MediaSource.MediaLoadingResult
-import org.wordpress.android.mediapicker.loader.MediaSource.MediaLoadingResult.Empty
-import org.wordpress.android.mediapicker.loader.MediaSource.MediaLoadingResult.Failure
-import org.wordpress.android.mediapicker.loader.MediaSource.MediaLoadingResult.Success
+import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult
+import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult.Empty
+import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult.Failure
+import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult.Success
 import org.wordpress.android.mediapicker.model.MediaItem
 
 data class MediaLoader(private val mediaSource: MediaSource) {

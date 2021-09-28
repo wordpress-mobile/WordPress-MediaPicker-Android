@@ -1,4 +1,4 @@
-package org.wordpress.android.mediapicker
+package org.wordpress.android.mediapicker.api
 
 import android.content.Intent
 import android.os.Bundle
@@ -114,7 +114,7 @@ data class MediaPickerSetup(
             val editingEnabled = intent.getBooleanExtra(KEY_SYSTEM_PICKER_ENABLED, false)
             val queueResults = intent.getBooleanExtra(KEY_QUEUE_RESULTS, false)
             val defaultSearchView = intent.getBooleanExtra(KEY_DEFAULT_SEARCH_VIEW, false)
-            val title = intent.getIntExtra(KEY_TITLE, R.string.photo_picker_photo_or_video_title)
+            val title = intent.getIntExtra(KEY_TITLE, 0)
             return MediaPickerSetup(
                     dataSource,
                     availableDataSources,

@@ -1,0 +1,15 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.plugin.parcelize'
+}
+
+android {
+    compileSdkVersion 31
+    buildToolsVersion "30.0.3"
+}
+
+dependencies {
+    implementation 'androidx.core:core-ktx:1.6.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2'
+}

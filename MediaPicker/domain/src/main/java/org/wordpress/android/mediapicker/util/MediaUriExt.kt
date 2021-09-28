@@ -1,4 +1,4 @@
-package org.wordpress.android.util
+package org.wordpress.android.mediapicker.util
 
 import android.net.Uri
 import org.wordpress.android.mediapicker.model.MediaUri
