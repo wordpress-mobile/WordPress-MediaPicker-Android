@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="photo_picker_photo_or_video_title">Choose media</string>
+    <string name="photo_picker_title">Choose photo</string>
+    <string name="photo_picker_video_title">Choose video</string>
+</resources>
