@@ -26,7 +26,10 @@ class DeviceListInsertUseCase constructor(
         if (failed) {
             emit(InsertModel.Error("Failed to fetch local media"))
         } else {
-            emit(InsertModel.Success(fetchedUris.map { LocalUri(MediaUri(it), queueResults) }))
+            emit(InsertModel.Success(fetchedUris.map { LocalUri(
+                MediaUri(
+                    it
+                ), queueResults) }))
         }
     }
 

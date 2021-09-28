@@ -9,37 +9,38 @@ import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.wordpress.android.R.string
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.mediapicker.MediaPickerSetup
-import org.wordpress.android.mediapicker.MediaPickerSetup.CameraSetup.HIDDEN
-import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.DEVICE
-import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.GIF_LIBRARY
-import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.STOCK_LIBRARY
-import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.WP_LIBRARY
-import org.wordpress.android.mediapicker.loader.DeviceListBuilder.DeviceListBuilderFactory
+import org.wordpress.android.mediapicker.api.MediaPickerSetup
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.CameraSetup.HIDDEN
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.GIF_LIBRARY
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.STOCK_LIBRARY
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.WP_LIBRARY
+import org.wordpress.android.mediapicker.source.devicemedia.DeviceListBuilder.DeviceListBuilderFactory
 import org.wordpress.android.mediapicker.loader.MediaLibraryDataSource.MediaLibraryDataSourceFactory
 import org.wordpress.android.util.NetworkUtilsWrapper
 
 @RunWith(MockitoJUnitRunner::class)
 class MediaLoaderFactoryTest {
     @Mock lateinit var deviceListBuilderFactory: DeviceListBuilderFactory
-    @Mock lateinit var deviceListBuilder: DeviceListBuilder
+    @Mock lateinit var deviceListBuilder: org.wordpress.android.mediapicker.source.devicemedia.DeviceListBuilder
     @Mock lateinit var mediaLibraryDataSourceFactory: MediaLibraryDataSourceFactory
     @Mock lateinit var mediaLibraryDataSource: MediaLibraryDataSource
     @Mock lateinit var stockMediaDataSource: StockMediaDataSource
     @Mock lateinit var gifMediaDataSource: GifMediaDataSource
     @Mock lateinit var networkUtilsWrapper: NetworkUtilsWrapper
     @Mock lateinit var site: SiteModel
-    private lateinit var mediaLoaderFactory: MediaLoaderFactory
+    private lateinit var mediaLoaderFactory: org.wordpress.android.mediapicker.source.devicemedia.MediaLoaderFactory
 
     @Before
     fun setUp() {
-        mediaLoaderFactory = MediaLoaderFactory(
+        mediaLoaderFactory =
+            org.wordpress.android.mediapicker.source.devicemedia.MediaLoaderFactory(
                 deviceListBuilderFactory,
                 mediaLibraryDataSourceFactory,
                 stockMediaDataSource,
                 gifMediaDataSource,
                 networkUtilsWrapper
-        )
+            )
     }
 
     @Test
@@ -61,10 +62,10 @@ class MediaLoaderFactoryTest {
         val mediaLoader = mediaLoaderFactory.build(mediaPickerSetup, site)
 
         assertThat(mediaLoader).isEqualTo(
-                MediaLoader(
-                        deviceListBuilder,
-                        networkUtilsWrapper
-                )
+            org.wordpress.android.mediapicker.source.devicemedia.MediaLoader(
+                deviceListBuilder,
+                networkUtilsWrapper
+            )
         )
     }
 
@@ -88,10 +89,10 @@ class MediaLoaderFactoryTest {
         val mediaLoader = mediaLoaderFactory.build(mediaPickerSetup, site)
 
         assertThat(mediaLoader).isEqualTo(
-                MediaLoader(
-                        mediaLibraryDataSource,
-                        networkUtilsWrapper
-                )
+            org.wordpress.android.mediapicker.source.devicemedia.MediaLoader(
+                mediaLibraryDataSource,
+                networkUtilsWrapper
+            )
         )
     }
 
@@ -114,10 +115,10 @@ class MediaLoaderFactoryTest {
         val mediaLoader = mediaLoaderFactory.build(mediaPickerSetup, site)
 
         assertThat(mediaLoader).isEqualTo(
-                MediaLoader(
-                        stockMediaDataSource,
-                        networkUtilsWrapper
-                )
+            org.wordpress.android.mediapicker.source.devicemedia.MediaLoader(
+                stockMediaDataSource,
+                networkUtilsWrapper
+            )
         )
     }
 
@@ -140,10 +141,10 @@ class MediaLoaderFactoryTest {
         val mediaLoader = mediaLoaderFactory.build(mediaPickerSetup, site)
 
         assertThat(mediaLoader).isEqualTo(
-                MediaLoader(
-                        gifMediaDataSource,
-                        networkUtilsWrapper
-                )
+            org.wordpress.android.mediapicker.source.devicemedia.MediaLoader(
+                gifMediaDataSource,
+                networkUtilsWrapper
+            )
         )
     }
 }

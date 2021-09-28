@@ -1,7 +1,7 @@
 package org.wordpress.android.mediapicker.insert
 
-import org.wordpress.android.mediapicker.MediaPickerSetup
-import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.DEVICE
+import org.wordpress.android.mediapicker.api.MediaPickerSetup
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.insert.DeviceListInsertUseCase.DeviceListInsertUseCaseFactory
 import javax.inject.Inject
 

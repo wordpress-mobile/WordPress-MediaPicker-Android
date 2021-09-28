@@ -21,7 +21,7 @@ import org.wordpress.android.test
 import org.wordpress.android.mediapicker.MediaItem
 import org.wordpress.android.mediapicker.MediaItem.Identifier.StockMediaIdentifier
 import org.wordpress.android.mediapicker.MediaType.IMAGE
-import org.wordpress.android.mediapicker.loader.MediaSource.MediaLoadingResult
+import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult
 import org.wordpress.android.ui.utils.UiString.UiStringRes
 import org.wordpress.android.ui.utils.UiString.UiStringResWithParams
 import org.wordpress.android.ui.utils.UiString.UiStringText

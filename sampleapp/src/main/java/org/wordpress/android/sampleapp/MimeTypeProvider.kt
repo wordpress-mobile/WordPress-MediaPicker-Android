@@ -2,8 +2,9 @@ package org.wordpress.android.sampleapp
 
 import android.webkit.MimeTypeMap
 import org.wordpress.android.mediapicker.api.MimeTypeSupportProvider
+import javax.inject.Inject
 
-class MimeTypeProvider : MimeTypeSupportProvider {
+class MimeTypeProvider @Inject constructor() : MimeTypeSupportProvider {
     override fun isMimeTypeSupportedBySitePlan(siteId: Long, mimeType: String): Boolean {
         return true
     }

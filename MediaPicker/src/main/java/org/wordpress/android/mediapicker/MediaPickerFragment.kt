@@ -19,7 +19,6 @@ import androidx.appcompat.app.AlertDialog.Builder
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
@@ -30,18 +29,18 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.DelicateCoroutinesApi
 import org.wordpress.android.mediapicker.MediaNavigationEvent.*
-import org.wordpress.android.mediapicker.MediaPickerActivity.Companion
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIconType.ANDROID_CHOOSE_FROM_DEVICE
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIconType.CAPTURE_PHOTO
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIconType.SWITCH_SOURCE
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIconType.WP_STORIES_CAPTURE
-import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import org.wordpress.android.mediapicker.MediaPickerViewModel.ActionModeUiModel
 import org.wordpress.android.mediapicker.MediaPickerViewModel.FabUiModel
 import org.wordpress.android.mediapicker.MediaPickerViewModel.PhotoListUiModel
 import org.wordpress.android.mediapicker.MediaPickerViewModel.ProgressDialogUiModel
 import org.wordpress.android.mediapicker.MediaPickerViewModel.ProgressDialogUiModel.Visible
 import org.wordpress.android.mediapicker.MediaPickerViewModel.SoftAskViewUiModel
+import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.databinding.MediaPickerFragmentBinding
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 import org.wordpress.android.mediapicker.model.MediaType
@@ -53,7 +52,6 @@ import org.wordpress.android.util.MediaPickerPermissionUtils.Companion.PHOTO_PIC
 import org.wordpress.android.util.MediaPickerPermissionUtils.Companion.PHOTO_PICKER_STORAGE_PERMISSION_REQUEST_CODE
 import javax.inject.Inject
 
-@DelicateCoroutinesApi
 @AndroidEntryPoint
 class MediaPickerFragment : Fragment() {
     enum class MediaPickerIconType {
@@ -129,9 +127,7 @@ class MediaPickerFragment : Fragment() {
                     ANDROID_CHOOSE_FROM_DEVICE -> {
                         val allowedTypes = (bundle.getStringArrayList(KEY_LAST_TAPPED_ICON_ALLOWED_TYPES)
                                 ?: listOf<String>()).map {
-                            MediaType.valueOf(
-                                    it
-                            )
+                            MediaType.valueOf(it)
                         }.toSet()
                         ChooseFromAndroidDevice(allowedTypes)
                     }
@@ -362,7 +358,9 @@ class MediaPickerFragment : Fragment() {
 //    }
 
     fun urisSelectedFromSystemPicker(uris: List<Uri>) {
-        viewModel.urisSelectedFromSystemPicker(uris.map { MediaUri(it.toString()) })
+        viewModel.urisSelectedFromSystemPicker(uris.map {
+            MediaUri(it.toString())
+        })
     }
 
     private fun initializeSearchView(actionMenuItem: MenuItem) {

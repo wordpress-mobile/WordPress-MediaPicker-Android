@@ -1,6 +1,7 @@
 package org.wordpress.android.mediapicker
 
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIcon
+import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 import javax.inject.Inject
 

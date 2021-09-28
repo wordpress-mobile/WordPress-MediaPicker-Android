@@ -33,9 +33,9 @@ import org.wordpress.android.mediapicker.MediaType.DOCUMENT
 import org.wordpress.android.mediapicker.MediaType.IMAGE
 import org.wordpress.android.mediapicker.MediaType.VIDEO
 import org.wordpress.android.mediapicker.loader.MediaLibraryDataSource.MediaLibraryDataSourceFactory
-import org.wordpress.android.mediapicker.loader.MediaSource.MediaLoadingResult.Empty
-import org.wordpress.android.mediapicker.loader.MediaSource.MediaLoadingResult.Failure
-import org.wordpress.android.mediapicker.loader.MediaSource.MediaLoadingResult.Success
+import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult.Empty
+import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult.Failure
+import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult.Success
 import org.wordpress.android.ui.utils.UiString.UiStringRes
 import org.wordpress.android.ui.utils.UiString.UiStringText
 import org.wordpress.android.util.DateTimeUtilsWrapper

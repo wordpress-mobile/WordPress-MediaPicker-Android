@@ -18,6 +18,7 @@ import org.wordpress.android.mediapicker.MediaPickerFragment;
 import org.wordpress.android.mediapicker.R;
 import org.wordpress.android.mediapicker.model.EditImageData;
 import org.wordpress.android.mediapicker.model.MediaUri;
+import org.wordpress.android.mediapicker.util.MediaUriExtKt;
 
 import java.io.File;
 import java.io.IOException;

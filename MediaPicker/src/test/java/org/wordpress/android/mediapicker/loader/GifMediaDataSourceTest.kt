@@ -17,7 +17,7 @@ import org.mockito.Mockito.doAnswer
 import org.mockito.invocation.InvocationOnMock
 import org.wordpress.android.BaseUnitTest
 import org.wordpress.android.test
-import org.wordpress.android.mediapicker.loader.MediaSource.MediaLoadingResult
+import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult
 import com.tenor.android.core.model.impl.Result
 import org.wordpress.android.R
 import org.wordpress.android.mediapicker.loader.GifMediaDataSourceTest.GifResponseTestScenario.EmptyList

@@ -24,8 +24,10 @@ pluginManagement {
     }
 }
 
-rootProject.name = "MediaPicker"
-include ':MediaPicker',
+rootProject.name = "mediapicker"
+include ':mediapicker',
+        ':mediapicker:domain',
+        ':mediapicker:devicemedia-source',
         ':sampleapp'
 
 // Build cache is only enabled for CI, at least for now

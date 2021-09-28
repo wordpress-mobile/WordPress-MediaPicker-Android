@@ -7,9 +7,9 @@ import org.wordpress.android.mediapicker.model.MediaType
 import org.wordpress.android.mediapicker.model.MediaType.IMAGE
 import org.wordpress.android.mediapicker.model.MediaType.VIDEO
 
-class DeviceMediaPickerSetupBuilder {
+class DeviceMediaPickerSetup {
     companion object {
-        private fun buildDeviceMediaPickerSetup(
+        fun build(
             isImagePicker: Boolean,
             isVideoPicker: Boolean,
             canMultiSelect: Boolean

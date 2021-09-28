@@ -30,19 +30,19 @@ import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerListener
 import org.wordpress.android.mediapicker.MediaPickerRequestCodes.MEDIA_LIBRARY
 import org.wordpress.android.mediapicker.MediaPickerRequestCodes.PHOTO_PICKER
 import org.wordpress.android.mediapicker.MediaPickerRequestCodes.TAKE_PHOTO
-import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource
-import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.DEVICE
+import org.wordpress.android.mediapicker.api.MediaPickerSetup
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.databinding.PhotoPickerActivityBinding
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 import org.wordpress.android.mediapicker.model.MediaUri
+import org.wordpress.android.mediapicker.util.asAndroidUri
+import org.wordpress.android.mediapicker.util.asMediaUri
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T.MEDIA
 import org.wordpress.android.util.WPMediaUtils
-import org.wordpress.android.util.asAndroidUri
-import org.wordpress.android.util.asMediaUri
 import java.io.File
 
-@DelicateCoroutinesApi
 @AndroidEntryPoint
 class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
     private var mediaCapturePath: String? = null

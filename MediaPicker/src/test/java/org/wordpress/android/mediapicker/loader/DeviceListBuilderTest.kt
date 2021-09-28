@@ -15,21 +15,21 @@ import org.wordpress.android.mediapicker.MediaItem.Identifier.LocalUri
 import org.wordpress.android.mediapicker.MediaType
 import org.wordpress.android.mediapicker.MediaType.DOCUMENT
 import org.wordpress.android.mediapicker.MediaType.IMAGE
-import org.wordpress.android.mediapicker.loader.DeviceMediaLoader.DeviceMediaItem
-import org.wordpress.android.mediapicker.loader.DeviceMediaLoader.DeviceMediaList
-import org.wordpress.android.mediapicker.loader.MediaSource.MediaLoadingResult
+import org.wordpress.android.mediapicker.source.devicemedia.DeviceMediaLoader.DeviceMediaItem
+import org.wordpress.android.mediapicker.source.devicemedia.DeviceMediaLoader.DeviceMediaList
+import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult
 import org.wordpress.android.util.MediaUtilsWrapper
 import org.wordpress.android.util.UriWrapper
 
 @InternalCoroutinesApi
 class DeviceListBuilderTest : BaseUnitTest() {
-    @Mock lateinit var deviceMediaLoader: DeviceMediaLoader
+    @Mock lateinit var deviceMediaLoader: org.wordpress.android.mediapicker.source.devicemedia.DeviceMediaLoader
     @Mock lateinit var mediaUtilsWrapper: MediaUtilsWrapper
     @Mock lateinit var site: SiteModel
     @Mock lateinit var uri1: UriWrapper
     @Mock lateinit var uri2: UriWrapper
     @Mock lateinit var uri3: UriWrapper
-    private lateinit var deviceListBuilder: DeviceListBuilder
+    private lateinit var deviceListBuilder: org.wordpress.android.mediapicker.source.devicemedia.DeviceListBuilder
     private lateinit var newestItem: DeviceMediaItem
     private lateinit var middleItem: DeviceMediaItem
     private lateinit var oldestItem: DeviceMediaItem
@@ -306,14 +306,15 @@ class DeviceListBuilderTest : BaseUnitTest() {
     }
 
     private fun setUp(allowedTypes: Set<MediaType>) {
-        deviceListBuilder = DeviceListBuilder(
+        deviceListBuilder =
+            org.wordpress.android.mediapicker.source.devicemedia.DeviceListBuilder(
                 deviceMediaLoader,
                 mediaUtilsWrapper,
                 site,
                 TEST_DISPATCHER,
                 allowedTypes,
                 pageSize
-        )
+            )
     }
 
     private fun MediaLoadingResult.Success.assertMediaItem(

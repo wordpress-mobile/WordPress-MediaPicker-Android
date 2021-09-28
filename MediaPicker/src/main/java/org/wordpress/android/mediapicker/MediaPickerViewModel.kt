@@ -12,13 +12,14 @@ import org.wordpress.android.mediapicker.MediaNavigationEvent.*
 import org.wordpress.android.mediapicker.MediaPickerFragment.*
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerAction.*
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIcon.*
-import org.wordpress.android.mediapicker.MediaPickerSetup.CameraSetup.*
-import org.wordpress.android.mediapicker.MediaPickerSetup.DataSource.DEVICE
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.CameraSetup.*
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.MediaPickerUiItem.*
 import org.wordpress.android.mediapicker.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction
 import org.wordpress.android.mediapicker.MediaPickerViewModel.ProgressDialogUiModel.Hidden
 import org.wordpress.android.mediapicker.MediaPickerViewModel.ProgressDialogUiModel.Visible
-import org.wordpress.android.mediapicker.model.MediaType.*
+import org.wordpress.android.mediapicker.api.MediaPickerSetup
+import org.wordpress.android.mediapicker.api.MediaSourceFactory
 import org.wordpress.android.mediapicker.api.MimeTypeSupportProvider
 import org.wordpress.android.mediapicker.insert.MediaInsertHandler
 import org.wordpress.android.mediapicker.insert.MediaInsertHandler.InsertModel
@@ -27,13 +28,13 @@ import org.wordpress.android.mediapicker.loader.MediaLoader
 import org.wordpress.android.mediapicker.loader.MediaLoader.DomainModel
 import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction
 import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction.NextPage
-import org.wordpress.android.mediapicker.loader.MediaLoaderFactory
 import org.wordpress.android.mediapicker.model.MediaItem
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier.LocalUri
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier.RemoteId
-import org.wordpress.android.mediapicker.model.UiString
+import org.wordpress.android.mediapicker.model.MediaType.*
 import org.wordpress.android.mediapicker.model.MediaUri
+import org.wordpress.android.mediapicker.model.UiString
 import org.wordpress.android.mediapicker.viewmodel.Event
 import org.wordpress.android.mediapicker.viewmodel.ResourceProvider
 import org.wordpress.android.util.*
@@ -41,7 +42,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MediaPickerViewModel @Inject constructor(
-    private val mediaLoaderFactory: MediaLoaderFactory,
+    private val mediaSourceFactory: MediaSourceFactory,
     private val mediaInsertHandlerFactory: MediaInsertHandlerFactory,
     private val mediaPickerTracker: MediaPickerTracker,
     private val permissionsHandler: PermissionsHandler,
@@ -200,7 +201,7 @@ class MediaPickerViewModel @Inject constructor(
                 PhotoListUiModel.Empty(
                     UiString.UiStringText(title),
                     htmlSubtitle?.let { UiString.UiStringText(it, true) },
-                    image,
+                    image ?: R.drawable.img_illustration_empty_results_216dp,
                     bottomImage,
                     bottomImageDescription?.let { UiString.UiStringText(it, true) },
                     isSearching == true,
@@ -307,7 +308,9 @@ class MediaPickerViewModel @Inject constructor(
         this.siteId = siteId
         if (_domainModel.value == null) {
             mediaPickerTracker.trackMediaPickerOpened(mediaPickerSetup)
-            this.mediaLoader = mediaLoaderFactory.build(mediaPickerSetup, siteId)
+            this.mediaLoader = mediaSourceFactory
+                .build(siteId, mediaPickerSetup.allowedTypes)
+                .toMediaLoader()
             this.mediaInsertHandler = mediaInsertHandlerFactory.build(mediaPickerSetup)
             viewModelScope.launch {
                 mediaLoader.loadMedia(loadActions).collect { domainModel ->
