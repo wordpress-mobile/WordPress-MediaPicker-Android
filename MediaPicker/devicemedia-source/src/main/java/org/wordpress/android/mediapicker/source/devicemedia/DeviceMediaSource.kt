@@ -77,7 +77,7 @@ class DeviceMediaSource(
             if (filter.isNullOrEmpty() || mediaItems.isNotEmpty()) {
                 MediaLoadingResult.Success(mediaItems, lastShownTimestamp > 0L)
             } else {
-                Empty("No media matching your search",                         image = R.drawable.img_illustration_empty_results_216dp)
+                Empty("No media matching your search")
             }
         }
     }
