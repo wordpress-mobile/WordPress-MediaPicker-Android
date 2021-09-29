@@ -13,7 +13,6 @@ data class MediaPickerSetup(
     val allowedTypes: Set<MediaType>,
     val cameraSetup: CameraSetup,
     val systemPickerEnabled: Boolean,
-    val editingEnabled: Boolean,
     val queueResults: Boolean,
     val defaultSearchView: Boolean,
     @StringRes val title: Int
@@ -34,7 +33,6 @@ data class MediaPickerSetup(
         bundle.putBoolean(KEY_REQUIRES_STORAGE_PERMISSIONS, requiresStoragePermissions)
         bundle.putInt(KEY_CAMERA_SETUP, cameraSetup.ordinal)
         bundle.putBoolean(KEY_SYSTEM_PICKER_ENABLED, systemPickerEnabled)
-        bundle.putBoolean(KEY_EDITING_ENABLED, editingEnabled)
         bundle.putBoolean(KEY_QUEUE_RESULTS, queueResults)
         bundle.putBoolean(KEY_DEFAULT_SEARCH_VIEW, defaultSearchView)
         bundle.putInt(KEY_TITLE, title)
@@ -48,7 +46,6 @@ data class MediaPickerSetup(
         intent.putExtra(KEY_REQUIRES_STORAGE_PERMISSIONS, requiresStoragePermissions)
         intent.putExtra(KEY_CAMERA_SETUP, cameraSetup.ordinal)
         intent.putExtra(KEY_SYSTEM_PICKER_ENABLED, systemPickerEnabled)
-        intent.putExtra(KEY_EDITING_ENABLED, editingEnabled)
         intent.putExtra(KEY_QUEUE_RESULTS, queueResults)
         intent.putExtra(KEY_DEFAULT_SEARCH_VIEW, defaultSearchView)
         intent.putExtra(KEY_TITLE, title)
@@ -62,7 +59,6 @@ data class MediaPickerSetup(
         private const val KEY_ALLOWED_TYPES = "key_allowed_types"
         private const val KEY_CAMERA_SETUP = "key_camera_setup"
         private const val KEY_SYSTEM_PICKER_ENABLED = "key_system_picker_enabled"
-        private const val KEY_EDITING_ENABLED = "key_editing_enabled"
         private const val KEY_QUEUE_RESULTS = "key_queue_results"
         private const val KEY_DEFAULT_SEARCH_VIEW = "key_default_search_view"
         private const val KEY_TITLE = "key_title"
@@ -79,7 +75,6 @@ data class MediaPickerSetup(
             val cameraSetup = CameraSetup.values()[bundle.getInt(KEY_CAMERA_SETUP)]
             val requiresStoragePermissions = bundle.getBoolean(KEY_REQUIRES_STORAGE_PERMISSIONS)
             val systemPickerEnabled = bundle.getBoolean(KEY_SYSTEM_PICKER_ENABLED)
-            val editingEnabled = bundle.getBoolean(KEY_EDITING_ENABLED)
             val queueResults = bundle.getBoolean(KEY_QUEUE_RESULTS)
             val defaultSearchView = bundle.getBoolean(KEY_DEFAULT_SEARCH_VIEW)
             val title = bundle.getInt(KEY_TITLE)
@@ -91,7 +86,6 @@ data class MediaPickerSetup(
                     allowedTypes,
                     cameraSetup,
                     systemPickerEnabled,
-                    editingEnabled,
                     queueResults,
                     defaultSearchView,
                     title
@@ -111,7 +105,6 @@ data class MediaPickerSetup(
             val cameraSetup = CameraSetup.values()[intent.getIntExtra(KEY_CAMERA_SETUP, -1)]
             val requiresStoragePermissions = intent.getBooleanExtra(KEY_REQUIRES_STORAGE_PERMISSIONS, false)
             val systemPickerEnabled = intent.getBooleanExtra(KEY_SYSTEM_PICKER_ENABLED, false)
-            val editingEnabled = intent.getBooleanExtra(KEY_SYSTEM_PICKER_ENABLED, false)
             val queueResults = intent.getBooleanExtra(KEY_QUEUE_RESULTS, false)
             val defaultSearchView = intent.getBooleanExtra(KEY_DEFAULT_SEARCH_VIEW, false)
             val title = intent.getIntExtra(KEY_TITLE, 0)
@@ -123,7 +116,6 @@ data class MediaPickerSetup(
                     allowedTypes,
                     cameraSetup,
                     systemPickerEnabled,
-                    editingEnabled,
                     queueResults,
                     defaultSearchView,
                     title

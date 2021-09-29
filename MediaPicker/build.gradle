@@ -46,7 +46,6 @@ android {
         implementation 'com.github.Tenor-Inc:tenor-android-core:0.5.1'
         // Remove dependency to Utils
         implementation 'com.android.volley:volley:1.2.1'
-        implementation 'org.wordpress:utils:2.0.0'
 
         // Glide
         implementation 'com.github.bumptech.glide:glide:4.12.0'

@@ -41,6 +41,8 @@ import org.wordpress.android.mediapicker.model.MediaPickerViewModel.PhotoListUiM
 import org.wordpress.android.mediapicker.model.MediaPickerViewModel.SearchUiModel.Collapsed
 import org.wordpress.android.mediapicker.model.MediaPickerViewModel.SearchUiModel.Expanded
 import org.wordpress.android.mediapicker.model.MediaType.*
+import org.wordpress.android.mediapicker.model.MediaUri
+import org.wordpress.android.mediapicker.model.UiString
 import org.wordpress.android.mediapicker.model.UiString.UiStringRes
 import org.wordpress.android.mediapicker.model.UiString.UiStringText
 import org.wordpress.android.mediapicker.viewmodel.Event
@@ -266,20 +268,7 @@ class MediaPickerViewModel @Inject constructor(
             }
         }
 
-        val onlyImagesSelected = items?.none { it.type != IMAGE && selectedIds.contains(it.identifier) } ?: true
-        val showEditActionButton = mediaPickerSetup.editingEnabled && onlyImagesSelected
-        return ActionModeUiModel.Visible(
-            title,
-            EditActionUiModel(
-                isVisible = showEditActionButton,
-                isCounterBadgeVisible = if (!showEditActionButton) {
-                    false
-                } else {
-                    mediaPickerSetup.canMultiselect
-                },
-                counterBadgeValue = numSelected
-            )
-        )
+        return ActionModeUiModel.Visible(title)
     }
 
     fun refreshData(forceReload: Boolean) {
@@ -434,11 +423,6 @@ class MediaPickerViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    fun performEditAction() {
-        val uriList = selectedIdentifiers().mapNotNull { (it as? Identifier.LocalUri)?.value }
-        _onNavigate.value = Event(EditMedia(uriList))
     }
 
     fun clickOnLastTappedIcon() = clickIcon(lastTappedIcon!!)
@@ -649,8 +633,7 @@ class MediaPickerViewModel @Inject constructor(
 
     sealed class ActionModeUiModel {
         data class Visible(
-            val actionModeTitle: UiString? = null,
-            val editActionUiModel: EditActionUiModel = EditActionUiModel()
+            val actionModeTitle: UiString? = null
         ) : ActionModeUiModel()
 
         object Hidden : ActionModeUiModel()
@@ -673,12 +656,6 @@ class MediaPickerViewModel @Inject constructor(
     }
 
     data class SoftAskRequest(val show: Boolean, val isAlwaysDenied: Boolean)
-
-    data class EditActionUiModel(
-        val isVisible: Boolean = false,
-        val isCounterBadgeVisible: Boolean = false,
-        val counterBadgeValue: Int = 1
-    )
 
     data class SnackbarMessageHolder(
         val message: UiString,

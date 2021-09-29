@@ -2,18 +2,16 @@ package org.wordpress.android.mediapicker
 
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.widget.TextView
 import androidx.appcompat.view.ActionMode
 import androidx.appcompat.view.ActionMode.Callback
-import androidx.appcompat.widget.TooltipCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Lifecycle.Event.ON_START
 import androidx.lifecycle.Lifecycle.Event.ON_STOP
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.Observer
-import org.wordpress.android.mediapicker.MediaPickerViewModel.ActionModeUiModel
+import org.wordpress.android.mediapicker.model.MediaPickerViewModel
+import org.wordpress.android.mediapicker.model.MediaPickerViewModel.ActionModeUiModel
 import org.wordpress.android.mediapicker.model.UiString
 
 class MediaPickerActionModeCallback(private val viewModel: MediaPickerViewModel) : Callback,
@@ -33,31 +31,6 @@ class MediaPickerActionModeCallback(private val viewModel: MediaPickerViewModel)
                     actionMode.finish()
                 }
                 is ActionModeUiModel.Visible -> {
-                    val editItem = menu.findItem(R.id.mnu_edit_item)
-
-                    val editItemUiModel = uiModel.editActionUiModel
-
-                    if (editItemUiModel.isVisible) {
-                        editItem.isVisible = true
-
-                        editItem.actionView.let { actionView ->
-                            actionView.setOnClickListener {
-                                onActionItemClicked(actionMode, editItem)
-                            }
-                            TooltipCompat.setTooltipText(actionView, editItem.title)
-                        }
-
-                        val editItemBadge = editItem.actionView.findViewById<TextView>(R.id.customize_icon_count)
-                        if (editItemUiModel.isCounterBadgeVisible) {
-                            editItemBadge.visibility = View.VISIBLE
-                            editItemBadge.text = editItemUiModel.counterBadgeValue.toString()
-                        } else {
-                            editItemBadge.visibility = View.GONE
-                        }
-                    } else {
-                        editItem.isVisible = false
-                    }
-
                     when (uiModel.actionModeTitle) {
                         is UiString.UiStringText -> {
                             actionMode.title = uiModel.actionModeTitle.text
@@ -83,10 +56,6 @@ class MediaPickerActionModeCallback(private val viewModel: MediaPickerViewModel)
         return when (item.itemId) {
             R.id.mnu_confirm_selection -> {
                 viewModel.performInsertAction()
-                true
-            }
-            R.id.mnu_edit_item -> {
-                viewModel.performEditAction()
                 true
             }
             else -> false

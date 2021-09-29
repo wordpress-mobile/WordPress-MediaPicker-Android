@@ -24,7 +24,6 @@
     <string name="permission_microphone">Microphone</string>
     <string name="unknown">Unknown</string>
     <string name="confirm">Confirm</string>
-    <string name="edit_photo_screen_title">Edit Photo</string>
     <string name="error_generic_network">A network error occurred. Please check your connection and try again.</string>
     <string name="pick_photo">Select photo</string>
     <string name="pick_video">Select video</string>

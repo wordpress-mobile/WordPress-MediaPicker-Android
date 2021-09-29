@@ -36,7 +36,6 @@ class DeviceMediaPickerSetup {
                 allowedTypes = allowedTypes,
                 cameraSetup = HIDDEN,
                 systemPickerEnabled = true,
-                editingEnabled = isImagePicker,
                 queueResults = false,
                 defaultSearchView = false,
                 title = title
