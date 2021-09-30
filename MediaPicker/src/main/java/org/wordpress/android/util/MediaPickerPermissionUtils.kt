@@ -22,7 +22,6 @@ import javax.inject.Singleton
 
 @Singleton
 class MediaPickerPermissionUtils @Inject constructor(
-    @ApplicationContext private val context: Context,
     private val perms: Permissions,
     private val log: Log
 ) {
@@ -60,7 +59,7 @@ class MediaPickerPermissionUtils @Inject constructor(
     ): Boolean {
         for (i in permissions.indices) {
             getPermissionAskedKey(permissions[i])?.let { key ->
-                val isFirstTime = perms.contains(key)
+                val isFirstTime = perms.wasPermissionAsked(key)
                 trackPermissionResult(requestCode, permissions[i], grantResults[i], isFirstTime)
                 perms.markAsAsked(key)
             }
@@ -75,7 +74,7 @@ class MediaPickerPermissionUtils @Inject constructor(
                         permissions[i]
                     )
                 ) {
-                    showPermissionAlwaysDeniedDialog(permissions[i])
+                    showPermissionAlwaysDeniedDialog(activity, permissions[i])
                     break
                 }
             }
@@ -91,8 +90,8 @@ class MediaPickerPermissionUtils @Inject constructor(
             ?: return false
 
         // if the key exists, we've already stored whether this permission has been asked for
-        if (perms.contains(key)) {
-            return perms[key]
+        if (perms.wasPermissionAsked(key)) {
+            return true
         }
 
         // otherwise, check whether permission has already been granted - if so we know it has been asked
@@ -113,7 +112,7 @@ class MediaPickerPermissionUtils @Inject constructor(
         // denied, but it also returns false if the app has never requested that permission - so we
         // check it only if we know we've asked for this permission
         if (isPermissionAsked(activity, permission) &&
-            ContextCompat.checkSelfPermission(context, permission) ==
+            ContextCompat.checkSelfPermission(activity, permission) ==
             PackageManager.PERMISSION_DENIED
         ) {
             val shouldShow =
@@ -158,7 +157,7 @@ class MediaPickerPermissionUtils @Inject constructor(
     /*
      * returns the name to display for a permission, ex: "permission.WRITE_EXTERNAL_STORAGE" > "Storage"
      */
-    fun getPermissionName(permission: String): String {
+    fun getPermissionName(context: Context, permission: String): String {
         return when (permission) {
             Manifest.permission.READ_EXTERNAL_STORAGE -> context.getString(
                 string.permission_storage
@@ -193,10 +192,10 @@ class MediaPickerPermissionUtils @Inject constructor(
      * called when the app detects that the user has permanently denied a permission, shows a dialog
      * alerting them to this fact and enabling them to visit the app settings to edit permissions
      */
-    fun showPermissionAlwaysDeniedDialog(permission: String) {
+    fun showPermissionAlwaysDeniedDialog(context: Context, permission: String) {
         val message = String.format(
             context.getString(string.permissions_denied_message),
-            getPermissionName(permission)
+            getPermissionName(context, permission)
         )
         val builder: Builder = MaterialAlertDialogBuilder(context)
             .setTitle(context.getString(string.permissions_denied_title))

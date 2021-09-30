@@ -8,10 +8,11 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -28,38 +29,27 @@ class Permissions @Inject constructor(
     }
 
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore("permissions")
-    private val map = mutableMapOf<Key, Boolean?>()
-
-    operator fun get(key: Key) = map[key] ?: false
+    private lateinit var preferences: Preferences
 
     fun markAsAsked(key: Key) {
         scope.launch {
-            savePermissionAsked(key, true)
+            savePermissionAsked(key)
         }
     }
+
+    fun wasPermissionAsked(key: Key) = preferences.contains(key)
 
     init {
         scope.launch {
-            getPermissionAsked(PERMISSION_STORAGE_READ).map {
-                map[PERMISSION_STORAGE_READ] = it
-            }
-        }
-
-        scope.launch {
-            getPermissionAsked(PERMISSION_CAMERA).map {
-                map[PERMISSION_CAMERA] = it
+            context.dataStore.data.collect {
+                preferences = it
             }
         }
     }
 
-    private fun getPermissionAsked(key: Key) = context.dataStore.data
-        .map { settings -> settings[key] }
-
-    private suspend fun savePermissionAsked(key: Key, wasAsked: Boolean) {
+    private suspend fun savePermissionAsked(key: Key) {
         context.dataStore.edit { settings ->
-            settings[key] = wasAsked
+            settings[key] = true
         }
     }
-
-    fun contains(key: Key) = map.containsKey(key) && map[key] != null
 }

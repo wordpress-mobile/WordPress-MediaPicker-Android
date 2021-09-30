@@ -233,17 +233,6 @@ class MediaPickerFragment : Fragment() {
                                     navigationEvent.url
                                 )
                             }
-//                            is PreviewMedia -> MediaViewerFragment.previewUrl(
-//                                    requireActivity(),
-//                                    navigationEvent.mediaId
-//                            )
-//                            is EditMedia -> {
-//                                val inputData = WPMediaUtils.createListOfEditImageInputData(
-//                                        requireContext(),
-//                                        navigationEvent.uris.map { wrapper -> wrapper.uri }
-//                                )
-//                                ActivityLauncher.openImageEditor(activity, inputData)
-//                            }
                             is InsertMedia -> listener?.onItemsChosen(navigationEvent.identifiers)
                             is IconClickEvent -> listener?.onIconClicked(navigationEvent.action)
                             Exit -> {
@@ -256,8 +245,8 @@ class MediaPickerFragment : Fragment() {
 
             viewModel.onPermissionsRequested.observeEvent(viewLifecycleOwner, {
                 when (it) {
-                    MediaPickerViewModel.PermissionsRequested.CAMERA -> requestCameraPermission()
-                    MediaPickerViewModel.PermissionsRequested.STORAGE -> requestStoragePermission()
+                    PermissionsRequested.CAMERA -> requestCameraPermission()
+                    PermissionsRequested.STORAGE -> requestStoragePermission()
                 }
             })
             viewModel.onSnackbarMessage.observeEvent(viewLifecycleOwner, { messageHolder ->
@@ -356,9 +345,9 @@ class MediaPickerFragment : Fragment() {
     private fun MediaPickerFragmentBinding.setupSoftAskView(uiModel: SoftAskViewUiModel) {
         when (uiModel) {
             is SoftAskViewUiModel.Visible -> {
-                softAskView.setTextSpan(Html.fromHtml(uiModel.label))
-                softAskView.setButtonTitleRes(uiModel.allowId.stringRes)
-                softAskView.setOnClickListener {
+                softAskView.title.text = Html.fromHtml(uiModel.label)
+                softAskView.button.setText(uiModel.allowId.stringRes)
+                softAskView.button.setOnClickListener {
                     if (uiModel.isAlwaysDenied) {
                         permissionUtils.showAppSettings(requireActivity())
                     } else {
@@ -386,30 +375,33 @@ class MediaPickerFragment : Fragment() {
             }
             is PhotoListUiModel.Empty -> {
                 setupAdapter(listOf())
-//                actionableEmptyView.updateLayoutForSearch(uiModel.isSearching, 0)
-//                actionableEmptyView.setText(UiHelpers.getTextOfUiString(requireContext(), uiModel.title))
+                actionableEmptyView.updateLayoutForSearch(uiModel.isSearching, 0)
+                actionableEmptyView.title.text = UiHelpers.getTextOfUiString(
+                    requireContext(),
+                    uiModel.title
+                )
 
-//                actionableEmptyView.subtitle.applyOrHide(uiModel.htmlSubtitle) { htmlSubtitle ->
-//                    actionableEmptyView.subtitle.text = Html.fromHtml(
-//                            uiHelpers.getTextOfUiString(
-//                                    requireContext(),
-//                                    htmlSubtitle
-//                            ).toString()
-//                    )
-//                    actionableEmptyView.subtitle.movementMethod = WPLinkMovementMethod.getInstance()
-//                }
-//                actionableEmptyView.image.applyOrHide(uiModel.image) { image ->
-//                    this.setImageResource(image)
-//                }
-//                actionableEmptyView.bottomImage.applyOrHide(uiModel.bottomImage) { bottomImage ->
-//                    this.setImageResource(bottomImage)
-//                    if (uiModel.bottomImageDescription != null) {
-//                        this.contentDescription = uiHelpers.getTextOfUiString(
-//                                requireContext(),
-//                                uiModel.bottomImageDescription
-//                        ).toString()
-//                    }
-//                }
+                actionableEmptyView.subtitle.applyOrHide(uiModel.htmlSubtitle) { htmlSubtitle ->
+                    actionableEmptyView.subtitle.text = Html.fromHtml(
+                            UiHelpers.getTextOfUiString(
+                                    requireContext(),
+                                    htmlSubtitle
+                            )
+                    )
+                    actionableEmptyView.subtitle.movementMethod = WPLinkMovementMethod.getInstance()
+                }
+                actionableEmptyView.image.applyOrHide(uiModel.image) { image ->
+                    this.setImageResource(image)
+                }
+                actionableEmptyView.bottomImage.applyOrHide(uiModel.bottomImage) { bottomImage ->
+                    this.setImageResource(bottomImage)
+                    if (uiModel.bottomImageDescription != null) {
+                        this.contentDescription = UiHelpers.getTextOfUiString(
+                                requireContext(),
+                                uiModel.bottomImageDescription
+                        )
+                    }
+                }
                 actionableEmptyView.setOnClickListener {
                     uiModel.retryAction?.invoke()
                 }
@@ -486,7 +478,7 @@ class MediaPickerFragment : Fragment() {
         })
     }
 
-    private fun MediaPickerFragmentBinding.showSnackbar(holder: MediaPickerViewModel.SnackbarMessageHolder) {
+    private fun MediaPickerFragmentBinding.showSnackbar(holder: SnackbarMessageHolder) {
         val snackbar = Snackbar.make(
             requireContext(),
             coordinator,
