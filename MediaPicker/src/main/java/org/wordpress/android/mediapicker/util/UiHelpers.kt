@@ -1,4 +1,4 @@
-package org.wordpress.android.util
+package org.wordpress.android.mediapicker.util
 
 import android.content.Context
 import android.view.View
@@ -7,7 +7,8 @@ import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import org.wordpress.android.mediapicker.model.UiString
-import org.wordpress.android.util.AnimUtils.Duration
+import org.wordpress.android.mediapicker.util.AnimUtils.Duration
+import org.wordpress.android.mediapicker.util.AnimUtils.Duration.SHORT
 
 class UiHelpers {
     companion object {
@@ -52,11 +53,11 @@ class UiHelpers {
         fun fadeInfadeOutViews(firstView: View?, secondView: View?, visible: Boolean) {
             if (firstView == null || secondView == null || visible == (firstView.visibility == View.VISIBLE)) return
             if (visible) {
-                AnimUtils.fadeIn(firstView, Duration.SHORT)
-                AnimUtils.fadeOut(secondView, Duration.SHORT, View.INVISIBLE)
+                AnimUtils.fadeIn(firstView, SHORT)
+                AnimUtils.fadeOut(secondView, SHORT, View.INVISIBLE)
             } else {
-                AnimUtils.fadeIn(secondView, Duration.SHORT)
-                AnimUtils.fadeOut(firstView, Duration.SHORT, View.INVISIBLE)
+                AnimUtils.fadeIn(secondView, SHORT)
+                AnimUtils.fadeOut(firstView, SHORT, View.INVISIBLE)
             }
         }
     }

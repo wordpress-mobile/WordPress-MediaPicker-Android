@@ -42,6 +42,9 @@ import org.wordpress.android.mediapicker.model.MediaPickerViewModel.SearchUiMode
 import org.wordpress.android.mediapicker.model.MediaType.*
 import org.wordpress.android.mediapicker.model.UiString.UiStringRes
 import org.wordpress.android.mediapicker.model.UiString.UiStringText
+import org.wordpress.android.mediapicker.util.PermissionsHandler
+import org.wordpress.android.mediapicker.util.distinct
+import org.wordpress.android.mediapicker.util.merge
 import org.wordpress.android.mediapicker.viewmodel.Event
 import org.wordpress.android.mediapicker.viewmodel.ResourceProvider
 import org.wordpress.android.util.*
@@ -254,13 +257,13 @@ class MediaPickerViewModel @Inject constructor(
                 val isVideoPicker = mediaPickerSetup.allowedTypes.contains(VIDEO)
                 val isAudioPicker = mediaPickerSetup.allowedTypes.contains(AUDIO)
                 if (isImagePicker && isVideoPicker) {
-                    UiString.UiStringRes(string.photo_picker_use_media)
+                    UiStringRes(string.photo_picker_use_media)
                 } else if (isVideoPicker) {
-                    UiString.UiStringRes(string.photo_picker_use_video)
+                    UiStringRes(string.photo_picker_use_video)
                 } else if (isAudioPicker) {
-                    UiString.UiStringRes(string.photo_picker_use_audio)
+                    UiStringRes(string.photo_picker_use_audio)
                 } else {
-                    UiString.UiStringRes(string.photo_picker_use_photo)
+                    UiStringRes(string.photo_picker_use_photo)
                 }
             }
         }
@@ -394,7 +397,7 @@ class MediaPickerViewModel @Inject constructor(
                                 )
                             )
                         } else {
-                            UiString.UiStringRes(string.media_insert_failed)
+                            UiStringRes(string.media_insert_failed)
                         }
                         _onSnackbarMessage.value = Event(
                                 SnackbarMessageHolder(
@@ -611,7 +614,7 @@ class MediaPickerViewModel @Inject constructor(
     sealed class SoftAskViewUiModel {
         data class Visible(
             val label: String,
-            val allowId: UiString.UiStringRes,
+            val allowId: UiStringRes,
             val isAlwaysDenied: Boolean
         ) :
                 SoftAskViewUiModel()

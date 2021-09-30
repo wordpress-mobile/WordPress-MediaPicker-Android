@@ -1,4 +1,4 @@
-package org.wordpress.android.util
+package org.wordpress.android.mediapicker.util
 
 import android.Manifest
 import android.app.Activity
@@ -16,6 +16,7 @@ import androidx.core.app.ActivityCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.wordpress.android.mediapicker.R.string
 import org.wordpress.android.mediapicker.util.Log
+import org.wordpress.android.mediapicker.util.Permissions.Companion
 import java.util.HashMap
 import javax.inject.Inject
 import javax.inject.Singleton

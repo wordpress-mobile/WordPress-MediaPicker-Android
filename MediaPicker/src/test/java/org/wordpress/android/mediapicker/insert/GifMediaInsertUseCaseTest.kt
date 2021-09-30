@@ -7,7 +7,6 @@ import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.flow.toList
 import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
@@ -26,7 +25,7 @@ import org.wordpress.android.mediapicker.insert.MediaInsertHandler.InsertModel.S
 import org.wordpress.android.util.FluxCUtilsWrapper
 import org.wordpress.android.util.MimeTypeMapUtilsWrapper
 import org.wordpress.android.util.UriWrapper
-import org.wordpress.android.util.WPMediaUtilsWrapper
+import org.wordpress.android.mediapicker.util.MediaUtilsWrapper
 
 @InternalCoroutinesApi
 class GifMediaInsertUseCaseTest : BaseUnitTest() {
@@ -34,7 +33,7 @@ class GifMediaInsertUseCaseTest : BaseUnitTest() {
     @Mock lateinit var site: SiteModel
     @Mock lateinit var dispatcher: Dispatcher
     @Mock lateinit var uriWrapper: UriWrapper
-    @Mock lateinit var wpMediaUtilsWrapper: WPMediaUtilsWrapper
+    @Mock lateinit var mediaUtilsWrapper: MediaUtilsWrapper
     @Mock lateinit var mimeTypeMapUtilsWrapper: MimeTypeMapUtilsWrapper
     @Mock lateinit var fluxCUtilsWrapper: FluxCUtilsWrapper
 
@@ -47,7 +46,7 @@ class GifMediaInsertUseCaseTest : BaseUnitTest() {
                 site,
                 dispatcher,
                 TEST_DISPATCHER,
-                wpMediaUtilsWrapper,
+                mediaUtilsWrapper,
                 fluxCUtilsWrapper,
                 mimeTypeMapUtilsWrapper
         )
@@ -60,7 +59,7 @@ class GifMediaInsertUseCaseTest : BaseUnitTest() {
         val itemToInsert = GifMediaIdentifier(uriWrapper, null)
         val insertedMediaModel = MediaModel().apply { id = 100 }
 
-        whenever(wpMediaUtilsWrapper.fetchMediaToUriWrapper(any())).thenReturn(mock())
+        whenever(mediaUtilsWrapper.fetchMediaToUriWrapper(any())).thenReturn(mock())
         whenever(mimeTypeMapUtilsWrapper.getFileExtensionFromUrl(any())).thenReturn("png")
         val mimeTypeMap: MimeTypeMap = mock()
         whenever(mimeTypeMap.getMimeTypeFromExtension(any())).thenReturn("image/png")

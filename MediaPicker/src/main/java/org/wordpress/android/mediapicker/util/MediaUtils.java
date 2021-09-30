@@ -1,4 +1,4 @@
-package org.wordpress.android.util;
+package org.wordpress.android.mediapicker.util;
 
 import android.app.Activity;
 import android.content.ClipData;
@@ -17,8 +17,6 @@ import org.wordpress.android.mediapicker.MediaPickerFragment;
 import org.wordpress.android.mediapicker.R;
 import org.wordpress.android.mediapicker.model.EditImageData;
 import org.wordpress.android.mediapicker.model.MediaUri;
-import org.wordpress.android.mediapicker.util.Log;
-import org.wordpress.android.mediapicker.util.MediaUriExtKt;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +26,7 @@ import java.util.List;
 import static org.wordpress.android.mediapicker.MediaPickerConstants.ARG_EDIT_IMAGE_DATA;
 import static org.wordpress.android.mediapicker.MediaPickerRequestCodes.TAKE_PHOTO;
 
-public class WPMediaUtils {
+public class MediaUtils {
     
     public interface LaunchCameraCallback {
         void onMediaCapturePathReady(String mediaCapturePath);
@@ -129,17 +127,17 @@ public class WPMediaUtils {
     }
 
     public static int getPlaceholder(String url) {
-        if (MediaUtils.isValidImage(url)) {
+        if (org.wordpress.android.util.MediaUtils.isValidImage(url)) {
             return R.drawable.ic_image_white_24dp;
-        } else if (MediaUtils.isDocument(url)) {
+        } else if (org.wordpress.android.util.MediaUtils.isDocument(url)) {
             return R.drawable.ic_pages_white_24dp;
-        } else if (MediaUtils.isPowerpoint(url)) {
+        } else if (org.wordpress.android.util.MediaUtils.isPowerpoint(url)) {
             return R.drawable.media_powerpoint;
-        } else if (MediaUtils.isSpreadsheet(url)) {
+        } else if (org.wordpress.android.util.MediaUtils.isSpreadsheet(url)) {
             return R.drawable.media_spreadsheet;
-        } else if (MediaUtils.isVideo(url)) {
+        } else if (org.wordpress.android.util.MediaUtils.isVideo(url)) {
             return R.drawable.ic_video_camera_white_24dp;
-        } else if (MediaUtils.isAudio(url)) {
+        } else if (org.wordpress.android.util.MediaUtils.isAudio(url)) {
             return R.drawable.ic_audio_white_24dp;
         } else {
             return R.drawable.ic_image_multiple_white_24dp;
@@ -170,14 +168,14 @@ public class WPMediaUtils {
      */
     public static @Nullable
     Uri fetchMedia(Log log, @NonNull Context context, @NonNull Uri mediaUri) {
-        if (MediaUtils.isInMediaStore(mediaUri)) {
+        if (org.wordpress.android.util.MediaUtils.isInMediaStore(mediaUri)) {
             return mediaUri;
         }
 
         try {
             // Do not download the file in async task. See
             // https://github.com/wordpress-mobile/WordPress-Android/issues/5818
-            return MediaUtils.downloadExternalMedia(context, mediaUri);
+            return org.wordpress.android.util.MediaUtils.downloadExternalMedia(context, mediaUri);
         } catch (IllegalStateException e) {
             // Ref: https://github.com/wordpress-mobile/WordPress-Android/issues/5823
             log.e("Can't download the image at: " + mediaUri.toString()

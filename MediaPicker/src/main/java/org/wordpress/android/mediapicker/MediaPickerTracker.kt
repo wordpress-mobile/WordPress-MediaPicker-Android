@@ -2,6 +2,7 @@ package org.wordpress.android.mediapicker
 
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIcon
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 import javax.inject.Inject
 
@@ -110,11 +111,11 @@ class MediaPickerTracker @Inject constructor(
     private fun MutableMap<String, Any?>.addMediaPickerProperties(
         mediaPickerSetup: MediaPickerSetup
     ): MutableMap<String, Any?> {
-//        this["source"] = when (mediaPickerSetup.primaryDataSource) {
-//            DEVICE -> "device_media_library"
-//        }
-//        this["can_multiselect"] = mediaPickerSetup.canMultiselect
-//        this["default_search_view"] = mediaPickerSetup.defaultSearchView
+        this["source"] = when (mediaPickerSetup.primaryDataSource) {
+            DEVICE -> "device_media_library"
+        }
+        this["can_multiselect"] = mediaPickerSetup.canMultiselect
+        this["default_search_view"] = mediaPickerSetup.defaultSearchView
         return this
     }
 

@@ -5,11 +5,11 @@ import org.wordpress.android.mediapicker.insert.MediaInsertHandler.InsertModel
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier.LocalUri
 import org.wordpress.android.mediapicker.model.MediaUri
-import org.wordpress.android.util.WPMediaUtilsWrapper
+import org.wordpress.android.mediapicker.util.MediaUtilsWrapper
 import javax.inject.Inject
 
 class DeviceListInsertUseCase constructor(
-    private val wpMediaUtilsWrapper: WPMediaUtilsWrapper,
+    private val mediaUtilsWrapper: MediaUtilsWrapper,
     private val queueResults: Boolean
 ) : MediaInsertUseCase {
     override suspend fun insert(identifiers: List<Identifier>) = flow {
@@ -17,7 +17,7 @@ class DeviceListInsertUseCase constructor(
         emit(InsertModel.Progress(actionTitle))
         var failed = false
         val fetchedUris = localUris.mapNotNull { localUri ->
-            val fetchedUri = wpMediaUtilsWrapper.fetchMedia(localUri.value)
+            val fetchedUri = mediaUtilsWrapper.fetchMedia(localUri.value)
             if (fetchedUri == null) {
                 failed = true
             }
@@ -34,11 +34,11 @@ class DeviceListInsertUseCase constructor(
     }
 
     class DeviceListInsertUseCaseFactory @Inject constructor(
-        private val wpMediaUtilsWrapper: WPMediaUtilsWrapper
+        private val mediaUtilsWrapper: MediaUtilsWrapper
     ) {
         fun build(queueResults: Boolean): DeviceListInsertUseCase {
             return DeviceListInsertUseCase(
-                    wpMediaUtilsWrapper,
+                    mediaUtilsWrapper,
                     queueResults
             )
         }

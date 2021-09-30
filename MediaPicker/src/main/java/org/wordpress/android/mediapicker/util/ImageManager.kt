@@ -1,4 +1,4 @@
-package org.wordpress.android.util
+package org.wordpress.android.mediapicker.util
 
 import android.app.Activity
 import android.app.Application

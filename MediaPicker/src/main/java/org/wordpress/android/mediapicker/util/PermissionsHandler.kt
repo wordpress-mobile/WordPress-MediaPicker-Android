@@ -1,4 +1,4 @@
-package org.wordpress.android.util
+package org.wordpress.android.mediapicker.util
 
 import android.Manifest
 import android.Manifest.permission

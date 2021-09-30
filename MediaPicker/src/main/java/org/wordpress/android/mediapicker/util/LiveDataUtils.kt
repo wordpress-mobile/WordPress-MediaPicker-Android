@@ -1,4 +1,4 @@
-package org.wordpress.android.util
+package org.wordpress.android.mediapicker.util
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData

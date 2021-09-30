@@ -3,8 +3,8 @@ package org.wordpress.android.mediapicker
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import org.wordpress.android.util.cancelRequestAndClearImageView
-import org.wordpress.android.util.load
+import org.wordpress.android.mediapicker.util.cancelRequestAndClearImageView
+import org.wordpress.android.mediapicker.util.load
 
 /*
  * ViewHolder containing a device thumbnail

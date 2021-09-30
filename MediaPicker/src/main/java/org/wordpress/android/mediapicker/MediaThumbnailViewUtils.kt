@@ -5,6 +5,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import org.wordpress.android.mediapicker.MediaPickerUiItem.ClickAction
 import org.wordpress.android.mediapicker.MediaPickerUiItem.ToggleAction
+import org.wordpress.android.mediapicker.util.*
+import org.wordpress.android.mediapicker.util.MediaUtils
 import org.wordpress.android.util.*
 import java.util.Locale
 
@@ -40,7 +42,7 @@ class MediaThumbnailViewUtils {
         imgThumbnail.cancelRequestAndClearImageView()
 
         // not an image or video, so show file name and file type
-        val placeholderResId = WPMediaUtils.getPlaceholder(fileName)
+        val placeholderResId = MediaUtils.getPlaceholder(fileName)
         imgThumbnail.setImageResourceWithTint(placeholderResId, R.color.neutral_30)
 
         container.setOnClickListener {

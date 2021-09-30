@@ -14,7 +14,7 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.core.view.isVisible
 import org.wordpress.android.mediapicker.R
 import org.wordpress.android.mediapicker.databinding.ActionableEmptyViewBinding
-import org.wordpress.android.util.AnimUtils
+import org.wordpress.android.mediapicker.util.AnimUtils
 import org.wordpress.android.util.DisplayUtils
 
 /**

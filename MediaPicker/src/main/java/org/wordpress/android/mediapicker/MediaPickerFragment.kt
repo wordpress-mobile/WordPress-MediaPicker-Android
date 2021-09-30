@@ -38,11 +38,14 @@ import org.wordpress.android.mediapicker.model.MediaPickerViewModel.*
 import org.wordpress.android.mediapicker.model.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction.SYSTEM_PICKER
 import org.wordpress.android.mediapicker.model.MediaType
 import org.wordpress.android.mediapicker.model.MediaUri
+import org.wordpress.android.mediapicker.util.AnimUtils
 import org.wordpress.android.mediapicker.viewmodel.observeEvent
-import org.wordpress.android.util.*
-import org.wordpress.android.util.AnimUtils.Duration.MEDIUM
-import org.wordpress.android.util.MediaPickerPermissionUtils.Companion.PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE
-import org.wordpress.android.util.MediaPickerPermissionUtils.Companion.PHOTO_PICKER_STORAGE_PERMISSION_REQUEST_CODE
+import org.wordpress.android.mediapicker.util.AnimUtils.Duration.MEDIUM
+import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils
+import org.wordpress.android.mediapicker.util.LinkMovementMethod
+import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils.Companion.PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE
+import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils.Companion.PHOTO_PICKER_STORAGE_PERMISSION_REQUEST_CODE
+import org.wordpress.android.mediapicker.util.UiHelpers
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -388,7 +391,7 @@ class MediaPickerFragment : Fragment() {
                                     htmlSubtitle
                             )
                     )
-                    actionableEmptyView.subtitle.movementMethod = WPLinkMovementMethod.getInstance()
+                    actionableEmptyView.subtitle.movementMethod = LinkMovementMethod.getInstance()
                 }
                 actionableEmptyView.image.applyOrHide(uiModel.image) { image ->
                     this.setImageResource(image)

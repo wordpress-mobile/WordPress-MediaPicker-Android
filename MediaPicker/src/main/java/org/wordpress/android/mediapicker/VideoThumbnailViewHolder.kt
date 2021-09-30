@@ -5,8 +5,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import kotlinx.coroutines.CoroutineScope
 import org.wordpress.android.mediapicker.R.id
-import org.wordpress.android.util.cancelRequestAndClearImageView
-import org.wordpress.android.util.loadThumbnailFromVideoUrl
+import org.wordpress.android.mediapicker.util.cancelRequestAndClearImageView
+import org.wordpress.android.mediapicker.util.loadThumbnailFromVideoUrl
 
 /*
  * ViewHolder containing a device thumbnail

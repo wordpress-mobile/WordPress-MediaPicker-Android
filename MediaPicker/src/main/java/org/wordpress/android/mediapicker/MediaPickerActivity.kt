@@ -36,7 +36,7 @@ import org.wordpress.android.mediapicker.model.MediaUri
 import org.wordpress.android.mediapicker.util.Log
 import org.wordpress.android.mediapicker.util.asAndroidUri
 import org.wordpress.android.mediapicker.util.asMediaUri
-import org.wordpress.android.util.WPMediaUtils
+import org.wordpress.android.mediapicker.util.MediaUtils
 import java.io.File
 import javax.inject.Inject
 
@@ -147,7 +147,7 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
         val intent: Intent? = when (requestCode) {
             MEDIA_LIBRARY -> {
                 data?.let {
-                    val uris = WPMediaUtils.retrieveMediaUris(data)
+                    val uris = MediaUtils.retrieveMediaUris(data)
                     pickerFragment?.urisSelectedFromSystemPicker(uris)
                     return
                 }
@@ -156,7 +156,7 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
                 try {
                     val intent = Intent()
                     mediaCapturePath!!.let {
-                        WPMediaUtils.scanMediaFile(log,this, it)
+                        MediaUtils.scanMediaFile(log,this, it)
                         val f = File(it)
                         val capturedImageUri = listOf(Uri.fromFile(f).asMediaUri())
                         if (mediaPickerSetup.queueResults) {
@@ -179,7 +179,7 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
                 data?.let {
                     val intent = Intent()
                     // TODO: 20/07/2021 There's a whole ImageEditor module in WPAndroid. Should we import it?
-                    val uris = WPMediaUtils.retrieveImageEditorResult(data)
+                    val uris = MediaUtils.retrieveImageEditorResult(data)
                     if (mediaPickerSetup.queueResults) {
                         intent.putQueuedUris(uris)
                     } else {
@@ -203,7 +203,7 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
     }
 
     private fun launchChooserWithContext(openSystemPicker: OpenSystemPicker) {
-        WPMediaUtils.launchChooserWithContext(this, openSystemPicker, MEDIA_LIBRARY)
+        MediaUtils.launchChooserWithContext(this, openSystemPicker, MEDIA_LIBRARY)
     }
 
     private fun Intent.putUris(
@@ -272,7 +272,7 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
                 startActivityForResult(buildIntent(this, action.mediaPickerSetup), PHOTO_PICKER)
             }
             OpenCameraForPhotos -> {
-                WPMediaUtils.launchCamera(log,this, applicationContext.packageName) { mediaCapturePath = it }
+                MediaUtils.launchCamera(log,this, applicationContext.packageName) { mediaCapturePath = it }
             }
         }
     }

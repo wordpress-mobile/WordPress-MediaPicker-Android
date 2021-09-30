@@ -1,4 +1,4 @@
-package org.wordpress.android.util
+package org.wordpress.android.mediapicker.util
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
@@ -15,6 +15,8 @@ import android.view.animation.LinearInterpolator
 import android.view.animation.RotateAnimation
 import android.view.animation.TranslateAnimation
 import androidx.core.view.isVisible
+import org.wordpress.android.mediapicker.util.AnimUtils.Duration.EXTRA_LONG
+import org.wordpress.android.mediapicker.util.AnimUtils.Duration.SHORT
 
 private const val REPEAT_COUNT_LOOP = -1
 private const val DEGREES_0 = 0f
@@ -39,7 +41,7 @@ object AnimUtils {
         }
     }
 
-    private val DEFAULT_DURATION = Duration.SHORT
+    private val DEFAULT_DURATION = SHORT
 
     fun getFadeInAnim(target: View, animDuration: Duration = DEFAULT_DURATION): ObjectAnimator {
         with(ObjectAnimator.ofFloat(target, View.ALPHA, 0.0f, 1.0f)) {
@@ -188,7 +190,7 @@ object AnimUtils {
         view.isVisible = isVisible
     }
 
-    fun rotate(view: View, duration: Duration = Duration.EXTRA_LONG) {
+    fun rotate(view: View, duration: Duration = EXTRA_LONG) {
         val rotationAnimation: Animation = RotateAnimation(
             DEGREES_0, DEGREES_360,
             Animation.RELATIVE_TO_SELF, PIVOT_CENTER,
