@@ -30,7 +30,7 @@ import org.wordpress.android.mediapicker.MediaPickerRequestCodes.TAKE_PHOTO
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
-import org.wordpress.android.mediapicker.databinding.PhotoPickerActivityBinding
+import org.wordpress.android.mediapicker.databinding.MediaPickerActivityBinding
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 import org.wordpress.android.mediapicker.model.MediaUri
 import org.wordpress.android.mediapicker.util.Log
@@ -72,7 +72,7 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding = PhotoPickerActivityBinding.inflate(layoutInflater)
+        val binding = MediaPickerActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.toolbarMain.setNavigationIcon(R.drawable.ic_close_white_24dp)
         setSupportActionBar(binding.toolbarMain)
