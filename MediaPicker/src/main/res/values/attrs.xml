@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--
+        Actionable Empty View
+    -->
     <declare-styleable name="ActionableEmptyView">
         <!-- Optional: string text of button -->
         <attr name="aevButton" format="string"/>
         <!-- Optional: resource id of image -->
         <attr name="aevImage" format="reference"/>
+        <!-- Optional: defines if image should be hidden in landscape mode -->
+        <attr name="aevImageHiddenInLandscape" format="boolean" />
+        <!-- Optional: string text of subtitle -->
+        <attr name="aevSubtitle" format="string"/>
         <!-- Required: string text of title -->
         <attr name="aevTitle" format="string"/>
-        <!-- Optional: resource id of title style -->
-        <attr name="aevTitleAppearance" format="reference"/>
     </declare-styleable>
 </resources>

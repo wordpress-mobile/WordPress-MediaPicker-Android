@@ -1,17 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="WordPress.ActionBar" parent="ThemeOverlay.AppCompat.DayNight">
-        <item name="android:textColorSecondary">?attr/colorOnSurface</item>
-        <item name="iconTint">?attr/colorOnSurface</item>
-        <item name="colorControlNormal">?attr/colorOnSurface</item>
-        <item name="android:editTextColor">?attr/colorOnSurface</item>
+    <style name="MediaPicker.ActionBar" parent="Theme.MediaPicker">
+        <item name="android:textColorSecondary">?attr/colorOnSecondary</item>
+        <item name="iconTint">?attr/colorOnSecondary</item>
+        <item name="colorControlNormal">?attr/colorOnSecondary</item>
+        <item name="android:editTextColor">?attr/colorOnSecondary</item>
+        <item name="android:textColorHint">?attr/colorOnSecondary</item>
     </style>
 
-    <style name="StatusMessage" parent="Subtitle1"/>
+    <style name="MediaPicker.NoActionBar" parent="Theme.MediaPicker">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
 
-    <style name="Subtitle1">
+    <style name="MediaPicker.SearchView" parent="Widget.AppCompat.Light.SearchView">
+        <item name="submitBackground">?attr/colorPrimary</item>
+        <item name="queryBackground">?attr/colorPrimary</item>
+    </style>
+
+    <style name="MediaPicker.ToolBar" parent="Widget.MaterialComponents.Toolbar.Surface">
+        <item name="titleTextColor">?attr/colorOnSecondary</item>
+        <item name="android:textColor">?attr/colorOnSecondary</item>
+        <item name="android:background">@null</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.DayNight</item>
+        <item name="android:elevation">0dp</item>
+        <item name="colorControlNormal">?attr/colorOnSecondary</item>
+    </style>
+
+    <style name="Subtitle">
         <item name="android:textColor">@color/color_on_surface_high</item>
-        <item name="android:gravity">center_vertical|start</item>
     </style>
 
     <style name="Button.Colored" parent="Widget.MaterialComponents.Button.UnelevatedButton">

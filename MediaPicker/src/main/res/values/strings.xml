@@ -45,4 +45,5 @@
     <string name="button_not_now">Not now</string>
     <string name="media_browse_for_items">Browse for items</string>
     <string name="search">Search</string>
+    <string name="reader_toast_err_url_intent">Unable to open %s</string>
 </resources>
