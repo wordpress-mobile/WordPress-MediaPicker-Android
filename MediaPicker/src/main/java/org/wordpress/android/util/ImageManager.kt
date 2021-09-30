@@ -29,6 +29,7 @@ import com.bumptech.glide.request.target.ViewTarget
 import com.bumptech.glide.request.transition.Transition
 import com.bumptech.glide.signature.ObjectKey
 import dagger.hilt.android.qualifiers.ApplicationContext
+import org.wordpress.android.mediapicker.util.Log
 import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -38,7 +39,8 @@ import javax.inject.Singleton
  */
 
 class ImageManager @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val log: Log
 ) {
     interface RequestListener<T> {
         /**
@@ -167,7 +169,7 @@ class ImageManager @Inject constructor(
         try {
             imageData = Base64.decode(base64ImageData, Base64.DEFAULT)
         } catch (ex: IllegalArgumentException) {
-            AppLog.e(AppLog.T.UTILS, String.format("Cant parse base64 image data:" + ex.message))
+           log.e(String.format("Cant parse base64 image data:" + ex.message))
             return
         }
 
@@ -406,7 +408,7 @@ class ImageManager @Inject constructor(
             ScaleType.FIT_START,
             ScaleType.FIT_XY,
             ScaleType.MATRIX -> {
-                AppLog.e(AppLog.T.UTILS, String.format("ScaleType %s is not supported.", scaleType.toString()))
+               log.e(String.format("ScaleType %s is not supported.", scaleType.toString()))
                 this
             }
         }
@@ -494,7 +496,7 @@ class ImageManager @Inject constructor(
                         requestListener.onResourceReady(resource, model)
                     } else {
                         // according to the Glide's JavaDoc, this shouldn't happen
-                        AppLog.e(AppLog.T.UTILS, "Resource in ImageManager.onResourceReady is null.")
+                       log.e("Resource in ImageManager.onResourceReady is null.")
                         requestListener.onLoadFailed(null, model)
                     }
                     return false

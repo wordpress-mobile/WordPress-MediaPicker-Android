@@ -18,7 +18,7 @@
         tools:ignore="InconsistentLayout"
         android:contentDescription="@string/permission_camera" />
 
-    <org.wordpress.android.util.widgets.CustomSwipeRefreshLayout
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/pullToRefresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -80,5 +80,5 @@
                 tools:visibility="visible" />
 
         </RelativeLayout>
-    </org.wordpress.android.util.widgets.CustomSwipeRefreshLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

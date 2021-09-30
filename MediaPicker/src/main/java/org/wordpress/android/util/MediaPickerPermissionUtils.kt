@@ -8,17 +8,15 @@ import androidx.core.content.ContextCompat
 import org.wordpress.android.mediapicker.viewmodel.ResourceProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.text.Html
-import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
 import androidx.appcompat.app.AlertDialog.Builder
 import androidx.core.app.ActivityCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.DelicateCoroutinesApi
-import org.wordpress.android.util.AppLog.T.UTILS
 import org.wordpress.android.mediapicker.R.string
+import org.wordpress.android.mediapicker.util.Log
 import java.util.HashMap
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -27,7 +25,8 @@ import javax.inject.Singleton
 @Singleton
 class MediaPickerPermissionUtils @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val perms: Permissions
+    private val perms: Permissions,
+    private val log: Log
 ) {
     // permission request codes - note these are reported to analytics so they shouldn't be changed
     companion object {
@@ -152,7 +151,7 @@ class MediaPickerPermissionUtils @Inject constructor(
             Manifest.permission.READ_EXTERNAL_STORAGE -> Permissions.PERMISSION_STORAGE_READ
             Manifest.permission.CAMERA -> Permissions.PERMISSION_CAMERA
             else -> {
-                AppLog.w(UTILS, "No key for requested permission")
+                log.w("No key for requested permission")
                 null
             }
         }
@@ -169,7 +168,7 @@ class MediaPickerPermissionUtils @Inject constructor(
             Manifest.permission.CAMERA -> context.getString(string.permission_camera)
             Manifest.permission.RECORD_AUDIO -> context.getString(string.permission_microphone)
             else -> {
-                AppLog.w(UTILS, "No name for requested permission")
+                log.w("No name for requested permission")
                 context.getString(string.unknown)
             }
         }
@@ -186,7 +185,7 @@ class MediaPickerPermissionUtils @Inject constructor(
             Manifest.permission.CAMERA -> resourceProvider.getString(string.permission_camera)
             Manifest.permission.RECORD_AUDIO -> resourceProvider.getString(string.permission_microphone)
             else -> {
-                AppLog.w(UTILS, "No name for requested permission")
+                log.w("No name for requested permission")
                 resourceProvider.getString(string.unknown)
             }
         }

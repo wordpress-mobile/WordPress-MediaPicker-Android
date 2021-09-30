@@ -10,7 +10,6 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.DelicateCoroutinesApi
 import org.wordpress.android.mediapicker.MediaPickerRequestCodes.IMAGE_EDITOR_EDIT_IMAGE
 import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_LAUNCH_WPSTORIES_CAMERA_REQUESTED
 import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_MEDIA_ID
@@ -36,17 +35,19 @@ import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.databinding.PhotoPickerActivityBinding
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 import org.wordpress.android.mediapicker.model.MediaUri
+import org.wordpress.android.mediapicker.util.Log
 import org.wordpress.android.mediapicker.util.asAndroidUri
 import org.wordpress.android.mediapicker.util.asMediaUri
-import org.wordpress.android.util.AppLog
-import org.wordpress.android.util.AppLog.T.MEDIA
 import org.wordpress.android.util.WPMediaUtils
 import java.io.File
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
     private var mediaCapturePath: String? = null
     private lateinit var mediaPickerSetup: MediaPickerSetup
+
+    @Inject lateinit var log: Log
 
     enum class MediaPickerMediaSource {
         ANDROID_CAMERA, ANDROID_PICKER, APP_PICKER, WP_MEDIA_PICKER, STOCK_MEDIA_PICKER;
@@ -157,7 +158,7 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
                 try {
                     val intent = Intent()
                     mediaCapturePath!!.let {
-                        WPMediaUtils.scanMediaFile(this, it)
+                        WPMediaUtils.scanMediaFile(log,this, it)
                         val f = File(it)
                         val capturedImageUri = listOf(Uri.fromFile(f).asMediaUri())
                         if (mediaPickerSetup.queueResults) {
@@ -172,7 +173,7 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
                     }
                     intent
                 } catch (e: RuntimeException) {
-                    AppLog.e(MEDIA, e)
+                    log.e(e)
                     null
                 }
             }
@@ -281,7 +282,7 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
                 startActivityForResult(buildIntent(this, action.mediaPickerSetup), PHOTO_PICKER)
             }
             OpenCameraForPhotos -> {
-                WPMediaUtils.launchCamera(this, applicationContext.packageName) { mediaCapturePath = it }
+                WPMediaUtils.launchCamera(log,this, applicationContext.packageName) { mediaCapturePath = it }
             }
         }
     }

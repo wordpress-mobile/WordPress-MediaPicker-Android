@@ -16,7 +16,6 @@ class MediaThumbnailViewUtils {
         clickAction: ClickAction,
         animateSelection: Boolean
     ) {
-        addImageSelectedToAccessibilityFocusedEvent(imgThumbnail, isSelected)
         imgThumbnail.setOnClickListener {
             toggleAction.toggle()
             imgThumbnail.announceSelectedImageForAccessibility(isSelected)
@@ -44,7 +43,6 @@ class MediaThumbnailViewUtils {
         val placeholderResId = WPMediaUtils.getPlaceholder(fileName)
         imgThumbnail.setImageResourceWithTint(placeholderResId, R.color.neutral_30)
 
-        addImageSelectedToAccessibilityFocusedEvent(imgThumbnail, isSelected)
         container.setOnClickListener {
             toggleAction.toggle()
             imgThumbnail.announceSelectedImageForAccessibility(isSelected)
@@ -55,29 +53,6 @@ class MediaThumbnailViewUtils {
         }
         container.redirectContextClickToLongPressListener()
         displaySelection(animateSelection, isSelected, container)
-    }
-
-    private fun addImageSelectedToAccessibilityFocusedEvent(
-        imageView: ImageView,
-        isSelected: Boolean
-    ) {
-        AccessibilityUtils.addPopulateAccessibilityEventFocusedListener(
-                imageView
-        ) {
-            val imageSelectedText = imageView.context
-                    .getString(R.string.photo_picker_image_selected)
-            if (isSelected) {
-                if (!imageView.contentDescription.toString().contains(imageSelectedText)) {
-                    imageView.contentDescription = ("${imageView.contentDescription} $imageSelectedText")
-                }
-            } else {
-                imageView.contentDescription = imageView.contentDescription
-                        .toString().replace(
-                                imageSelectedText,
-                                ""
-                        )
-            }
-        }
     }
 
     private fun displaySelection(animate: Boolean, isSelected: Boolean, view: View) {
@@ -133,9 +108,7 @@ class MediaThumbnailViewUtils {
         showOrderCounter: Boolean,
         animateSelection: Boolean
     ) {
-        ViewUtils.addCircularShadowOutline(
-                txtSelectionCount
-        )
+        ViewUtils.addCircularShadowOutline(txtSelectionCount)
         txtSelectionCount.isSelected = isSelected
         updateSelectionCountForPosition(txtSelectionCount, selectedOrder)
         if (!showOrderCounter) {

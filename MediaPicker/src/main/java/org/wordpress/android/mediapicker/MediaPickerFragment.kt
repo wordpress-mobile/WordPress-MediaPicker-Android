@@ -209,8 +209,10 @@ class MediaPickerFragment : Fragment() {
             recycler.setEmptyView(actionableEmptyView)
             recycler.setHasFixedSize(true)
 
-            val swipeToRefreshHelper = WPSwipeToRefreshHelper.buildSwipeToRefreshHelper(pullToRefresh) {
-                viewModel.onPullToRefresh()
+            pullToRefresh.apply {
+                setOnRefreshListener {
+                    viewModel.onPullToRefresh()
+                }
             }
 
             var isShowingActionMode = false
@@ -229,7 +231,7 @@ class MediaPickerFragment : Fragment() {
                         isShowingActionMode = false
                     }
                     setupFab(uiState.fabUiModel)
-                    swipeToRefreshHelper.isRefreshing = uiState.isRefreshing
+                    pullToRefresh.isRefreshing = uiState.isRefreshing
                 }
             })
 
@@ -240,10 +242,6 @@ class MediaPickerFragment : Fragment() {
                                 MediaViewerFragment.previewUrl(
                                     requireActivity(),
                                     navigationEvent.url
-                                )
-                                AccessibilityUtils.setActionModeDoneButtonContentDescription(
-                                        activity,
-                                        getString(R.string.cancel)
                                 )
                             }
 //                            is PreviewMedia -> MediaViewerFragment.previewUrl(

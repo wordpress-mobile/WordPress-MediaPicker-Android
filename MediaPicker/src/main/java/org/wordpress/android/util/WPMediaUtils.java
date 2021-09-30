@@ -8,7 +8,6 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -18,6 +17,7 @@ import org.wordpress.android.mediapicker.MediaPickerFragment;
 import org.wordpress.android.mediapicker.R;
 import org.wordpress.android.mediapicker.model.EditImageData;
 import org.wordpress.android.mediapicker.model.MediaUri;
+import org.wordpress.android.mediapicker.util.Log;
 import org.wordpress.android.mediapicker.util.MediaUriExtKt;
 
 import java.io.File;
@@ -29,9 +29,7 @@ import static org.wordpress.android.mediapicker.MediaPickerConstants.ARG_EDIT_IM
 import static org.wordpress.android.mediapicker.MediaPickerRequestCodes.TAKE_PHOTO;
 
 public class WPMediaUtils {
-
-    private static final String TAG = "MediaPicker";
-
+    
     public interface LaunchCameraCallback {
         void onMediaCapturePathReady(String mediaCapturePath);
     }
@@ -68,21 +66,21 @@ public class WPMediaUtils {
         return Intent.createChooser(intent, context.getString(chooserContext.getTitle()));
     }
 
-    public static void launchCamera(Activity activity, String applicationId, LaunchCameraCallback callback) {
-        Intent intent = prepareLaunchCamera(activity, applicationId, callback);
+    public static void launchCamera(Log log, Activity activity, String applicationId, LaunchCameraCallback callback) {
+        Intent intent = prepareLaunchCamera(log, activity, applicationId, callback);
         if (intent != null) {
             activity.startActivityForResult(intent, TAKE_PHOTO);
         }
     }
 
-    private static Intent prepareLaunchCamera(Context context, String applicationId, LaunchCameraCallback callback) {
+    private static Intent prepareLaunchCamera(Log log, Context context, String applicationId, LaunchCameraCallback callback) {
         String state = Environment.getExternalStorageState();
         if (!state.equals(Environment.MEDIA_MOUNTED)) {
             showSDCardRequiredDialog(context);
             return null;
         } else {
             try {
-                return getLaunchCameraIntent(context, applicationId, callback);
+                return getLaunchCameraIntent(log, context, applicationId, callback);
             } catch (IOException e) {
                 // No need to write log here
                 return null;
@@ -90,7 +88,7 @@ public class WPMediaUtils {
         }
     }
 
-    private static Intent getLaunchCameraIntent(Context context, String applicationId, LaunchCameraCallback callback)
+    private static Intent getLaunchCameraIntent(Log log, Context context, String applicationId, LaunchCameraCallback callback)
             throws IOException {
         File externalStoragePublicDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
         String mediaCapturePath =
@@ -103,7 +101,7 @@ public class WPMediaUtils {
             try {
                 throw new IOException("Path to file could not be created: " + mediaCapturePath);
             } catch (IOException e) {
-                Log.e(TAG, "", e);
+                log.e(e);
                 throw e;
             }
         }
@@ -112,10 +110,10 @@ public class WPMediaUtils {
         try {
             fileUri = FileProvider.getUriForFile(context, applicationId + ".provider", new File(mediaCapturePath));
         } catch (IllegalArgumentException e) {
-            Log.e(TAG, "Cannot access the file planned to store the new media", e);
+            log.e("Cannot access the file planned to store the new media", e);
             throw new IOException("Cannot access the file planned to store the new media");
         } catch (NullPointerException e) {
-            Log.e(TAG, "Cannot access the file planned to store the new media - "
+            log.e("Cannot access the file planned to store the new media - "
                     + "FileProvider.getUriForFile cannot find a valid provider for the authority: "
                     + applicationId + ".provider", e);
             throw new IOException("Cannot access the file planned to store the new media");
@@ -153,10 +151,10 @@ public class WPMediaUtils {
      * the media content provider - use this after capturing or downloading media to ensure
      * that it appears in the stock Gallery app
      */
-    public static void scanMediaFile(@NonNull Context context, @NonNull String localMediaPath) {
+    public static void scanMediaFile(Log log, @NonNull Context context, @NonNull String localMediaPath) {
         MediaScannerConnection.scanFile(context,
                 new String[]{localMediaPath}, null,
-                (path, uri) -> Log.d(TAG, "Media scanner finished scanning " + path));
+                (path, uri) -> log.d("Media scanner finished scanning " + path));
     }
 
 
@@ -171,7 +169,7 @@ public class WPMediaUtils {
      * @return A local {@link Uri} or null if the download failed
      */
     public static @Nullable
-    Uri fetchMedia(@NonNull Context context, @NonNull Uri mediaUri) {
+    Uri fetchMedia(Log log, @NonNull Context context, @NonNull Uri mediaUri) {
         if (MediaUtils.isInMediaStore(mediaUri)) {
             return mediaUri;
         }
@@ -182,7 +180,7 @@ public class WPMediaUtils {
             return MediaUtils.downloadExternalMedia(context, mediaUri);
         } catch (IllegalStateException e) {
             // Ref: https://github.com/wordpress-mobile/WordPress-Android/issues/5823
-            AppLog.e(AppLog.T.UTILS, "Can't download the image at: " + mediaUri.toString()
+            log.e("Can't download the image at: " + mediaUri.toString()
                     + " See issue #5823", e);
 
             return null;

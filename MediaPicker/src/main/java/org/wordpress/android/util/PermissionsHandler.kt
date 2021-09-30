@@ -7,10 +7,12 @@ import org.wordpress.android.mediapicker.R
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
+import org.wordpress.android.mediapicker.util.Log
 import javax.inject.Inject
 
 class PermissionsHandler @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val log: Log
 ) {
     fun hasPermissionsToAccessPhotos(): Boolean {
         return hasCameraPermission() && hasStoragePermission()
@@ -42,7 +44,7 @@ class PermissionsHandler @Inject constructor(
             Manifest.permission.CAMERA -> context.getString(R.string.permission_camera)
             Manifest.permission.RECORD_AUDIO -> context.getString(R.string.permission_microphone)
             else -> {
-                AppLog.w(AppLog.T.UTILS, "No name for requested permission")
+                log.w("No name for requested permission")
                 context.getString(R.string.unknown)
             }
         }

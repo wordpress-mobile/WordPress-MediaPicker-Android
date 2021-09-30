@@ -13,6 +13,7 @@ import org.wordpress.android.mediapicker.api.MediaSourceFactory
 import org.wordpress.android.mediapicker.api.MimeTypeSupportProvider
 import org.wordpress.android.mediapicker.source.devicemedia.DeviceMediaSource.DeviceMediaSourceFactory
 import org.wordpress.android.mediapicker.source.devicemedia.DeviceMediaLoader
+import org.wordpress.android.mediapicker.util.Log
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -47,4 +48,7 @@ abstract class AppModule {
 
     @Binds
     abstract fun bindMimeTypeProvider(mimeTypeProvider: MimeTypeProvider): MimeTypeSupportProvider
+
+    @Binds
+    abstract fun bindLogger(mimeTypeProvider: Logger): Log
 }
