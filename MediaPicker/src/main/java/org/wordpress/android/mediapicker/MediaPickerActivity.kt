@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.mediapicker.MediaPickerRequestCodes.IMAGE_EDITOR_EDIT_IMAGE
-import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_LAUNCH_WPSTORIES_CAMERA_REQUESTED
 import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_MEDIA_ID
 import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_MEDIA_QUEUED_URIS
 import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_MEDIA_SOURCE
@@ -22,7 +21,6 @@ import org.wordpress.android.mediapicker.MediaPickerActivity.MediaPickerMediaSou
 import org.wordpress.android.mediapicker.MediaPickerFragment.Companion.newInstance
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerAction
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerAction.OpenCameraForPhotos
-import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerAction.OpenCameraForWPStories
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerAction.OpenSystemPicker
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerAction.SwitchMediaPicker
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerListener
@@ -50,7 +48,7 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
     @Inject lateinit var log: Log
 
     enum class MediaPickerMediaSource {
-        ANDROID_CAMERA, ANDROID_PICKER, APP_PICKER, WP_MEDIA_PICKER, STOCK_MEDIA_PICKER;
+        ANDROID_CAMERA, APP_PICKER;
 
         companion object {
             fun fromString(strSource: String?): MediaPickerMediaSource? {
@@ -208,13 +206,6 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
         WPMediaUtils.launchChooserWithContext(this, openSystemPicker, MEDIA_LIBRARY)
     }
 
-    private fun launchWPStoriesCamera() {
-        val intent = Intent()
-                .putExtra(EXTRA_LAUNCH_WPSTORIES_CAMERA_REQUESTED, true)
-        setResult(Activity.RESULT_OK, intent)
-        finish()
-    }
-
     private fun Intent.putUris(
         mediaUris: List<MediaUri>
     ) {
@@ -277,7 +268,6 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
             is OpenSystemPicker -> {
                 launchChooserWithContext(action)
             }
-            is OpenCameraForWPStories -> launchWPStoriesCamera()
             is SwitchMediaPicker -> {
                 startActivityForResult(buildIntent(this, action.mediaPickerSetup), PHOTO_PICKER)
             }

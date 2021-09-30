@@ -558,7 +558,7 @@ class MediaPickerViewModelTest : BaseUnitTest() {
     fun `switch media source from DEVICE to WP_MEDIA_LIBRARY`() = test {
         val mediaPickerSetup = singleSelectMediaPickerSetup.copy(
                 availableDataSources = setOf(WP_LIBRARY),
-                cameraSetup = ENABLED
+                allowCameraCapture = ENABLED
         )
         setupViewModel(listOf(), mediaPickerSetup, true)
 
@@ -585,8 +585,8 @@ class MediaPickerViewModelTest : BaseUnitTest() {
                 mediaPickerSetup.copy(
                         primaryDataSource = WP_LIBRARY,
                         availableDataSources = setOf(),
-                        systemPickerEnabled = false,
-                        cameraSetup = HIDDEN
+                        isSystemPickerEnabled = false,
+                        allowCameraCapture = HIDDEN
                 )
         )
     }
@@ -620,7 +620,7 @@ class MediaPickerViewModelTest : BaseUnitTest() {
                         primaryDataSource = STOCK_LIBRARY,
                         availableDataSources = setOf(),
                         defaultSearchView = true,
-                        systemPickerEnabled = false
+                        isSystemPickerEnabled = false
                 )
         )
     }
@@ -913,8 +913,8 @@ class MediaPickerViewModelTest : BaseUnitTest() {
             canMultiselect = canMultiselect,
             requiresStoragePermissions = requiresStoragePermissions,
             allowedTypes = allowedTypes,
-            cameraSetup = cameraSetup,
-            systemPickerEnabled = true,
+            allowCameraCapture = cameraSetup,
+            isSystemPickerEnabled = true,
             editingEnabled = editingEnabled,
             queueResults = false,
             defaultSearchView = false,

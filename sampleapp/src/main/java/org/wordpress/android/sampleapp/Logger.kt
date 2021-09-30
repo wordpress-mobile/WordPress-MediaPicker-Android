@@ -9,7 +9,8 @@ class Logger @Inject constructor() : Log {
     }
 
     override fun e(message: String, throwable: Throwable) {
-        println("$message: ${throwable.stackTrace}")
+        println(message)
+        throwable.printStackTrace()
     }
 
     override fun e(e: Throwable) {

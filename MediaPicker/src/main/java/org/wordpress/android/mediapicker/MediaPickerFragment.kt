@@ -28,7 +28,6 @@ import org.wordpress.android.mediapicker.MediaNavigationEvent.*
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIconType.ANDROID_CHOOSE_FROM_DEVICE
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIconType.CAPTURE_PHOTO
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIconType.SWITCH_SOURCE
-import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIconType.WP_STORIES_CAPTURE
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import org.wordpress.android.mediapicker.model.MediaPickerViewModel.ProgressDialogUiModel.Visible
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
@@ -51,7 +50,6 @@ class MediaPickerFragment : Fragment() {
     enum class MediaPickerIconType {
         ANDROID_CHOOSE_FROM_DEVICE,
         SWITCH_SOURCE,
-        WP_STORIES_CAPTURE,
         CAPTURE_PHOTO;
 
         companion object {
@@ -82,7 +80,6 @@ class MediaPickerFragment : Fragment() {
             val allowMultipleSelection: Boolean
         ) : MediaPickerAction()
 
-        data class OpenCameraForWPStories(val allowMultipleSelection: Boolean) : MediaPickerAction()
         object OpenCameraForPhotos : MediaPickerAction()
         data class SwitchMediaPicker(val mediaPickerSetup: MediaPickerSetup) : MediaPickerAction()
     }
@@ -94,7 +91,6 @@ class MediaPickerFragment : Fragment() {
 
         data class SwitchSource(val dataSource: DataSource) : MediaPickerIcon(SWITCH_SOURCE)
 
-        object WpStoriesCapture : MediaPickerIcon(WP_STORIES_CAPTURE)
         object CapturePhoto : MediaPickerIcon(CAPTURE_PHOTO)
 
         fun toBundle(bundle: Bundle) {
@@ -125,7 +121,6 @@ class MediaPickerFragment : Fragment() {
                         }.toSet()
                         ChooseFromAndroidDevice(allowedTypes)
                     }
-                    WP_STORIES_CAPTURE -> WpStoriesCapture
                     CAPTURE_PHOTO -> CapturePhoto
                     SWITCH_SOURCE -> {
                         val ordinal = bundle.getInt(KEY_LAST_TAPPED_ICON_DATA_SOURCE, -1)

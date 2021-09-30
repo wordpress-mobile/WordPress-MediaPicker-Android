@@ -15,7 +15,6 @@ import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerAction.*
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIcon.*
 import org.wordpress.android.mediapicker.MediaPickerTracker
 import org.wordpress.android.mediapicker.MediaPickerUiItem
-import org.wordpress.android.mediapicker.api.MediaPickerSetup.CameraSetup.*
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.MediaPickerUiItem.*
 import org.wordpress.android.mediapicker.R.drawable
@@ -41,8 +40,6 @@ import org.wordpress.android.mediapicker.model.MediaPickerViewModel.PhotoListUiM
 import org.wordpress.android.mediapicker.model.MediaPickerViewModel.SearchUiModel.Collapsed
 import org.wordpress.android.mediapicker.model.MediaPickerViewModel.SearchUiModel.Expanded
 import org.wordpress.android.mediapicker.model.MediaType.*
-import org.wordpress.android.mediapicker.model.MediaUri
-import org.wordpress.android.mediapicker.model.UiString
 import org.wordpress.android.mediapicker.model.UiString.UiStringRes
 import org.wordpress.android.mediapicker.model.UiString.UiStringText
 import org.wordpress.android.mediapicker.viewmodel.Event
@@ -87,7 +84,7 @@ class MediaPickerViewModel @Inject constructor(
         MediaPickerUiState(
                 buildUiModel(domainModel, selectedIds, softAskRequest, searchExpanded),
                 buildSoftAskView(softAskRequest),
-                FabUiModel(mediaPickerSetup.cameraSetup != HIDDEN && selectedIds.isNullOrEmpty(), this::clickOnCamera),
+                FabUiModel(mediaPickerSetup.allowCameraCapture && selectedIds.isNullOrEmpty(), this::clickOnCamera),
                 buildActionModeUiModel(selectedIds, domainModel?.domainItems),
                 buildSearchUiModel(softAskRequest?.let { !it.show } ?: true, domainModel?.filter, searchExpanded),
                 !domainModel?.domainItems.isNullOrEmpty() && domainModel?.isLoading == true,
@@ -108,7 +105,7 @@ class MediaPickerViewModel @Inject constructor(
         val isSoftAskRequestVisible = softAskRequest?.show ?: false
         val isSearchExpanded = searchExpanded ?: false
         val showActions = !isSoftAskRequestVisible && !isSearchExpanded
-        val showSystemPicker = mediaPickerSetup.systemPickerEnabled && showActions
+        val showSystemPicker = mediaPickerSetup.isSystemPickerEnabled && showActions
 
         return if (showActions && (showSystemPicker || mediaPickerSetup.availableDataSources.isNotEmpty())) {
             val actions = mutableSetOf<BrowseAction>()
@@ -429,25 +426,19 @@ class MediaPickerViewModel @Inject constructor(
 
     private fun clickIcon(icon: MediaPickerIcon) {
         mediaPickerTracker.trackIconClick(icon, mediaPickerSetup)
-        if (icon is WpStoriesCapture || icon is CapturePhoto) {
+        if (icon is CapturePhoto) {
             if (!permissionsHandler.hasPermissionsToAccessPhotos()) {
                 _onPermissionsRequested.value = Event(CAMERA)
                 lastTappedIcon = icon
                 return
             }
         }
-        // Do we need tracking here?; review tracking need.
-
         _onNavigate.postValue(Event(populateIconClickEvent(icon, mediaPickerSetup.canMultiselect)))
     }
 
     private fun clickOnCamera() {
-        when (mediaPickerSetup.cameraSetup) {
-            STORIES -> clickIcon(WpStoriesCapture)
-            ENABLED -> clickIcon(CapturePhoto)
-            HIDDEN -> {
-                // Do nothing
-            }
+        if (mediaPickerSetup.allowCameraCapture) {
+            clickIcon(CapturePhoto)
         }
     }
 
@@ -474,16 +465,15 @@ class MediaPickerViewModel @Inject constructor(
                 }
                 OpenSystemPicker(context, types.toList(), canMultiselect)
             }
-            is WpStoriesCapture -> OpenCameraForWPStories(canMultiselect)
             is CapturePhoto -> OpenCameraForPhotos
             is SwitchSource -> {
                 SwitchMediaPicker(
                         mediaPickerSetup.copy(
                                 primaryDataSource = icon.dataSource,
                                 availableDataSources = setOf(),
-                                systemPickerEnabled = icon.dataSource == DEVICE,
+                                isSystemPickerEnabled = icon.dataSource == DEVICE,
                                 defaultSearchView = false,
-                                cameraSetup = HIDDEN
+                                allowCameraCapture = false
                         )
                 )
             }
