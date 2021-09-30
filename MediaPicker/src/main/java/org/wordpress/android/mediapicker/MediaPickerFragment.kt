@@ -9,11 +9,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
 import android.text.Html
-import android.view.LayoutInflater
-import android.view.MenuItem
+import android.view.*
 import android.view.MenuItem.OnActionExpandListener
-import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AlertDialog.Builder
 import androidx.appcompat.app.AppCompatActivity
@@ -33,16 +30,13 @@ import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIconType
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIconType.SWITCH_SOURCE
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIconType.WP_STORIES_CAPTURE
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
-import org.wordpress.android.mediapicker.model.MediaPickerViewModel.ActionModeUiModel
-import org.wordpress.android.mediapicker.model.MediaPickerViewModel.FabUiModel
-import org.wordpress.android.mediapicker.model.MediaPickerViewModel.PhotoListUiModel
-import org.wordpress.android.mediapicker.model.MediaPickerViewModel.ProgressDialogUiModel
 import org.wordpress.android.mediapicker.model.MediaPickerViewModel.ProgressDialogUiModel.Visible
-import org.wordpress.android.mediapicker.model.MediaPickerViewModel.SoftAskViewUiModel
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.databinding.MediaPickerFragmentBinding
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 import org.wordpress.android.mediapicker.model.MediaPickerViewModel
+import org.wordpress.android.mediapicker.model.MediaPickerViewModel.*
+import org.wordpress.android.mediapicker.model.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction.SYSTEM_PICKER
 import org.wordpress.android.mediapicker.model.MediaType
 import org.wordpress.android.mediapicker.model.MediaUri
 import org.wordpress.android.mediapicker.viewmodel.observeEvent
@@ -287,73 +281,45 @@ class MediaPickerFragment : Fragment() {
         binding = null
     }
 
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//        super.onCreateOptionsMenu(menu, inflater)
-//        inflater.inflate(R.menu.menu_media_picker, menu)
-//
-//        val searchMenuItem = checkNotNull(menu.findItem(R.id.action_search)) {
-//            "Menu does not contain mandatory search item"
-//        }
-//        val browseMenuItem = checkNotNull(menu.findItem(R.id.mnu_browse_item)) {
-//            "Menu does not contain mandatory browse item"
-//        }
-//        val mediaLibraryMenuItem = checkNotNull(menu.findItem(R.id.mnu_choose_from_media_library)) {
-//            "Menu does not contain mandatory media library item"
-//        }
-//        val deviceMenuItem = checkNotNull(menu.findItem(R.id.mnu_choose_from_device)) {
-//            "Menu does not contain device library item"
-//        }
-//        val stockLibraryMenuItem = checkNotNull(menu.findItem(R.id.mnu_choose_from_stock_library)) {
-//            "Menu does not contain mandatory stock library item"
-//        }
-//        val tenorLibraryMenuItem = checkNotNull(menu.findItem(R.id.mnu_choose_from_tenor_library)) {
-//            "Menu does not contain mandatory tenor library item"
-//        }
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu_media_picker, menu)
 
-//        initializeSearchView(searchMenuItem)
-//        viewModel.uiState.observe(viewLifecycleOwner, Observer { uiState ->
-//            val searchView = searchMenuItem.actionView as SearchView
-//
-//            if (uiState.searchUiModel is SearchUiModel.Expanded && !searchMenuItem.isActionViewExpanded) {
-//                searchMenuItem.expandActionView()
-//                searchView.maxWidth = Integer.MAX_VALUE
-//                searchView.setQuery(uiState.searchUiModel.filter, true)
-//                searchView.setOnCloseListener { !uiState.searchUiModel.closeable }
-//            } else if (uiState.searchUiModel is SearchUiModel.Collapsed && searchMenuItem.isActionViewExpanded) {
-//                searchMenuItem.collapseActionView()
-//            }
-//
-//            searchMenuItem.isVisible = uiState.searchUiModel !is SearchUiModel.Hidden
-//
-//            val shownActions = uiState.browseMenuUiModel.shownActions
-//            browseMenuItem.isVisible = shownActions.contains(SYSTEM_PICKER)
-//            mediaLibraryMenuItem.isVisible = shownActions.contains(WP_MEDIA_LIBRARY)
-//            deviceMenuItem.isVisible = shownActions.contains(DEVICE)
-//            stockLibraryMenuItem.isVisible = shownActions.contains(STOCK_LIBRARY)
-//            tenorLibraryMenuItem.isVisible = shownActions.contains(GIF_LIBRARY)
-//        })
-//    }
+        val searchMenuItem = checkNotNull(menu.findItem(R.id.action_search)) {
+            "Menu does not contain mandatory search item"
+        }
+        val browseMenuItem = checkNotNull(menu.findItem(R.id.mnu_browse_item)) {
+            "Menu does not contain mandatory browse item"
+        }
 
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        when (item.itemId) {
-//            R.id.mnu_browse_item -> {
-//                viewModel.onMenuItemClicked(SYSTEM_PICKER)
-//            }
-//            R.id.mnu_choose_from_media_library -> {
-//                viewModel.onMenuItemClicked(WP_MEDIA_LIBRARY)
-//            }
-//            R.id.mnu_choose_from_device -> {
-//                viewModel.onMenuItemClicked(DEVICE)
-//            }
-//            R.id.mnu_choose_from_stock_library -> {
-//                viewModel.onMenuItemClicked(STOCK_LIBRARY)
-//            }
-//            R.id.mnu_choose_from_tenor_library -> {
-//                viewModel.onMenuItemClicked(GIF_LIBRARY)
-//            }
-//        }
-//        return true
-//    }
+        initializeSearchView(searchMenuItem)
+        viewModel.uiState.observe(viewLifecycleOwner, { uiState ->
+            val searchView = searchMenuItem.actionView as SearchView
+
+            if (uiState.searchUiModel is SearchUiModel.Expanded && !searchMenuItem.isActionViewExpanded) {
+                searchMenuItem.expandActionView()
+                searchView.maxWidth = Integer.MAX_VALUE
+                searchView.setQuery(uiState.searchUiModel.filter, true)
+                searchView.setOnCloseListener { !uiState.searchUiModel.closeable }
+            } else if (uiState.searchUiModel is SearchUiModel.Collapsed && searchMenuItem.isActionViewExpanded) {
+                searchMenuItem.collapseActionView()
+            }
+
+            searchMenuItem.isVisible = uiState.searchUiModel !is SearchUiModel.Hidden
+
+            val shownActions = uiState.browseMenuUiModel.shownActions
+            browseMenuItem.isVisible = shownActions.contains(SYSTEM_PICKER)
+        })
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.mnu_browse_item -> {
+                viewModel.onMenuItemClicked(SYSTEM_PICKER)
+            }
+        }
+        return true
+    }
 
     fun urisSelectedFromSystemPicker(uris: List<Uri>) {
         viewModel.urisSelectedFromSystemPicker(uris.map {

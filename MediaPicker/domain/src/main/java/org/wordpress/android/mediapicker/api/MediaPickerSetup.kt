@@ -18,7 +18,7 @@ data class MediaPickerSetup(
     @StringRes val title: Int
 ) {
     enum class DataSource {
-        DEVICE,
+        DEVICE
     }
 
     enum class CameraSetup {

@@ -14,14 +14,12 @@ import android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
 import androidx.appcompat.app.AlertDialog.Builder
 import androidx.core.app.ActivityCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.DelicateCoroutinesApi
 import org.wordpress.android.mediapicker.R.string
 import org.wordpress.android.mediapicker.util.Log
 import java.util.HashMap
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@DelicateCoroutinesApi
 @Singleton
 class MediaPickerPermissionUtils @Inject constructor(
     @ApplicationContext private val context: Context,
