@@ -8,22 +8,27 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import org.wordpress.android.mediapicker.api.MediaSourceFactory
 import org.wordpress.android.mediapicker.api.MimeTypeSupportProvider
 import org.wordpress.android.mediapicker.source.devicemedia.DeviceMediaSource.DeviceMediaSourceFactory
 import org.wordpress.android.mediapicker.source.devicemedia.DeviceMediaLoader
 import org.wordpress.android.mediapicker.util.Log
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class AppModule {
     companion object {
+        @Singleton
         @Provides
         fun provideBackgroundDispatcher(): CoroutineDispatcher {
             return Dispatchers.Default
         }
 
+        @Singleton
         @Provides
         fun provideMediaSourceFactory(
             deviceMediaLoader: DeviceMediaLoader,
@@ -37,12 +42,19 @@ abstract class AppModule {
             )
         }
 
+        @Singleton
         @Provides
         fun provideDeviceMediaLoader(
             @ApplicationContext context: Context,
             mimeTypeSupportProvider: MimeTypeSupportProvider
         ): DeviceMediaLoader {
             return DeviceMediaLoader(context, mimeTypeSupportProvider)
+        }
+
+        @Singleton
+        @Provides
+        fun providesCoroutineScope(dispatcher: CoroutineDispatcher): CoroutineScope {
+            return CoroutineScope(SupervisorJob() + dispatcher)
         }
     }
 

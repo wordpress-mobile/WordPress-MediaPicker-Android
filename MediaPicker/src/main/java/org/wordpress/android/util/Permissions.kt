@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.map
@@ -16,9 +17,11 @@ import javax.inject.Singleton
 
 typealias Key = Preferences.Key<Boolean>
 
-@DelicateCoroutinesApi
 @Singleton
-class Permissions @Inject constructor(@ApplicationContext private val context: Context) {
+class Permissions @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val scope: CoroutineScope
+) {
     companion object {
         val PERMISSION_STORAGE_READ = booleanPreferencesKey("PERMISSION_STORAGE_READ")
         val PERMISSION_CAMERA = booleanPreferencesKey("PERMISSION_CAMERA")
@@ -30,19 +33,19 @@ class Permissions @Inject constructor(@ApplicationContext private val context: C
     operator fun get(key: Key) = map[key] ?: false
 
     fun markAsAsked(key: Key) {
-        GlobalScope.launch {
+        scope.launch {
             savePermissionAsked(key, true)
         }
     }
 
     init {
-        GlobalScope.launch {
+        scope.launch {
             getPermissionAsked(PERMISSION_STORAGE_READ).map {
                 map[PERMISSION_STORAGE_READ] = it
             }
         }
 
-        GlobalScope.launch {
+        scope.launch {
             getPermissionAsked(PERMISSION_CAMERA).map {
                 map[PERMISSION_CAMERA] = it
             }
