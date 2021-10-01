@@ -61,7 +61,7 @@ import org.wordpress.android.mediapicker.model.MediaPickerViewModel
 import org.wordpress.android.mediapicker.source.device.MediaLoader
 import org.wordpress.android.mediapicker.source.device.MediaLoader.DomainModel
 import org.wordpress.android.mediapicker.source.device.MediaLoader.LoadAction
-import org.wordpress.android.mediapicker.source.device.MediaLoaderFactory
+import org.wordpress.android.sampleapp.MediaLoaderFactory
 import org.wordpress.android.ui.photopicker.PermissionsHandler
 import org.wordpress.android.ui.utils.UiString
 import org.wordpress.android.ui.utils.UiString.UiStringRes
@@ -72,7 +72,7 @@ import org.wordpress.android.viewmodel.Event
 import org.wordpress.android.viewmodel.ResourceProvider
 
 class MediaPickerViewModelTest : BaseUnitTest() {
-    @Mock lateinit var mediaLoaderFactory: org.wordpress.android.mediapicker.source.device.MediaLoaderFactory
+    @Mock lateinit var mediaLoaderFactory: org.wordpress.android.sampleapp.MediaLoaderFactory
     @Mock lateinit var mediaLoader: org.wordpress.android.mediapicker.source.device.MediaLoader
     @Mock lateinit var mediaInsertHandlerFactory: MediaInsertHandlerFactory
     @Mock lateinit var mediaInsertHandler: MediaInsertHandler

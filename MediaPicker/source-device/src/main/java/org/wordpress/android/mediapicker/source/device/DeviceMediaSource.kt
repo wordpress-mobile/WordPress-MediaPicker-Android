@@ -12,9 +12,9 @@ import org.wordpress.android.mediapicker.model.MediaType.VIDEO
 import org.wordpress.android.mediapicker.api.MimeTypeSupportProvider
 import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult
 import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult.Empty
-import org.wordpress.android.mediapicker.api.MediaSourceFactory
 import org.wordpress.android.mediapicker.model.MediaItem
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier.LocalUri
+import org.wordpress.android.mediapicker.util.UiString.UiStringText
 
 class DeviceMediaSource(
     private val deviceMediaLoader: DeviceMediaLoader,
@@ -77,7 +77,7 @@ class DeviceMediaSource(
             if (filter.isNullOrEmpty() || mediaItems.isNotEmpty()) {
                 MediaLoadingResult.Success(mediaItems, lastShownTimestamp > 0L)
             } else {
-                Empty("No media matching your search")
+                Empty(UiStringText("No media matching your search"))
             }
         }
     }
@@ -156,12 +156,12 @@ class DeviceMediaSource(
         return this == null || (nextTimestamp != null && this.items.size <= (visibleItems + pageSize))
     }
 
-    class DeviceMediaSourceFactory constructor(
+    class Factory constructor(
         private val deviceMediaLoader: DeviceMediaLoader,
         private val bgDispatcher: CoroutineDispatcher,
         private val mimeTypeSupportProvider: MimeTypeSupportProvider,
-    ) : MediaSourceFactory {
-        override fun build(siteId: Long, mediaTypes: Set<MediaType>): MediaSource {
+    ) {
+        fun build(siteId: Long, mediaTypes: Set<MediaType>): MediaSource {
             return DeviceMediaSource(
                     deviceMediaLoader,
                     siteId,

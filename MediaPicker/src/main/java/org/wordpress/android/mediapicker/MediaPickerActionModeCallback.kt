@@ -12,7 +12,7 @@ import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.Observer
 import org.wordpress.android.mediapicker.model.MediaPickerViewModel
 import org.wordpress.android.mediapicker.model.MediaPickerViewModel.ActionModeUiModel
-import org.wordpress.android.mediapicker.model.UiString
+import org.wordpress.android.mediapicker.util.UiString
 
 class MediaPickerActionModeCallback(private val viewModel: MediaPickerViewModel) : Callback,
     LifecycleOwner {

@@ -17,6 +17,7 @@ import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult.Empt
 import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult.Failure
 import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult.Success
 import org.wordpress.android.mediapicker.model.MediaItem
+import org.wordpress.android.mediapicker.util.UiString
 
 data class MediaLoader(private val mediaSource: MediaSource) {
     suspend fun loadMedia(actions: Channel<LoadAction>): Flow<DomainModel> {
@@ -154,11 +155,11 @@ data class MediaLoader(private val mediaSource: MediaSource) {
         val emptyState: EmptyState? = null
     ) {
         data class EmptyState(
-            val title: String,
-            val htmlSubtitle: String? = null,
+            val title: UiString,
+            val htmlSubtitle: UiString? = null,
             val image: Int? = null,
             val bottomImage: Int? = null,
-            val bottomImageDescription: String? = null,
+            val bottomImageDescription: UiString? = null,
             val isError: Boolean = false
         )
     }

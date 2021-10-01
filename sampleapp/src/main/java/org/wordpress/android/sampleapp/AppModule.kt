@@ -11,10 +11,10 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import org.wordpress.android.mediapicker.api.MediaSourceFactory
 import org.wordpress.android.mediapicker.api.MimeTypeSupportProvider
-import org.wordpress.android.mediapicker.source.device.DeviceMediaSource.DeviceMediaSourceFactory
+import org.wordpress.android.mediapicker.loader.MediaLoaderFactory
 import org.wordpress.android.mediapicker.source.device.DeviceMediaLoader
+import org.wordpress.android.mediapicker.source.device.DeviceMediaSource
 import org.wordpress.android.mediapicker.util.Log
 import javax.inject.Singleton
 
@@ -30,12 +30,12 @@ abstract class AppModule {
 
         @Singleton
         @Provides
-        fun provideMediaSourceFactory(
+        fun provideDeviceMediaSourceFactory(
             deviceMediaLoader: DeviceMediaLoader,
             mimeTypeSupportProvider: MimeTypeSupportProvider,
             coroutineDispatcher: CoroutineDispatcher
-        ): MediaSourceFactory {
-            return DeviceMediaSourceFactory(
+        ): DeviceMediaSource.Factory {
+            return DeviceMediaSource.Factory(
                 deviceMediaLoader,
                 coroutineDispatcher,
                 mimeTypeSupportProvider
@@ -60,6 +60,9 @@ abstract class AppModule {
 
     @Binds
     abstract fun bindMimeTypeProvider(mimeTypeProvider: MimeTypeProvider): MimeTypeSupportProvider
+
+    @Binds
+    abstract fun bindMediaLoaderFactory(sampleMediaLoaderFactory: SampleMediaLoaderFactory): MediaLoaderFactory
 
     @Binds
     abstract fun bindLogger(mimeTypeProvider: Logger): Log

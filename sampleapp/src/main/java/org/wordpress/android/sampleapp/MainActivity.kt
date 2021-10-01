@@ -10,6 +10,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.mediapicker.MediaPickerConstants
 import org.wordpress.android.mediapicker.MediaPickerLauncher
 import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup
+import org.wordpress.android.mediapicker.source.device.GifMediaPickerSetup
 import org.wordpress.android.sampleapp.R.id
 import org.wordpress.android.sampleapp.databinding.ActivityMainBinding
 
@@ -37,7 +38,7 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        binding.button.setOnClickListener {
+        binding.devicePickerButton.setOnClickListener {
             val mediaPickerIntent = MediaPickerLauncher.buildMediaPickerIntent(
                 activity = this,
                 DeviceMediaPickerSetup.build(
@@ -45,6 +46,14 @@ class MainActivity : AppCompatActivity() {
                     isVideoPicker = false,
                     canMultiSelect = true
                 )
+            )
+            resultLauncher.launch(mediaPickerIntent)
+        }
+
+        binding.gifPickerButton.setOnClickListener {
+            val mediaPickerIntent = MediaPickerLauncher.buildMediaPickerIntent(
+                activity = this,
+                GifMediaPickerSetup.build(canMultiSelect = true)
             )
             resultLauncher.launch(mediaPickerIntent)
         }

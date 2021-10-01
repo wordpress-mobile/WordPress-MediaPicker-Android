@@ -6,16 +6,16 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import org.wordpress.android.mediapicker.model.UiString
-import org.wordpress.android.mediapicker.util.AnimUtils.Duration
 import org.wordpress.android.mediapicker.util.AnimUtils.Duration.SHORT
+import org.wordpress.android.mediapicker.util.UiString.UiStringRes
+import org.wordpress.android.mediapicker.util.UiString.UiStringText
 
 class UiHelpers {
     companion object {
         fun getTextOfUiString(context: Context, uiString: UiString): String =
             when (uiString) {
-                is UiString.UiStringRes -> context.getString(uiString.stringRes)
-                is UiString.UiStringText -> uiString.text
+                is UiStringRes -> context.getString(uiString.stringRes)
+                is UiStringText -> uiString.text
             }
 
         fun updateVisibility(view: View, visible: Boolean) {

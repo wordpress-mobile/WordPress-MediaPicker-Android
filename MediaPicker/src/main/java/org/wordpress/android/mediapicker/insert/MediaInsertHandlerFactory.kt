@@ -8,9 +8,11 @@ import javax.inject.Inject
 class MediaInsertHandlerFactory @Inject constructor(
     private val deviceListInsertUseCaseFactory: DeviceListInsertUseCaseFactory,
 ) {
+    // TODO: FIX
     fun build(mediaPickerSetup: MediaPickerSetup): MediaInsertHandler {
         return when (mediaPickerSetup.primaryDataSource) {
             DEVICE -> deviceListInsertUseCaseFactory.build(mediaPickerSetup.queueResults)
+            else -> deviceListInsertUseCaseFactory.build(mediaPickerSetup.queueResults)
         }.toMediaInsertHandler()
     }
 

@@ -29,12 +29,12 @@ class MediaLoaderFactoryTest {
     @Mock lateinit var gifMediaDataSource: GifMediaDataSource
     @Mock lateinit var networkUtilsWrapper: NetworkUtilsWrapper
     @Mock lateinit var site: SiteModel
-    private lateinit var mediaLoaderFactory: org.wordpress.android.mediapicker.source.device.MediaLoaderFactory
+    private lateinit var mediaLoaderFactory: org.wordpress.android.sampleapp.MediaLoaderFactory
 
     @Before
     fun setUp() {
         mediaLoaderFactory =
-            org.wordpress.android.mediapicker.source.device.MediaLoaderFactory(
+            org.wordpress.android.sampleapp.MediaLoaderFactory(
                 deviceListBuilderFactory,
                 mediaLibraryDataSourceFactory,
                 stockMediaDataSource,

@@ -18,7 +18,7 @@ data class MediaPickerSetup(
     @StringRes val title: Int
 ) {
     enum class DataSource {
-        DEVICE
+        DEVICE, GIF_LIBRARY
     }
 
     fun toBundle(bundle: Bundle) {
