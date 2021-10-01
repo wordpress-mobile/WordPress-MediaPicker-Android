@@ -1,5 +1,8 @@
 package org.wordpress.android.mediapicker.util;
 
+import static org.wordpress.android.mediapicker.MediaPickerConstants.ARG_EDIT_IMAGE_DATA;
+import static org.wordpress.android.mediapicker.MediaPickerRequestCodes.TAKE_PHOTO;
+
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.Context;
@@ -22,9 +25,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.wordpress.android.mediapicker.MediaPickerConstants.ARG_EDIT_IMAGE_DATA;
-import static org.wordpress.android.mediapicker.MediaPickerRequestCodes.TAKE_PHOTO;
 
 public class MediaUtils {
     
@@ -153,36 +153,6 @@ public class MediaUtils {
         MediaScannerConnection.scanFile(context,
                 new String[]{localMediaPath}, null,
                 (path, uri) -> log.d("Media scanner finished scanning " + path));
-    }
-
-
-    /**
-     * Downloads the {@code mediaUri} and returns the {@link Uri} for the downloaded file
-     * <p>
-     * If the {@code mediaUri} is already in the the local store, no download will be done and the given
-     * {@code mediaUri} will be returned instead. This may return null if the download fails.
-     * <p>
-     * The current thread is blocked until the download is finished.
-     *
-     * @return A local {@link Uri} or null if the download failed
-     */
-    public static @Nullable
-    Uri fetchMedia(Log log, @NonNull Context context, @NonNull Uri mediaUri) {
-        if (org.wordpress.android.util.MediaUtils.isInMediaStore(mediaUri)) {
-            return mediaUri;
-        }
-
-        try {
-            // Do not download the file in async task. See
-            // https://github.com/wordpress-mobile/WordPress-Android/issues/5818
-            return org.wordpress.android.util.MediaUtils.downloadExternalMedia(context, mediaUri);
-        } catch (IllegalStateException e) {
-            // Ref: https://github.com/wordpress-mobile/WordPress-Android/issues/5823
-            log.e("Can't download the image at: " + mediaUri.toString()
-                    + " See issue #5823", e);
-
-            return null;
-        }
     }
 
     public static List<MediaUri> retrieveImageEditorResult(Intent data) {

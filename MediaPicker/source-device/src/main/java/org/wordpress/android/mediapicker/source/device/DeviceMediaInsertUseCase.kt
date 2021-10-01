@@ -1,15 +1,16 @@
-package org.wordpress.android.mediapicker.insert
+package org.wordpress.android.mediapicker.source.device
 
 import kotlinx.coroutines.flow.flow
-import org.wordpress.android.mediapicker.insert.MediaInsertHandler.InsertModel
+import org.wordpress.android.mediapicker.api.MediaInsertHandler.InsertModel
+import org.wordpress.android.mediapicker.api.MediaInsertUseCase
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier.LocalUri
 import org.wordpress.android.mediapicker.model.MediaUri
-import org.wordpress.android.mediapicker.util.MediaUtilsWrapper
+import org.wordpress.android.mediapicker.util.MediaFetcher
 import javax.inject.Inject
 
-class DeviceListInsertUseCase constructor(
-    private val mediaUtilsWrapper: MediaUtilsWrapper,
+class DeviceMediaInsertUseCase constructor(
+    private val mediaFetcher: MediaFetcher,
     private val queueResults: Boolean
 ) : MediaInsertUseCase {
     override suspend fun insert(identifiers: List<Identifier>) = flow {
@@ -17,7 +18,7 @@ class DeviceListInsertUseCase constructor(
         emit(InsertModel.Progress(actionTitle))
         var failed = false
         val fetchedUris = localUris.mapNotNull { localUri ->
-            val fetchedUri = mediaUtilsWrapper.fetchMedia(localUri.value)
+            val fetchedUri = mediaFetcher.fetchMedia(localUri.uri)
             if (fetchedUri == null) {
                 failed = true
             }
@@ -33,12 +34,12 @@ class DeviceListInsertUseCase constructor(
         }
     }
 
-    class DeviceListInsertUseCaseFactory @Inject constructor(
-        private val mediaUtilsWrapper: MediaUtilsWrapper
+    class DeviceMediaInsertUseCaseFactory @Inject constructor(
+        private val mediaFetcher: MediaFetcher
     ) {
-        fun build(queueResults: Boolean): DeviceListInsertUseCase {
-            return DeviceListInsertUseCase(
-                    mediaUtilsWrapper,
+        fun build(queueResults: Boolean): DeviceMediaInsertUseCase {
+            return DeviceMediaInsertUseCase(
+                    mediaFetcher,
                     queueResults
             )
         }

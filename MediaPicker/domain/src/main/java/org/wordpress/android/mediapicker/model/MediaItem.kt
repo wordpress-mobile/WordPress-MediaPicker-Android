@@ -21,7 +21,7 @@ data class MediaItem(
 
     sealed class Identifier(val type: IdentifierType) : Parcelable {
         @Parcelize
-        data class LocalUri(val value: MediaUri, val queued: Boolean = false) : Identifier(LOCAL_URI)
+        data class LocalUri(val uri: MediaUri, val queued: Boolean = false) : Identifier(LOCAL_URI)
 
         @Parcelize
         data class RemoteId(val value: Long) : Identifier(REMOTE_ID)
@@ -30,6 +30,6 @@ data class MediaItem(
         data class LocalId(val value: Int) : Identifier(LOCAL_ID)
 
         @Parcelize
-        data class GifMediaId(val value: MediaUri, val title: String?) : Identifier(GIF_MEDIA_ID)
+        data class GifMediaId(val uri: MediaUri, val title: String?) : Identifier(GIF_MEDIA_ID)
     }
 }

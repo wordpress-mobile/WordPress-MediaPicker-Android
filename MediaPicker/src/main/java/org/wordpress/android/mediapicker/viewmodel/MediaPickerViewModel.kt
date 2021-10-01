@@ -1,4 +1,4 @@
-package org.wordpress.android.mediapicker.model
+package org.wordpress.android.mediapicker.viewmodel
 
 import android.Manifest.permission
 import androidx.lifecycle.*
@@ -19,35 +19,35 @@ import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.MediaPickerUiItem.*
 import org.wordpress.android.mediapicker.R.drawable
 import org.wordpress.android.mediapicker.R.string
-import org.wordpress.android.mediapicker.model.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction
-import org.wordpress.android.mediapicker.model.MediaPickerViewModel.ProgressDialogUiModel.Hidden
-import org.wordpress.android.mediapicker.model.MediaPickerViewModel.ProgressDialogUiModel.Visible
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.ProgressDialogUiModel.Hidden
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.ProgressDialogUiModel.Visible
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.GIF_LIBRARY
 import org.wordpress.android.mediapicker.api.MimeTypeSupportProvider
-import org.wordpress.android.mediapicker.insert.MediaInsertHandler
-import org.wordpress.android.mediapicker.insert.MediaInsertHandler.InsertModel
-import org.wordpress.android.mediapicker.insert.MediaInsertHandlerFactory
+import org.wordpress.android.mediapicker.api.MediaInsertHandler
+import org.wordpress.android.mediapicker.api.MediaInsertHandler.InsertModel
+import org.wordpress.android.mediapicker.api.MediaInsertHandlerFactory
 import org.wordpress.android.mediapicker.loader.MediaLoader
 import org.wordpress.android.mediapicker.loader.MediaLoader.DomainModel
 import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction
 import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction.NextPage
 import org.wordpress.android.mediapicker.loader.MediaLoaderFactory
+import org.wordpress.android.mediapicker.model.MediaItem
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier.LocalUri
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier.RemoteId
-import org.wordpress.android.mediapicker.model.MediaPickerViewModel.PermissionsRequested.CAMERA
-import org.wordpress.android.mediapicker.model.MediaPickerViewModel.PhotoListUiModel.*
-import org.wordpress.android.mediapicker.model.MediaPickerViewModel.SearchUiModel.Collapsed
-import org.wordpress.android.mediapicker.model.MediaPickerViewModel.SearchUiModel.Expanded
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PermissionsRequested.CAMERA
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PhotoListUiModel.*
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.SearchUiModel.Collapsed
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.SearchUiModel.Expanded
 import org.wordpress.android.mediapicker.model.MediaType.*
+import org.wordpress.android.mediapicker.model.MediaUri
 import org.wordpress.android.mediapicker.util.UiString.UiStringRes
 import org.wordpress.android.mediapicker.util.PermissionsHandler
 import org.wordpress.android.mediapicker.util.UiString
 import org.wordpress.android.mediapicker.util.distinct
 import org.wordpress.android.mediapicker.util.merge
-import org.wordpress.android.mediapicker.viewmodel.Event
-import org.wordpress.android.mediapicker.viewmodel.ResourceProvider
 import javax.inject.Inject
 
 @HiltViewModel
@@ -95,6 +95,9 @@ class MediaPickerViewModel @Inject constructor(
                 progressDialogUiModel ?: Hidden
         )
     }
+
+    val selectedIdentifiers: List<Identifier>
+        get() = _selectedIds.value ?: listOf()
 
     private fun buildSearchUiModel(isVisible: Boolean, filter: String?, searchExpanded: Boolean?): SearchUiModel {
         return when {
@@ -329,14 +332,6 @@ class MediaPickerViewModel @Inject constructor(
         }
     }
 
-    fun numSelected(): Int {
-        return _selectedIds.value?.size ?: 0
-    }
-
-    fun selectedIdentifiers(): List<Identifier> {
-        return _selectedIds.value ?: listOf()
-    }
-
     private fun toggleItem(identifier: Identifier, canMultiselect: Boolean) {
         val updatedUris = _selectedIds.value?.toMutableList() ?: mutableListOf()
         if (updatedUris.contains(identifier)) {
@@ -358,7 +353,7 @@ class MediaPickerViewModel @Inject constructor(
         }
         when (identifier) {
             is LocalUri -> {
-                _onNavigate.postValue(Event(PreviewUrl(identifier.value.toString())))
+                _onNavigate.postValue(Event(PreviewUrl(identifier.uri.toString())))
             }
             is RemoteId -> {
                 siteId?.let {
@@ -370,10 +365,7 @@ class MediaPickerViewModel @Inject constructor(
         }
     }
 
-    fun performInsertAction() {
-        val ids = selectedIdentifiers()
-        insertIdentifiers(ids)
-    }
+    fun performInsertAction() = insertIdentifiers(selectedIdentifiers)
 
     private fun insertIdentifiers(ids: List<Identifier>) {
         var job: Job? = null

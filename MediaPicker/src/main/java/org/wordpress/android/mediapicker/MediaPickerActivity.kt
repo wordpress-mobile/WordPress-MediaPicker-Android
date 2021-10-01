@@ -10,14 +10,12 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.mediapicker.MediaPickerRequestCodes.IMAGE_EDITOR_EDIT_IMAGE
 import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_MEDIA_ID
 import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_MEDIA_QUEUED_URIS
 import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_MEDIA_SOURCE
 import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_MEDIA_URIS
 import org.wordpress.android.mediapicker.MediaPickerConstants.RESULT_IDS
 import org.wordpress.android.mediapicker.MediaPickerActivity.MediaPickerMediaSource.ANDROID_CAMERA
-import org.wordpress.android.mediapicker.MediaPickerActivity.MediaPickerMediaSource.APP_PICKER
 import org.wordpress.android.mediapicker.MediaPickerFragment.Companion.newInstance
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerAction
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerAction.OpenCameraForPhotos
@@ -166,23 +164,6 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
                     null
                 }
             }
-            IMAGE_EDITOR_EDIT_IMAGE -> {
-                data?.let {
-                    val intent = Intent()
-                    // TODO: 20/07/2021 There's a whole ImageEditor module in WPAndroid. Should we import it?
-                    val uris = MediaUtils.retrieveImageEditorResult(data)
-                    if (mediaPickerSetup.queueResults) {
-                        intent.putQueuedUris(uris)
-                    } else {
-                        intent.putUris(uris)
-                    }
-                    intent.putExtra(
-                            EXTRA_MEDIA_SOURCE,
-                            APP_PICKER.name
-                    )
-                    intent
-                }
-            }
             else -> {
                 data
             }
@@ -227,14 +208,17 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
 
     override fun onItemsChosen(identifiers: List<Identifier>) {
         val chosenLocalUris = identifiers.mapNotNull { (it as? Identifier.LocalUri) }
-        val chosenUris = chosenLocalUris.filter { !it.queued }.map { it.value }
-        val queuedUris = chosenLocalUris.filter { it.queued }.map { it.value }
+        val chosenGifUris = identifiers.mapNotNull { (it as? Identifier.GifMediaId) }
+        val chosenUris = chosenLocalUris.filter { !it.queued }.map { it.uri }
+        val queuedUris = chosenLocalUris.filter { it.queued }.map { it.uri }
         val chosenIds = identifiers.mapNotNull { (it as? Identifier.RemoteId)?.value }
         val chosenLocalIds = identifiers.mapNotNull { (it as? Identifier.LocalId)?.value }
 
         val intent = Intent()
         if (!chosenUris.isNullOrEmpty()) {
             intent.putUris(chosenUris)
+        } else if (!chosenGifUris.isNullOrEmpty()) {
+            intent.putUris(chosenGifUris.map { it.uri })
         }
         if (!queuedUris.isNullOrEmpty()) {
             intent.putQueuedUris(queuedUris)

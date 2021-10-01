@@ -20,12 +20,12 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.test
 import org.wordpress.android.mediapicker.MediaItem.Identifier.GifMediaIdentifier
 import org.wordpress.android.mediapicker.MediaItem.Identifier.LocalId
-import org.wordpress.android.mediapicker.insert.MediaInsertHandler.InsertModel.Progress
-import org.wordpress.android.mediapicker.insert.MediaInsertHandler.InsertModel.Success
+import org.wordpress.android.mediapicker.api.MediaInsertHandler.InsertModel.Progress
+import org.wordpress.android.mediapicker.api.MediaInsertHandler.InsertModel.Success
 import org.wordpress.android.util.FluxCUtilsWrapper
 import org.wordpress.android.util.MimeTypeMapUtilsWrapper
 import org.wordpress.android.util.UriWrapper
-import org.wordpress.android.mediapicker.util.MediaUtilsWrapper
+import org.wordpress.android.mediapicker.util.MediaFetcher
 
 @InternalCoroutinesApi
 class GifMediaInsertUseCaseTest : BaseUnitTest() {
@@ -33,7 +33,7 @@ class GifMediaInsertUseCaseTest : BaseUnitTest() {
     @Mock lateinit var site: SiteModel
     @Mock lateinit var dispatcher: Dispatcher
     @Mock lateinit var uriWrapper: UriWrapper
-    @Mock lateinit var mediaUtilsWrapper: MediaUtilsWrapper
+    @Mock lateinit var mediaFetcher: MediaFetcher
     @Mock lateinit var mimeTypeMapUtilsWrapper: MimeTypeMapUtilsWrapper
     @Mock lateinit var fluxCUtilsWrapper: FluxCUtilsWrapper
 
@@ -46,7 +46,7 @@ class GifMediaInsertUseCaseTest : BaseUnitTest() {
                 site,
                 dispatcher,
                 TEST_DISPATCHER,
-                mediaUtilsWrapper,
+                mediaFetcher,
                 fluxCUtilsWrapper,
                 mimeTypeMapUtilsWrapper
         )
@@ -59,7 +59,7 @@ class GifMediaInsertUseCaseTest : BaseUnitTest() {
         val itemToInsert = GifMediaIdentifier(uriWrapper, null)
         val insertedMediaModel = MediaModel().apply { id = 100 }
 
-        whenever(mediaUtilsWrapper.fetchMediaToUriWrapper(any())).thenReturn(mock())
+        whenever(mediaFetcher.fetchMediaToUriWrapper(any())).thenReturn(mock())
         whenever(mimeTypeMapUtilsWrapper.getFileExtensionFromUrl(any())).thenReturn("png")
         val mimeTypeMap: MimeTypeMap = mock()
         whenever(mimeTypeMap.getMimeTypeFromExtension(any())).thenReturn("image/png")

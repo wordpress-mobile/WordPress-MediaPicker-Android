@@ -1,4 +1,4 @@
-package org.wordpress.android.mediapicker.insert
+package org.wordpress.android.mediapicker.api
 
 import kotlinx.coroutines.flow.Flow
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier

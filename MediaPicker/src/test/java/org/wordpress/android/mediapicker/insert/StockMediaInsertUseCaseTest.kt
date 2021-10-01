@@ -4,7 +4,6 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.flow.toList
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -19,7 +18,7 @@ import org.wordpress.android.fluxc.store.StockMediaUploadItem
 import org.wordpress.android.test
 import org.wordpress.android.mediapicker.MediaItem.Identifier
 import org.wordpress.android.mediapicker.MediaItem.Identifier.RemoteId
-import org.wordpress.android.mediapicker.insert.MediaInsertHandler.InsertModel
+import org.wordpress.android.mediapicker.api.MediaInsertHandler.InsertModel
 
 @InternalCoroutinesApi
 class StockMediaInsertUseCaseTest : BaseUnitTest() {

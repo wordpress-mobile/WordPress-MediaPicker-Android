@@ -29,13 +29,13 @@ import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIconType
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIconType.CAPTURE_PHOTO
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIconType.SWITCH_SOURCE
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
-import org.wordpress.android.mediapicker.model.MediaPickerViewModel.ProgressDialogUiModel.Visible
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.ProgressDialogUiModel.Visible
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.databinding.MediaPickerFragmentBinding
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
-import org.wordpress.android.mediapicker.model.MediaPickerViewModel
-import org.wordpress.android.mediapicker.model.MediaPickerViewModel.*
-import org.wordpress.android.mediapicker.model.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction.SYSTEM_PICKER
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.*
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction.SYSTEM_PICKER
 import org.wordpress.android.mediapicker.model.MediaType
 import org.wordpress.android.mediapicker.model.MediaUri
 import org.wordpress.android.mediapicker.util.AnimUtils
@@ -499,7 +499,7 @@ class MediaPickerFragment : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         viewModel.lastTappedIcon?.toBundle(outState)
-        val selectedIds = viewModel.selectedIdentifiers()
+        val selectedIds = viewModel.selectedIdentifiers
         if (selectedIds.isNotEmpty()) {
             outState.putParcelableArrayList(
                 KEY_SELECTED_IDS,

@@ -11,6 +11,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import org.wordpress.android.mediapicker.api.MediaInsertHandlerFactory
 import org.wordpress.android.mediapicker.api.MimeTypeSupportProvider
 import org.wordpress.android.mediapicker.loader.MediaLoaderFactory
 import org.wordpress.android.mediapicker.source.device.DeviceMediaLoader
@@ -62,7 +63,14 @@ abstract class AppModule {
     abstract fun bindMimeTypeProvider(mimeTypeProvider: MimeTypeProvider): MimeTypeSupportProvider
 
     @Binds
-    abstract fun bindMediaLoaderFactory(sampleMediaLoaderFactory: SampleMediaLoaderFactory): MediaLoaderFactory
+    abstract fun bindMediaLoaderFactory(
+        sampleMediaLoaderFactory: SampleMediaLoaderFactory
+    ): MediaLoaderFactory
+
+    @Binds
+    abstract fun bindMediaInsertHandlerFactory(
+        sampleMediaLoaderFactory: SampleMediaInsertHandlerFactory
+    ): MediaInsertHandlerFactory
 
     @Binds
     abstract fun bindLogger(mimeTypeProvider: Logger): Log

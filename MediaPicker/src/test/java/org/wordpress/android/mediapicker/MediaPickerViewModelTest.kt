@@ -38,26 +38,26 @@ import org.wordpress.android.mediapicker.MediaPickerUiItem.FileItem
 import org.wordpress.android.mediapicker.MediaPickerUiItem.NextPageLoader
 import org.wordpress.android.mediapicker.MediaPickerUiItem.PhotoItem
 import org.wordpress.android.mediapicker.MediaPickerUiItem.VideoItem
-import org.wordpress.android.mediapicker.model.MediaPickerViewModel.ActionModeUiModel
-import org.wordpress.android.mediapicker.model.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction
-import org.wordpress.android.mediapicker.model.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction.SYSTEM_PICKER
-import org.wordpress.android.mediapicker.model.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction.WP_MEDIA_LIBRARY
-import org.wordpress.android.mediapicker.model.MediaPickerViewModel.EditActionUiModel
-import org.wordpress.android.mediapicker.model.MediaPickerViewModel.MediaPickerUiState
-import org.wordpress.android.mediapicker.model.MediaPickerViewModel.PhotoListUiModel.Data
-import org.wordpress.android.mediapicker.model.MediaPickerViewModel.PhotoListUiModel.Empty
-import org.wordpress.android.mediapicker.model.MediaPickerViewModel.PhotoListUiModel.Hidden
-import org.wordpress.android.mediapicker.model.MediaPickerViewModel.SearchUiModel
-import org.wordpress.android.mediapicker.model.MediaPickerViewModel.SoftAskViewUiModel
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.ActionModeUiModel
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction.SYSTEM_PICKER
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction.WP_MEDIA_LIBRARY
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.EditActionUiModel
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.MediaPickerUiState
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PhotoListUiModel.Data
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PhotoListUiModel.Empty
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PhotoListUiModel.Hidden
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.SearchUiModel
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.SoftAskViewUiModel
 import org.wordpress.android.mediapicker.MediaType.AUDIO
 import org.wordpress.android.mediapicker.MediaType.DOCUMENT
 import org.wordpress.android.mediapicker.MediaType.IMAGE
 import org.wordpress.android.mediapicker.MediaType.VIDEO
 import org.wordpress.android.mediapicker.R.string
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
-import org.wordpress.android.mediapicker.insert.MediaInsertHandler
-import org.wordpress.android.mediapicker.insert.MediaInsertHandlerFactory
-import org.wordpress.android.mediapicker.model.MediaPickerViewModel
+import org.wordpress.android.mediapicker.api.MediaInsertHandler
+import org.wordpress.android.sampleapp.MediaInsertHandlerFactory
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel
 import org.wordpress.android.mediapicker.source.device.MediaLoader
 import org.wordpress.android.mediapicker.source.device.MediaLoader.DomainModel
 import org.wordpress.android.mediapicker.source.device.MediaLoader.LoadAction
@@ -74,7 +74,7 @@ import org.wordpress.android.viewmodel.ResourceProvider
 class MediaPickerViewModelTest : BaseUnitTest() {
     @Mock lateinit var mediaLoaderFactory: org.wordpress.android.sampleapp.MediaLoaderFactory
     @Mock lateinit var mediaLoader: org.wordpress.android.mediapicker.source.device.MediaLoader
-    @Mock lateinit var mediaInsertHandlerFactory: MediaInsertHandlerFactory
+    @Mock lateinit var mediaInsertHandlerFactory: org.wordpress.android.sampleapp.MediaInsertHandlerFactory
     @Mock lateinit var mediaInsertHandler: MediaInsertHandler
     @Mock lateinit var mediaPickerTracker: MediaPickerTracker
     @Mock lateinit var uriWrapper1: UriWrapper
@@ -760,8 +760,8 @@ class MediaPickerViewModelTest : BaseUnitTest() {
                 }
             }
         }
-        assertThat(viewModel.numSelected()).isEqualTo(selectedItems.size)
-        assertThat(viewModel.selectedIdentifiers()).isEqualTo(selectedItems.map { it.identifier })
+        assertThat(viewModel.selectedIdentifiers.size).isEqualTo(selectedItems.size)
+        assertThat(viewModel.selectedIdentifiers).isEqualTo(selectedItems.map { it.identifier })
         assertSoftAskUiModelHidden()
     }
 
