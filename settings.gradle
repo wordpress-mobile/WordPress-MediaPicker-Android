@@ -27,7 +27,7 @@ pluginManagement {
 rootProject.name = "mediapicker"
 include ':mediapicker',
         ':mediapicker:domain',
-        ':mediapicker:devicemedia-source',
+        ':mediapicker:source-device',
         ':sampleapp'
 
 // Build cache is only enabled for CI, at least for now

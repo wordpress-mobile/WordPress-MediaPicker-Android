@@ -58,10 +58,10 @@ import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.insert.MediaInsertHandler
 import org.wordpress.android.mediapicker.insert.MediaInsertHandlerFactory
 import org.wordpress.android.mediapicker.model.MediaPickerViewModel
-import org.wordpress.android.mediapicker.source.devicemedia.MediaLoader
-import org.wordpress.android.mediapicker.source.devicemedia.MediaLoader.DomainModel
-import org.wordpress.android.mediapicker.source.devicemedia.MediaLoader.LoadAction
-import org.wordpress.android.mediapicker.source.devicemedia.MediaLoaderFactory
+import org.wordpress.android.mediapicker.source.device.MediaLoader
+import org.wordpress.android.mediapicker.source.device.MediaLoader.DomainModel
+import org.wordpress.android.mediapicker.source.device.MediaLoader.LoadAction
+import org.wordpress.android.mediapicker.source.device.MediaLoaderFactory
 import org.wordpress.android.ui.photopicker.PermissionsHandler
 import org.wordpress.android.ui.utils.UiString
 import org.wordpress.android.ui.utils.UiString.UiStringRes
@@ -72,8 +72,8 @@ import org.wordpress.android.viewmodel.Event
 import org.wordpress.android.viewmodel.ResourceProvider
 
 class MediaPickerViewModelTest : BaseUnitTest() {
-    @Mock lateinit var mediaLoaderFactory: org.wordpress.android.mediapicker.source.devicemedia.MediaLoaderFactory
-    @Mock lateinit var mediaLoader: org.wordpress.android.mediapicker.source.devicemedia.MediaLoader
+    @Mock lateinit var mediaLoaderFactory: org.wordpress.android.mediapicker.source.device.MediaLoaderFactory
+    @Mock lateinit var mediaLoader: org.wordpress.android.mediapicker.source.device.MediaLoader
     @Mock lateinit var mediaInsertHandlerFactory: MediaInsertHandlerFactory
     @Mock lateinit var mediaInsertHandler: MediaInsertHandler
     @Mock lateinit var mediaPickerTracker: MediaPickerTracker

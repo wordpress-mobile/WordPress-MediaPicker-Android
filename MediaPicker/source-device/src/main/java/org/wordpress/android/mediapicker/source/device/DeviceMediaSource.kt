@@ -1,4 +1,4 @@
-package org.wordpress.android.mediapicker.source.devicemedia
+package org.wordpress.android.mediapicker.source.device
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async

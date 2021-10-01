@@ -13,8 +13,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import org.wordpress.android.mediapicker.api.MediaSourceFactory
 import org.wordpress.android.mediapicker.api.MimeTypeSupportProvider
-import org.wordpress.android.mediapicker.source.devicemedia.DeviceMediaSource.DeviceMediaSourceFactory
-import org.wordpress.android.mediapicker.source.devicemedia.DeviceMediaLoader
+import org.wordpress.android.mediapicker.source.device.DeviceMediaSource.DeviceMediaSourceFactory
+import org.wordpress.android.mediapicker.source.device.DeviceMediaLoader
 import org.wordpress.android.mediapicker.util.Log
 import javax.inject.Singleton
 

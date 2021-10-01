@@ -1,4 +1,4 @@
-package org.wordpress.android.mediapicker.source.devicemedia
+package org.wordpress.android.mediapicker.source.device
 
 import android.content.ContentResolver
 import android.content.Context

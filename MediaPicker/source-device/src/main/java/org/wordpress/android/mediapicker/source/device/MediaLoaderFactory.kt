@@ -1,10 +1,9 @@
-package org.wordpress.android.mediapicker.source.devicemedia
+package org.wordpress.android.mediapicker.source.device
 
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
-import org.wordpress.android.mediapicker.api.MediaSource
 import org.wordpress.android.mediapicker.loader.MediaLoader
-import org.wordpress.android.mediapicker.source.devicemedia.DeviceMediaSource.DeviceMediaSourceFactory
+import org.wordpress.android.mediapicker.source.device.DeviceMediaSource.DeviceMediaSourceFactory
 import javax.inject.Inject
 
 class MediaLoaderFactory @Inject constructor(
