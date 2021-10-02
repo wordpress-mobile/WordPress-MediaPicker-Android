@@ -1,4 +1,4 @@
-package org.wordpress.android.mediapicker
+package org.wordpress.android.mediapicker.ui
 
 import android.app.Activity
 import android.content.Context
@@ -10,21 +10,24 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.mediapicker.MediaPickerConstants
 import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_MEDIA_ID
 import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_MEDIA_QUEUED_URIS
 import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_MEDIA_SOURCE
 import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_MEDIA_URIS
 import org.wordpress.android.mediapicker.MediaPickerConstants.RESULT_IDS
-import org.wordpress.android.mediapicker.MediaPickerActivity.MediaPickerMediaSource.ANDROID_CAMERA
-import org.wordpress.android.mediapicker.MediaPickerFragment.Companion.newInstance
-import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerAction
-import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerAction.OpenCameraForPhotos
-import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerAction.OpenSystemPicker
-import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerAction.SwitchMediaPicker
-import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerListener
+import org.wordpress.android.mediapicker.ui.MediaPickerActivity.MediaPickerMediaSource.ANDROID_CAMERA
+import org.wordpress.android.mediapicker.ui.MediaPickerFragment.Companion.newInstance
+import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerAction
+import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerAction.OpenCameraForPhotos
+import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerAction.OpenSystemPicker
+import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerAction.SwitchMediaPicker
+import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerListener
 import org.wordpress.android.mediapicker.MediaPickerRequestCodes.MEDIA_LIBRARY
 import org.wordpress.android.mediapicker.MediaPickerRequestCodes.PHOTO_PICKER
 import org.wordpress.android.mediapicker.MediaPickerRequestCodes.TAKE_PHOTO
+import org.wordpress.android.mediapicker.R.drawable
+import org.wordpress.android.mediapicker.R.id
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
@@ -63,7 +66,7 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
         super.onCreate(savedInstanceState)
         val binding = MediaPickerActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.toolbarMain.setNavigationIcon(R.drawable.ic_close_white_24dp)
+        binding.toolbarMain.setNavigationIcon(drawable.ic_close_white_24dp)
         setSupportActionBar(binding.toolbarMain)
         val actionBar = supportActionBar
         if (actionBar != null) {
@@ -80,7 +83,7 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
             fragment = newInstance(this, mediaPickerSetup)
             supportFragmentManager.beginTransaction()
                     .replace(
-                            R.id.fragment_container,
+                        id.fragment_container,
                             fragment,
                             PICKER_FRAGMENT_TAG
                     )
@@ -201,7 +204,7 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
         mediaLocalIds: List<Int>
     ) {
         this.putExtra(
-                MediaPickerConstants.EXTRA_SAVED_MEDIA_MODEL_LOCAL_IDS,
+            MediaPickerConstants.EXTRA_SAVED_MEDIA_MODEL_LOCAL_IDS,
                 mediaLocalIds.toIntArray()
         )
     }

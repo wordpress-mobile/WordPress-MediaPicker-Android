@@ -1,4 +1,4 @@
-package org.wordpress.android.mediapicker.util
+package org.wordpress.android.mediapicker
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -9,10 +9,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 import javax.inject.Singleton
 

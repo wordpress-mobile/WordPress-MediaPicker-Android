@@ -1,9 +1,9 @@
-package org.wordpress.android.mediapicker
+package org.wordpress.android.mediapicker.model
 
-import org.wordpress.android.mediapicker.MediaPickerUiItem.Type.FILE
-import org.wordpress.android.mediapicker.MediaPickerUiItem.Type.NEXT_PAGE_LOADER
-import org.wordpress.android.mediapicker.MediaPickerUiItem.Type.PHOTO
-import org.wordpress.android.mediapicker.MediaPickerUiItem.Type.VIDEO
+import org.wordpress.android.mediapicker.model.MediaPickerUiItem.Type.FILE
+import org.wordpress.android.mediapicker.model.MediaPickerUiItem.Type.NEXT_PAGE_LOADER
+import org.wordpress.android.mediapicker.model.MediaPickerUiItem.Type.PHOTO
+import org.wordpress.android.mediapicker.model.MediaPickerUiItem.Type.VIDEO
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 
 sealed class MediaPickerUiItem(

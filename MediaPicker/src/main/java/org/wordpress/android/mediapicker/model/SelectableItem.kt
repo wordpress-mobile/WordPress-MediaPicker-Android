@@ -1,8 +1,9 @@
-package org.wordpress.android.mediapicker
+package org.wordpress.android.mediapicker.model
 
-import org.wordpress.android.mediapicker.MediaPickerUiItem.FileItem
-import org.wordpress.android.mediapicker.MediaPickerUiItem.PhotoItem
-import org.wordpress.android.mediapicker.MediaPickerUiItem.VideoItem
+import org.wordpress.android.mediapicker.model.MediaPickerUiItem
+import org.wordpress.android.mediapicker.model.MediaPickerUiItem.FileItem
+import org.wordpress.android.mediapicker.model.MediaPickerUiItem.PhotoItem
+import org.wordpress.android.mediapicker.model.MediaPickerUiItem.VideoItem
 
 data class SelectableItem(val isSelected: Boolean, val showOrderCounter: Boolean, val selectedOrder: Int?)
 

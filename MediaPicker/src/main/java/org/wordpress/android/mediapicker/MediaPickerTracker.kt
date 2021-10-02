@@ -3,8 +3,8 @@ package org.wordpress.android.mediapicker
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIcon
-import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIcon.*
+import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerIcon
+import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerIcon.*
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.GIF_LIBRARY

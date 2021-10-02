@@ -1,12 +1,11 @@
-package org.wordpress.android.mediapicker
+package org.wordpress.android.mediapicker.util
 
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import org.wordpress.android.mediapicker.MediaPickerUiItem.ClickAction
-import org.wordpress.android.mediapicker.MediaPickerUiItem.ToggleAction
-import org.wordpress.android.mediapicker.util.*
-import org.wordpress.android.mediapicker.util.MediaUtils
+import org.wordpress.android.mediapicker.R.*
+import org.wordpress.android.mediapicker.model.MediaPickerUiItem.ClickAction
+import org.wordpress.android.mediapicker.model.MediaPickerUiItem.ToggleAction
 import org.wordpress.android.util.*
 import java.util.Locale
 
@@ -43,7 +42,7 @@ class MediaThumbnailViewUtils {
 
         // not an image or video, so show file name and file type
         val placeholderResId = MediaUtils.getPlaceholder(fileName)
-        imgThumbnail.setImageResourceWithTint(placeholderResId, R.color.neutral_30)
+        imgThumbnail.setImageResourceWithTint(placeholderResId, color.neutral_30)
 
         container.setOnClickListener {
             toggleAction.toggle()
@@ -83,7 +82,7 @@ class MediaThumbnailViewUtils {
         if (animate) {
             val duration = txtSelectionCount.context.resources.getInteger(ANI_DURATION).toLong()
             when {
-                showOrderCounter -> txtSelectionCount.startAnimation(R.anim.pop)
+                showOrderCounter -> txtSelectionCount.startAnimation(anim.pop)
                 isSelected -> txtSelectionCount.fadeIn(duration)
                 else -> txtSelectionCount.fadeOut(duration)
             }
@@ -114,7 +113,7 @@ class MediaThumbnailViewUtils {
         txtSelectionCount.isSelected = isSelected
         updateSelectionCountForPosition(txtSelectionCount, selectedOrder)
         if (!showOrderCounter) {
-            txtSelectionCount.setBackgroundResource(R.drawable.media_picker_circle_pressed)
+            txtSelectionCount.setBackgroundResource(drawable.media_picker_circle_pressed)
         }
         displayTextSelectionCount(
                 animateSelection,
@@ -132,6 +131,6 @@ class MediaThumbnailViewUtils {
     companion object {
         private const val SCALE_NORMAL = 1.0f
         private const val SCALE_SELECTED = .8f
-        private val ANI_DURATION = R.integer.config_shortAnimTime
+        private val ANI_DURATION = integer.config_shortAnimTime
     }
 }

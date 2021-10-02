@@ -16,7 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import org.wordpress.android.mediapicker.MediaPickerFragment;
+import org.wordpress.android.mediapicker.ui.MediaPickerFragment;
 import org.wordpress.android.mediapicker.R;
 import org.wordpress.android.mediapicker.model.EditImageData;
 import org.wordpress.android.mediapicker.model.MediaUri;

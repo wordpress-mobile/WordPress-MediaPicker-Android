@@ -13,10 +13,9 @@ import android.net.Uri
 import android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
 import androidx.appcompat.app.AlertDialog.Builder
 import androidx.core.app.ActivityCompat
-import dagger.hilt.android.qualifiers.ApplicationContext
+import org.wordpress.android.mediapicker.Key
+import org.wordpress.android.mediapicker.Permissions
 import org.wordpress.android.mediapicker.R.string
-import org.wordpress.android.mediapicker.util.Log
-import org.wordpress.android.mediapicker.util.Permissions.Companion
 import java.util.HashMap
 import javax.inject.Inject
 import javax.inject.Singleton

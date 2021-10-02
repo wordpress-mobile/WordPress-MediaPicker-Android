@@ -1,10 +1,13 @@
-package org.wordpress.android.mediapicker
+package org.wordpress.android.mediapicker.ui.viewholder
 
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import kotlinx.coroutines.CoroutineScope
 import org.wordpress.android.mediapicker.R.id
+import org.wordpress.android.mediapicker.R.layout
+import org.wordpress.android.mediapicker.model.MediaPickerUiItem
+import org.wordpress.android.mediapicker.util.MediaThumbnailViewUtils
 import org.wordpress.android.mediapicker.util.cancelRequestAndClearImageView
 import org.wordpress.android.mediapicker.util.loadThumbnailFromVideoUrl
 
@@ -17,7 +20,7 @@ class VideoThumbnailViewHolder(
     private val coroutineScope: CoroutineScope
 ) : ThumbnailViewHolder(
                 parent,
-                R.layout.media_picker_thumbnail_item
+    layout.media_picker_thumbnail_item
         ) {
     private val imgThumbnail: ImageView = itemView.findViewById(id.image_thumbnail)
     private val txtSelectionCount: TextView = itemView.findViewById(id.text_selection_count)

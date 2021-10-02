@@ -1,4 +1,4 @@
-package org.wordpress.android.mediapicker
+package org.wordpress.android.mediapicker.ui
 
 import android.Manifest.permission.CAMERA
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
@@ -24,20 +24,19 @@ import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.mediapicker.MediaNavigationEvent.*
-import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIconType.ANDROID_CHOOSE_FROM_DEVICE
-import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIconType.CAPTURE_PHOTO
-import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIconType.SWITCH_SOURCE
+import org.wordpress.android.mediapicker.model.MediaNavigationEvent.*
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.ProgressDialogUiModel.Visible
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.databinding.MediaPickerFragmentBinding
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
+import org.wordpress.android.mediapicker.model.MediaPickerUiItem
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.*
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction.SYSTEM_PICKER
 import org.wordpress.android.mediapicker.model.MediaType
 import org.wordpress.android.mediapicker.model.MediaUri
+import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerIconType.*
 import org.wordpress.android.mediapicker.util.AnimUtils
 import org.wordpress.android.mediapicker.viewmodel.observeEvent
 import org.wordpress.android.mediapicker.util.AnimUtils.Duration.MEDIUM
@@ -69,11 +68,16 @@ class MediaPickerFragment : Fragment() {
         val title: Int,
         val mediaTypeFilter: String
     ) {
-        PHOTO(ACTION_GET_CONTENT, R.string.pick_photo, "image/*"),
-        VIDEO(ACTION_GET_CONTENT, R.string.pick_video, "video/*"),
-        PHOTO_OR_VIDEO(ACTION_GET_CONTENT, R.string.pick_media, "*/*"),
-        AUDIO(ACTION_GET_CONTENT, R.string.pick_audio, "*/*"),
-        MEDIA_FILE(ACTION_OPEN_DOCUMENT, R.string.pick_file, "*/*");
+        PHOTO(ACTION_GET_CONTENT,
+            _root_ide_package_.org.wordpress.android.mediapicker.R.string.pick_photo, "image/*"),
+        VIDEO(ACTION_GET_CONTENT,
+            _root_ide_package_.org.wordpress.android.mediapicker.R.string.pick_video, "video/*"),
+        PHOTO_OR_VIDEO(ACTION_GET_CONTENT,
+            _root_ide_package_.org.wordpress.android.mediapicker.R.string.pick_media, "*/*"),
+        AUDIO(ACTION_GET_CONTENT,
+            _root_ide_package_.org.wordpress.android.mediapicker.R.string.pick_audio, "*/*"),
+        MEDIA_FILE(ACTION_OPEN_DOCUMENT,
+            _root_ide_package_.org.wordpress.android.mediapicker.R.string.pick_file, "*/*");
     }
 
     sealed class MediaPickerAction {
@@ -116,9 +120,15 @@ class MediaPickerFragment : Fragment() {
             fun fromBundle(bundle: Bundle): MediaPickerIcon? {
                 val iconTypeName = bundle.getString(KEY_LAST_TAPPED_ICON) ?: return null
 
-                return when (iconTypeName.let { MediaPickerIconType.fromNameString(iconTypeName) }) {
+                return when (iconTypeName.let {
+                    _root_ide_package_.org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerIconType.fromNameString(
+                        iconTypeName
+                    )
+                }) {
                     ANDROID_CHOOSE_FROM_DEVICE -> {
-                        val allowedTypes = (bundle.getStringArrayList(KEY_LAST_TAPPED_ICON_ALLOWED_TYPES)
+                        val allowedTypes = (bundle.getStringArrayList(
+                            KEY_LAST_TAPPED_ICON_ALLOWED_TYPES
+                        )
                                 ?: listOf<String>()).map {
                             MediaType.valueOf(it)
                         }.toSet()
@@ -166,7 +176,7 @@ class MediaPickerFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(
-                R.layout.media_picker_fragment,
+            _root_ide_package_.org.wordpress.android.mediapicker.R.layout.media_picker_fragment,
                 container,
                 false
         )
@@ -179,7 +189,10 @@ class MediaPickerFragment : Fragment() {
         var selectedIds: List<Identifier> = emptyList()
         var lastTappedIcon: MediaPickerIcon? = null
         if (savedInstanceState != null) {
-            lastTappedIcon = MediaPickerIcon.fromBundle(savedInstanceState)
+            lastTappedIcon =
+                _root_ide_package_.org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerIcon.fromBundle(
+                    savedInstanceState
+                )
             if (savedInstanceState.containsKey(KEY_SELECTED_IDS)) {
                 selectedIds = savedInstanceState.getParcelableArrayList<Identifier>(
                     KEY_SELECTED_IDS
@@ -215,9 +228,9 @@ class MediaPickerFragment : Fragment() {
                     if (uiState.actionModeUiModel is ActionModeUiModel.Visible && !isShowingActionMode) {
                         isShowingActionMode = true
                         (activity as AppCompatActivity).startSupportActionMode(
-                                MediaPickerActionModeCallback(
-                                        viewModel
-                                )
+                            MediaPickerActionModeCallback(
+                                viewModel
+                            )
                         )
                     } else if (uiState.actionModeUiModel is ActionModeUiModel.Hidden && isShowingActionMode) {
                         isShowingActionMode = false
@@ -270,12 +283,12 @@ class MediaPickerFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu_media_picker, menu)
+        inflater.inflate(_root_ide_package_.org.wordpress.android.mediapicker.R.menu.menu_media_picker, menu)
 
-        val searchMenuItem = checkNotNull(menu.findItem(R.id.action_search)) {
+        val searchMenuItem = checkNotNull(menu.findItem(_root_ide_package_.org.wordpress.android.mediapicker.R.id.action_search)) {
             "Menu does not contain mandatory search item"
         }
-        val browseMenuItem = checkNotNull(menu.findItem(R.id.mnu_browse_item)) {
+        val browseMenuItem = checkNotNull(menu.findItem(_root_ide_package_.org.wordpress.android.mediapicker.R.id.mnu_browse_item)) {
             "Menu does not contain mandatory browse item"
         }
 
@@ -301,7 +314,7 @@ class MediaPickerFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.mnu_browse_item -> {
+            _root_ide_package_.org.wordpress.android.mediapicker.R.id.mnu_browse_item -> {
                 viewModel.onMenuItemClicked(SYSTEM_PICKER)
             }
         }
@@ -423,7 +436,10 @@ class MediaPickerFragment : Fragment() {
 
     private fun MediaPickerFragmentBinding.setupAdapter(items: List<MediaPickerUiItem>) {
         if (recycler.adapter == null) {
-            recycler.adapter = MediaPickerAdapter(lifecycleScope)
+            recycler.adapter =
+                MediaPickerAdapter(
+                    lifecycleScope
+                )
         }
         val adapter = recycler.adapter as MediaPickerAdapter
 
@@ -460,9 +476,9 @@ class MediaPickerFragment : Fragment() {
                         if (progressDialog == null || progressDialog?.isShowing == false) {
                             val builder: Builder = MaterialAlertDialogBuilder(requireContext())
                             builder.setTitle(this.title)
-                            builder.setView(R.layout.media_picker_progress_dialog)
+                            builder.setView(_root_ide_package_.org.wordpress.android.mediapicker.R.layout.media_picker_progress_dialog)
                             builder.setNegativeButton(
-                                    R.string.cancel
+                                _root_ide_package_.org.wordpress.android.mediapicker.R.string.cancel
                             ) { _, _ -> this.cancelAction() }
                             builder.setOnCancelListener { this.cancelAction() }
                             builder.setCancelable(true)

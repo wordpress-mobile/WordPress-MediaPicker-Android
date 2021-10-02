@@ -1,16 +1,19 @@
-package org.wordpress.android.mediapicker
+package org.wordpress.android.mediapicker.ui
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import kotlinx.coroutines.CoroutineScope
-import org.wordpress.android.mediapicker.MediaPickerAdapterDiffCallback.Payload.COUNT_CHANGE
-import org.wordpress.android.mediapicker.MediaPickerAdapterDiffCallback.Payload.SELECTION_CHANGE
-import org.wordpress.android.mediapicker.MediaPickerUiItem.FileItem
-import org.wordpress.android.mediapicker.MediaPickerUiItem.NextPageLoader
-import org.wordpress.android.mediapicker.MediaPickerUiItem.PhotoItem
-import org.wordpress.android.mediapicker.MediaPickerUiItem.Type
-import org.wordpress.android.mediapicker.MediaPickerUiItem.VideoItem
+import org.wordpress.android.mediapicker.ui.MediaPickerAdapterDiffCallback.Payload.COUNT_CHANGE
+import org.wordpress.android.mediapicker.ui.MediaPickerAdapterDiffCallback.Payload.SELECTION_CHANGE
+import org.wordpress.android.mediapicker.model.MediaPickerUiItem
+import org.wordpress.android.mediapicker.model.MediaPickerUiItem.FileItem
+import org.wordpress.android.mediapicker.model.MediaPickerUiItem.NextPageLoader
+import org.wordpress.android.mediapicker.model.MediaPickerUiItem.PhotoItem
+import org.wordpress.android.mediapicker.model.MediaPickerUiItem.Type
+import org.wordpress.android.mediapicker.model.MediaPickerUiItem.VideoItem
+import org.wordpress.android.mediapicker.ui.viewholder.*
+import org.wordpress.android.mediapicker.util.MediaThumbnailViewUtils
 
 class MediaPickerAdapter internal constructor(
     private val coroutineScope: CoroutineScope

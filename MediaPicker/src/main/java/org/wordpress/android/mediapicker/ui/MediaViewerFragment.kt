@@ -1,4 +1,4 @@
-package org.wordpress.android.mediapicker
+package org.wordpress.android.mediapicker.ui
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -16,12 +16,14 @@ import com.bumptech.glide.request.RequestListener
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.mediapicker.databinding.FragmentMediaViewerBinding
 import androidx.appcompat.app.AppCompatActivity
+import org.wordpress.android.mediapicker.R.id
+import org.wordpress.android.mediapicker.R.layout
 
 /**
  * Fullscreen single image viewer
  */
 @AndroidEntryPoint
-class MediaViewerFragment : Fragment(R.layout.fragment_media_viewer),
+class MediaViewerFragment : Fragment(layout.fragment_media_viewer),
     RequestListener<Drawable> {
     companion object {
         const val IMAGE_URL_KEY = "image_url_key"
@@ -33,7 +35,7 @@ class MediaViewerFragment : Fragment(R.layout.fragment_media_viewer),
             fragment.arguments = Bundle().apply { putString(IMAGE_URL_KEY, url) }
             activity.supportFragmentManager.beginTransaction()
                 .add(
-                    R.id.fragment_container,
+                    id.fragment_container,
                     fragment,
                     VIEWER_FRAGMENT_TAG
                 )

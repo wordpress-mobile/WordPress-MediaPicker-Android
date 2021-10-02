@@ -1,4 +1,4 @@
-package org.wordpress.android.mediapicker
+package org.wordpress.android.mediapicker.ui
 
 import android.view.Menu
 import android.view.MenuItem
@@ -10,6 +10,8 @@ import androidx.lifecycle.Lifecycle.Event.ON_STOP
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.Observer
+import org.wordpress.android.mediapicker.R
+import org.wordpress.android.mediapicker.R.id
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.ActionModeUiModel
 import org.wordpress.android.mediapicker.util.UiString
@@ -54,7 +56,7 @@ class MediaPickerActionModeCallback(private val viewModel: MediaPickerViewModel)
         item: MenuItem
     ): Boolean {
         return when (item.itemId) {
-            R.id.mnu_confirm_selection -> {
+            id.mnu_confirm_selection -> {
                 viewModel.performInsertAction()
                 true
             }

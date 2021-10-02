@@ -1,4 +1,4 @@
-package org.wordpress.android.mediapicker
+package org.wordpress.android.mediapicker.ui.viewholder
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

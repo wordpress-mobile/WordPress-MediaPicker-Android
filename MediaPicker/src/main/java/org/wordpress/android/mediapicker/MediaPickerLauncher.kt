@@ -3,6 +3,7 @@ package org.wordpress.android.mediapicker
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
+import org.wordpress.android.mediapicker.ui.MediaPickerActivity
 
 class MediaPickerLauncher {
     companion object {
