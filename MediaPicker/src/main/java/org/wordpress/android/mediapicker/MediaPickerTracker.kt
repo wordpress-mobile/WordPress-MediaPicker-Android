@@ -1,112 +1,114 @@
 package org.wordpress.android.mediapicker
 
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIcon
+import org.wordpress.android.mediapicker.MediaPickerFragment.MediaPickerIcon.*
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.GIF_LIBRARY
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
+import org.wordpress.android.mediapicker.model.MediaItem.Identifier.LocalUri
+import org.wordpress.android.mediapicker.util.Tracker
+import org.wordpress.android.mediapicker.util.Tracker.Stat.*
+import org.wordpress.android.util.MediaUtils
 import javax.inject.Inject
 
 class MediaPickerTracker @Inject constructor(
-//    @Named(BG_THREAD) private val bgDispatcher: CoroutineDispatcher,
-//    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-//    private val analyticsUtilsWrapper: AnalyticsUtilsWrapper
+    private val bgDispatcher: CoroutineDispatcher,
+    private val tracker: Tracker
 ) {
     suspend fun trackPreview(isVideo: Boolean, identifier: Identifier, mediaPickerSetup: MediaPickerSetup) {
-//        withContext(bgDispatcher) {
-//            val properties = if (identifier is LocalUri) {
-//                analyticsUtilsWrapper.getMediaProperties(
-//                    isVideo,
-//                    identifier.value,
-//                    null
-//                )
-//            } else {
-//                mutableMapOf()
-//            }
-//            properties.addMediaPickerProperties(mediaPickerSetup)
-//            properties["is_video"] = isVideo
-//            analyticsTrackerWrapper.track(MEDIA_PICKER_PREVIEW_OPENED, properties)
-//        }
+        withContext(bgDispatcher) {
+            val properties: MutableMap<String, Any?> = getMediaProperties(identifier)
+            properties.addMediaPickerProperties(mediaPickerSetup)
+            properties["is_video"] = isVideo
+            tracker.track(MEDIA_PICKER_PREVIEW_OPENED, properties)
+        }
     }
 
     suspend fun trackItemsPicked(identifiers: List<Identifier>, mediaPickerSetup: MediaPickerSetup) {
-//        withContext(bgDispatcher) {
-//            launch {
-//                val isMultiselection = identifiers.size > 1
-//                for (identifier in identifiers) {
-//                    val isVideo =
-//                        org.wordpress.android.util.MediaUtils.isVideo(identifier.toString())
-//                    val properties = if (identifier is LocalUri) {
-//                        analyticsUtilsWrapper.getMediaProperties(
-//                            isVideo,
-//                            identifier.value,
-//                            null
-//                        )
-//                    } else {
-//                        mutableMapOf()
-//                    }
-//                    properties["is_part_of_multiselection"] = isMultiselection
-//                    if (isMultiselection) {
-//                        properties["number_of_media_selected"] = identifiers.size
-//                    }
-//                    properties.addMediaPickerProperties(mediaPickerSetup)
-//                    analyticsTrackerWrapper.track(MEDIA_PICKER_RECENT_MEDIA_SELECTED, properties)
-//                }
-//            }
-//        }
+        withContext(bgDispatcher) {
+            launch {
+                val isMultiSelection = identifiers.size > 1
+                for (identifier in identifiers) {
+                    val properties: MutableMap<String, Any?> = getMediaProperties(identifier)
+                    properties["is_part_of_multiselection"] = isMultiSelection
+                    if (isMultiSelection) {
+                        properties["number_of_media_selected"] = identifiers.size
+                    }
+                    properties.addMediaPickerProperties(mediaPickerSetup)
+                    tracker.track(MEDIA_PICKER_RECENT_MEDIA_SELECTED, properties)
+                }
+            }
+        }
+    }
+
+    private fun getMediaProperties(identifier: Identifier): MutableMap<String, Any?> {
+        val properties: MutableMap<String, Any?> = if (identifier is LocalUri) {
+            val isVideo = MediaUtils.isVideo(identifier.toString())
+            mutableMapOf("is_video" to isVideo, "uri" to identifier.uri)
+        } else {
+            mutableMapOf()
+        }
+        return properties
     }
 
     fun trackIconClick(icon: MediaPickerIcon, mediaPickerSetup: MediaPickerSetup) {
-//        when (icon) {
-//            is WpStoriesCapture -> analyticsTrackerWrapper.track(
-//                    MEDIA_PICKER_OPEN_WP_STORIES_CAPTURE,
-//                    mediaPickerSetup.toProperties()
-//            )
-//            is ChooseFromAndroidDevice -> analyticsTrackerWrapper.track(
-//                    MEDIA_PICKER_OPEN_DEVICE_LIBRARY,
-//                    mediaPickerSetup.toProperties()
-//            )
-//            is SwitchSource -> {
-//                val event = when (icon.dataSource) {
-//                    DEVICE -> MEDIA_PICKER_OPEN_DEVICE_LIBRARY
-//                }
-//                analyticsTrackerWrapper.track(event, mediaPickerSetup.toProperties())
-//            }
-//        }
+        when (icon) {
+            is ChooseFromAndroidDevice -> tracker.track(
+                    MEDIA_PICKER_OPEN_DEVICE_LIBRARY,
+                    mediaPickerSetup.toProperties()
+            )
+            is SwitchSource -> {
+                val event = when (icon.dataSource) {
+                    DEVICE -> MEDIA_PICKER_OPEN_DEVICE_LIBRARY
+                    GIF_LIBRARY -> MEDIA_PICKER_OPEN_GIF_LIBRARY
+                }
+                tracker.track(event, mediaPickerSetup.toProperties())
+            }
+            is CapturePhoto -> {
+                tracker.track(
+                    MEDIA_PICKER_CAPTURE_PHOTO,
+                    mediaPickerSetup.toProperties()
+                )
+            }
+        }
     }
 
     fun trackSearch(mediaPickerSetup: MediaPickerSetup) {
-//        analyticsTrackerWrapper.track(MEDIA_PICKER_SEARCH_TRIGGERED, mediaPickerSetup.toProperties())
+        tracker.track(MEDIA_PICKER_SEARCH_TRIGGERED, mediaPickerSetup.toProperties())
     }
 
     fun trackSearchExpanded(mediaPickerSetup: MediaPickerSetup) {
-//        analyticsTrackerWrapper.track(MEDIA_PICKER_SEARCH_EXPANDED, mediaPickerSetup.toProperties())
+        tracker.track(MEDIA_PICKER_SEARCH_EXPANDED, mediaPickerSetup.toProperties())
     }
 
     fun trackSearchCollapsed(mediaPickerSetup: MediaPickerSetup) {
-//        analyticsTrackerWrapper.track(MEDIA_PICKER_SEARCH_COLLAPSED, mediaPickerSetup.toProperties())
+        tracker.track(MEDIA_PICKER_SEARCH_COLLAPSED, mediaPickerSetup.toProperties())
     }
 
     fun trackShowPermissionsScreen(mediaPickerSetup: MediaPickerSetup, isAlwaysDenied: Boolean) {
         val properties = mediaPickerSetup.toProperties()
         properties["always_denied"] = isAlwaysDenied
-//        analyticsTrackerWrapper.track(MEDIA_PICKER_SHOW_PERMISSIONS_SCREEN, properties)
+        tracker.track(MEDIA_PICKER_SHOW_PERMISSIONS_SCREEN, properties)
     }
 
     fun trackItemSelected(mediaPickerSetup: MediaPickerSetup) {
-//        analyticsTrackerWrapper.track(MEDIA_PICKER_ITEM_SELECTED, mediaPickerSetup.toProperties())
+        tracker.track(MEDIA_PICKER_ITEM_SELECTED, mediaPickerSetup.toProperties())
     }
 
     fun trackItemUnselected(mediaPickerSetup: MediaPickerSetup) {
-//        analyticsTrackerWrapper.track(MEDIA_PICKER_ITEM_UNSELECTED, mediaPickerSetup.toProperties())
+        tracker.track(MEDIA_PICKER_ITEM_UNSELECTED, mediaPickerSetup.toProperties())
     }
 
     fun trackSelectionCleared(mediaPickerSetup: MediaPickerSetup) {
-//        analyticsTrackerWrapper.track(MEDIA_PICKER_SELECTION_CLEARED, mediaPickerSetup.toProperties())
+        tracker.track(MEDIA_PICKER_SELECTION_CLEARED, mediaPickerSetup.toProperties())
     }
 
     fun trackMediaPickerOpened(mediaPickerSetup: MediaPickerSetup) {
-//        analyticsTrackerWrapper.track(MEDIA_PICKER_OPENED, mediaPickerSetup.toProperties())
+        tracker.track(MEDIA_PICKER_OPENED, mediaPickerSetup.toProperties())
     }
 
     private fun MutableMap<String, Any?>.addMediaPickerProperties(

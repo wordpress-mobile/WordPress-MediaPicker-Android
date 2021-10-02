@@ -17,6 +17,7 @@ import org.wordpress.android.mediapicker.loader.MediaLoaderFactory
 import org.wordpress.android.mediapicker.source.device.DeviceMediaLoader
 import org.wordpress.android.mediapicker.source.device.DeviceMediaSource
 import org.wordpress.android.mediapicker.util.Log
+import org.wordpress.android.mediapicker.util.Tracker
 import javax.inject.Singleton
 
 @Module
@@ -74,4 +75,7 @@ abstract class AppModule {
 
     @Binds
     abstract fun bindLogger(mimeTypeProvider: Logger): Log
+
+    @Binds
+    abstract fun bindTracker(tracker: SampleTracker): Tracker
 }
