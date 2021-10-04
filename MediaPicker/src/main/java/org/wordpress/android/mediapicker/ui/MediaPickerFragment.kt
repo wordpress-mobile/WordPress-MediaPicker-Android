@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.mediapicker.R
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.*
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.ProgressDialogUiModel.Visible
@@ -69,15 +70,15 @@ class MediaPickerFragment : Fragment() {
         val mediaTypeFilter: String
     ) {
         PHOTO(ACTION_GET_CONTENT,
-            _root_ide_package_.org.wordpress.android.mediapicker.R.string.pick_photo, "image/*"),
+            R.string.pick_photo, "image/*"),
         VIDEO(ACTION_GET_CONTENT,
-            _root_ide_package_.org.wordpress.android.mediapicker.R.string.pick_video, "video/*"),
+            R.string.pick_video, "video/*"),
         PHOTO_OR_VIDEO(ACTION_GET_CONTENT,
-            _root_ide_package_.org.wordpress.android.mediapicker.R.string.pick_media, "*/*"),
+            R.string.pick_media, "*/*"),
         AUDIO(ACTION_GET_CONTENT,
-            _root_ide_package_.org.wordpress.android.mediapicker.R.string.pick_audio, "*/*"),
+            R.string.pick_audio, "*/*"),
         MEDIA_FILE(ACTION_OPEN_DOCUMENT,
-            _root_ide_package_.org.wordpress.android.mediapicker.R.string.pick_file, "*/*");
+            R.string.pick_file, "*/*");
     }
 
     sealed class MediaPickerAction {
@@ -121,7 +122,7 @@ class MediaPickerFragment : Fragment() {
                 val iconTypeName = bundle.getString(KEY_LAST_TAPPED_ICON) ?: return null
 
                 return when (iconTypeName.let {
-                    _root_ide_package_.org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerIconType.fromNameString(
+                    MediaPickerIconType.fromNameString(
                         iconTypeName
                     )
                 }) {
@@ -176,7 +177,7 @@ class MediaPickerFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(
-            _root_ide_package_.org.wordpress.android.mediapicker.R.layout.media_picker_fragment,
+            R.layout.media_picker_fragment,
                 container,
                 false
         )
@@ -190,7 +191,7 @@ class MediaPickerFragment : Fragment() {
         var lastTappedIcon: MediaPickerIcon? = null
         if (savedInstanceState != null) {
             lastTappedIcon =
-                _root_ide_package_.org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerIcon.fromBundle(
+                MediaPickerIcon.fromBundle(
                     savedInstanceState
                 )
             if (savedInstanceState.containsKey(KEY_SELECTED_IDS)) {
@@ -283,12 +284,12 @@ class MediaPickerFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(_root_ide_package_.org.wordpress.android.mediapicker.R.menu.menu_media_picker, menu)
+        inflater.inflate(R.menu.menu_media_picker, menu)
 
-        val searchMenuItem = checkNotNull(menu.findItem(_root_ide_package_.org.wordpress.android.mediapicker.R.id.action_search)) {
+        val searchMenuItem = checkNotNull(menu.findItem(R.id.action_search)) {
             "Menu does not contain mandatory search item"
         }
-        val browseMenuItem = checkNotNull(menu.findItem(_root_ide_package_.org.wordpress.android.mediapicker.R.id.mnu_browse_item)) {
+        val browseMenuItem = checkNotNull(menu.findItem(R.id.mnu_browse_item)) {
             "Menu does not contain mandatory browse item"
         }
 
@@ -314,7 +315,7 @@ class MediaPickerFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            _root_ide_package_.org.wordpress.android.mediapicker.R.id.mnu_browse_item -> {
+            R.id.mnu_browse_item -> {
                 viewModel.onMenuItemClicked(SYSTEM_PICKER)
             }
         }
@@ -476,9 +477,9 @@ class MediaPickerFragment : Fragment() {
                         if (progressDialog == null || progressDialog?.isShowing == false) {
                             val builder: Builder = MaterialAlertDialogBuilder(requireContext())
                             builder.setTitle(this.title)
-                            builder.setView(_root_ide_package_.org.wordpress.android.mediapicker.R.layout.media_picker_progress_dialog)
+                            builder.setView(R.layout.media_picker_progress_dialog)
                             builder.setNegativeButton(
-                                _root_ide_package_.org.wordpress.android.mediapicker.R.string.cancel
+                                R.string.cancel
                             ) { _, _ -> this.cancelAction() }
                             builder.setOnCancelListener { this.cancelAction() }
                             builder.setCancelable(true)

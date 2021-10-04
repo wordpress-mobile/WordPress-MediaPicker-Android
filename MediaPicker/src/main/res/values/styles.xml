@@ -35,5 +35,6 @@
         <item name="android:paddingStart">@dimen/major_100</item>
         <item name="android:paddingEnd">@dimen/major_100</item>
         <item name="backgroundTint">@color/button_colored_bg_selector</item>
+        <item name="android:textColor">?attr/colorOnSecondary</item>
     </style>
 </resources>
