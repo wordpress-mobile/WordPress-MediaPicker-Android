@@ -21,8 +21,9 @@
     <style name="MediaPicker.ToolBar" parent="Widget.MaterialComponents.Toolbar.Surface">
         <item name="titleTextColor">?attr/colorOnSecondary</item>
         <item name="android:textColor">?attr/colorOnSecondary</item>
-        <item name="android:background">@null</item>
-        <item name="popupTheme">@style/ThemeOverlay.AppCompat.DayNight</item>
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="theme">@style/Theme.MediaPicker</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.DayNight.ActionBar</item>
         <item name="android:elevation">0dp</item>
         <item name="colorControlNormal">?attr/colorOnSecondary</item>
     </style>

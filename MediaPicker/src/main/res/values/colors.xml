@@ -5,11 +5,11 @@
     <color name="color_secondary">@color/blue_50</color>
     <color name="color_secondary_variant">@color/blue_80</color>
 
-    <color name="black_90_alpha_087">#DE121212</color>
-    <color name="white_alpha_087">#DEFFFFFF</color>
-
     <color name="color_on_surface_high">@color/black_90_alpha_087</color>
     <color name="color_on_surface">@android:color/black</color>
     <color name="color_on_surface_inverted">@android:color/white</color>
+
     <color name="black_translucent_50">#80000000</color>
+    <color name="black_90_alpha_087">#DE121212</color>
+    <color name="white_alpha_087">#DEFFFFFF</color>
 </resources>
