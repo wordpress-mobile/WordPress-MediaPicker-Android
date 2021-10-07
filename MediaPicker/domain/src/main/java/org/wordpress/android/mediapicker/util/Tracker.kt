@@ -1,9 +1,9 @@
 package org.wordpress.android.mediapicker.util
 
 interface Tracker {
-    fun track (stat: Stat, properties: Map<String, Any?>)
+    fun track(event: Event, properties: Map<String, Any?>)
 
-    enum class Stat {
+    enum class Event {
         MEDIA_PICKER_PREVIEW_OPENED,
         MEDIA_PICKER_RECENT_MEDIA_SELECTED,
         MEDIA_PICKER_OPEN_GIF_LIBRARY,

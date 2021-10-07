@@ -11,7 +11,7 @@ import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.GIF_LIB
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier.LocalUri
 import org.wordpress.android.mediapicker.util.Tracker
-import org.wordpress.android.mediapicker.util.Tracker.Stat.*
+import org.wordpress.android.mediapicker.util.Tracker.Event.*
 import org.wordpress.android.util.MediaUtils
 import javax.inject.Inject
 
