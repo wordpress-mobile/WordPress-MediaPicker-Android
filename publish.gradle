@@ -1,0 +1,21 @@
+apply plugin: 'maven-publish'
+
+afterEvaluate {
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                from components.release
+                groupId 'org.wordpress'
+                artifactId project.name
+                pom {
+                    licenses {
+                        license {
+                            name = 'GNU General Public License v2.0'
+                            url = 'https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html'
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
