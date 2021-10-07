@@ -1,6 +1,5 @@
 package org.wordpress.android.mediapicker.util;
 
-import static org.wordpress.android.mediapicker.MediaPickerConstants.ARG_EDIT_IMAGE_DATA;
 import static org.wordpress.android.mediapicker.MediaPickerRequestCodes.TAKE_PHOTO;
 
 import android.app.Activity;
@@ -12,7 +11,6 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -153,16 +151,6 @@ public class MediaUtils {
         MediaScannerConnection.scanFile(context,
                 new String[]{localMediaPath}, null,
                 (path, uri) -> log.d("Media scanner finished scanning " + path));
-    }
-
-    public static List<MediaUri> retrieveImageEditorResult(Intent data) {
-        if (data != null && data.hasExtra(ARG_EDIT_IMAGE_DATA)) {
-            return convertEditImageOutputToListOfUris(
-                    data.getParcelableArrayListExtra(ARG_EDIT_IMAGE_DATA)
-            );
-        } else {
-            return new ArrayList<>();
-        }
     }
 
     private static List<MediaUri> convertEditImageOutputToListOfUris(List<EditImageData.OutputData> data) {
