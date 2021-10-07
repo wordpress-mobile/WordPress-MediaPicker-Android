@@ -10,7 +10,6 @@ import android.text.style.URLSpan;
 import android.view.MotionEvent;
 import android.widget.TextView;
 import org.wordpress.android.mediapicker.R;
-import org.wordpress.android.util.AppLog;
 import org.wordpress.android.util.StringUtils;
 import org.wordpress.android.util.ToastUtils;
 
@@ -20,14 +19,19 @@ import org.wordpress.android.util.ToastUtils;
  * LinkMovementMethod to catch and ignore the exception.
  */
 
-public class LinkMovementMethod extends android.text.method.LinkMovementMethod {
-    protected static LinkMovementMethod mMovementMethod;
+public class MediaPickerLinkMovementMethod extends android.text.method.LinkMovementMethod {
+    protected static MediaPickerLinkMovementMethod mMovementMethod;
+    private final Log logger;
 
-    public static LinkMovementMethod getInstance() {
+    public static MediaPickerLinkMovementMethod getInstance(Log log) {
         if (mMovementMethod == null) {
-            mMovementMethod = new LinkMovementMethod();
+            mMovementMethod = new MediaPickerLinkMovementMethod(log);
         }
         return mMovementMethod;
+    }
+
+    private MediaPickerLinkMovementMethod(Log log) {
+        logger = log;
     }
 
     @Override
@@ -35,7 +39,7 @@ public class LinkMovementMethod extends android.text.method.LinkMovementMethod {
         try {
             return super.onTouchEvent(textView, buffer, event);
         } catch (ActivityNotFoundException e) {
-            AppLog.e(AppLog.T.UTILS, e);
+            logger.e(e);
             // attempt to correct the tapped url then launch the intent to display it
             showTappedUrl(textView.getContext(), fixTappedUrl(buffer));
             return true;

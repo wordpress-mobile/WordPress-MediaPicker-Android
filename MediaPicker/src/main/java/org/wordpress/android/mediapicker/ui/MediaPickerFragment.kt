@@ -38,18 +38,17 @@ import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.BrowseMe
 import org.wordpress.android.mediapicker.model.MediaType
 import org.wordpress.android.mediapicker.model.MediaUri
 import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerIconType.*
-import org.wordpress.android.mediapicker.util.AnimUtils
+import org.wordpress.android.mediapicker.util.*
 import org.wordpress.android.mediapicker.viewmodel.observeEvent
 import org.wordpress.android.mediapicker.util.AnimUtils.Duration.MEDIUM
-import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils
-import org.wordpress.android.mediapicker.util.LinkMovementMethod
 import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils.Companion.PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE
 import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils.Companion.PHOTO_PICKER_STORAGE_PERMISSION_REQUEST_CODE
-import org.wordpress.android.mediapicker.util.UiHelpers
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MediaPickerFragment : Fragment() {
+    @Inject lateinit var log: Log
+
     enum class MediaPickerIconType {
         ANDROID_CHOOSE_FROM_DEVICE,
         SWITCH_SOURCE,
@@ -405,7 +404,8 @@ class MediaPickerFragment : Fragment() {
                                     htmlSubtitle
                             )
                     )
-                    actionableEmptyView.subtitle.movementMethod = LinkMovementMethod.getInstance()
+                    actionableEmptyView.subtitle.movementMethod =
+                        MediaPickerLinkMovementMethod.getInstance(log)
                 }
                 actionableEmptyView.image.applyOrHide(uiModel.image) { image ->
                     this.setImageResource(image)
