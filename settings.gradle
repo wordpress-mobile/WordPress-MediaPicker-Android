@@ -25,7 +25,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = "mediapicker"
+rootProject.name = "Media Picker"
 include ':mediapicker',
         ':mediapicker:domain',
         ':mediapicker:source-device',
