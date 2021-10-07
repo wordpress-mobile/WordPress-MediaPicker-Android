@@ -62,3 +62,23 @@ android {
         implementation 'org.wordpress:utils:2.0.0'
     }
 }
+
+afterEvaluate {
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                artifactId 'WordPress-MediaPicker-Android'
+                from components.release
+                groupId 'org.wordpress'
+                pom {
+                    licenses {
+                        license {
+                            name = 'GNU General Public License v2.0'
+                            url = 'https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html'
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
