@@ -37,7 +37,7 @@ android {
     }
 
     dependencies {
-        api project(":mediapicker:domain")
+        implementation project(":mediapicker:domain")
 
         implementation 'com.google.android.material:material:1.4.0'
 
