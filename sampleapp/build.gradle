@@ -1,13 +1,12 @@
 plugins {
     id 'com.android.application'
-    id 'org.jetbrains.kotlin.android' version '1.5.31'
-    id 'org.jetbrains.kotlin.kapt' version '1.5.31'
+    id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.kapt'
     id 'dagger.hilt.android.plugin'
 }
 
 android {
     compileSdkVersion 31
-    buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "org.wordpress.android.sampleapp"
