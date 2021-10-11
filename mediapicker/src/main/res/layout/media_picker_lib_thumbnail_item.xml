@@ -20,7 +20,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <include layout="@layout/media_picker_selection_count" />
+    <include layout="@layout/media_picker_lib_selection_count" />
 
     <ImageView
         android:id="@+id/image_video_overlay"

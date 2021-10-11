@@ -1,20 +1,13 @@
 package org.wordpress.android.mediapicker.widget
 
 import android.content.Context
-import android.os.Build
-import android.text.Spanned
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.Gravity
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
-import androidx.annotation.StringRes
 import androidx.appcompat.widget.AppCompatButton
-import androidx.core.view.isVisible
 import org.wordpress.android.mediapicker.R
-import org.wordpress.android.mediapicker.databinding.ActionableEmptyViewBinding
-import org.wordpress.android.mediapicker.util.AnimUtils
 import org.wordpress.android.util.DisplayUtils
 
 /**
@@ -58,7 +51,7 @@ class ActionableEmptyView : LinearLayout {
         gravity = Gravity.CENTER
         orientation = VERTICAL
 
-        layout = View.inflate(context, R.layout.actionable_empty_view, this)
+        layout = View.inflate(context, R.layout.media_picker_lib_actionable_empty_view, this)
 
         image = layout.findViewById(R.id.image)
         title = layout.findViewById(R.id.title)

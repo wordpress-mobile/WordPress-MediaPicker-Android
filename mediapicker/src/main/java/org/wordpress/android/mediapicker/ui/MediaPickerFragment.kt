@@ -29,7 +29,7 @@ import org.wordpress.android.mediapicker.model.MediaNavigationEvent.*
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.ProgressDialogUiModel.Visible
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
-import org.wordpress.android.mediapicker.databinding.MediaPickerFragmentBinding
+import org.wordpress.android.mediapicker.databinding.MediaPickerLibFragmentBinding
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel
@@ -39,10 +39,10 @@ import org.wordpress.android.mediapicker.model.MediaType
 import org.wordpress.android.mediapicker.model.MediaUri
 import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerIconType.*
 import org.wordpress.android.mediapicker.util.*
-import org.wordpress.android.mediapicker.viewmodel.observeEvent
 import org.wordpress.android.mediapicker.util.AnimUtils.Duration.MEDIUM
 import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils.Companion.PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE
 import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils.Companion.PHOTO_PICKER_STORAGE_PERMISSION_REQUEST_CODE
+import org.wordpress.android.mediapicker.viewmodel.observeEvent
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -163,7 +163,7 @@ class MediaPickerFragment : Fragment() {
     @Inject lateinit var permissionUtils: MediaPickerPermissionUtils
 
     private val viewModel: MediaPickerViewModel by viewModels()
-    private var binding: MediaPickerFragmentBinding? = null
+    private var binding: MediaPickerLibFragmentBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -176,7 +176,7 @@ class MediaPickerFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(
-            R.layout.media_picker_fragment,
+            R.layout.media_picker_lib_fragment,
                 container,
                 false
         )
@@ -208,7 +208,7 @@ class MediaPickerFragment : Fragment() {
         savedInstanceState?.getParcelable<Parcelable>(KEY_LIST_STATE)?.let {
             layoutManager.onRestoreInstanceState(it)
         }
-        with(MediaPickerFragmentBinding.bind(view)) {
+        with(MediaPickerLibFragmentBinding.bind(view)) {
             binding = this
             recycler.layoutManager = layoutManager
             recycler.setEmptyView(actionableEmptyView)
@@ -283,7 +283,7 @@ class MediaPickerFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu_media_picker, menu)
+        inflater.inflate(R.menu.media_picker_lib_menu, menu)
 
         val searchMenuItem = checkNotNull(menu.findItem(R.id.action_search)) {
             "Menu does not contain mandatory search item"
@@ -358,7 +358,7 @@ class MediaPickerFragment : Fragment() {
         })
     }
 
-    private fun MediaPickerFragmentBinding.setupSoftAskView(uiModel: SoftAskViewUiModel) {
+    private fun MediaPickerLibFragmentBinding.setupSoftAskView(uiModel: SoftAskViewUiModel) {
         when (uiModel) {
             is SoftAskViewUiModel.Visible -> {
                 softAskView.title.text = Html.fromHtml(uiModel.label)
@@ -381,7 +381,7 @@ class MediaPickerFragment : Fragment() {
         }
     }
 
-    private fun MediaPickerFragmentBinding.setupPhotoList(uiModel: PhotoListUiModel) {
+    private fun MediaPickerLibFragmentBinding.setupPhotoList(uiModel: PhotoListUiModel) {
         loadingView.visibility = if (uiModel == PhotoListUiModel.Loading) View.VISIBLE else View.GONE
         actionableEmptyView.visibility = if (uiModel is PhotoListUiModel.Empty) View.VISIBLE else View.GONE
         recycler.visibility = if (uiModel is PhotoListUiModel.Data) View.VISIBLE else View.INVISIBLE
@@ -435,12 +435,9 @@ class MediaPickerFragment : Fragment() {
         }
     }
 
-    private fun MediaPickerFragmentBinding.setupAdapter(items: List<MediaPickerUiItem>) {
+    private fun MediaPickerLibFragmentBinding.setupAdapter(items: List<MediaPickerUiItem>) {
         if (recycler.adapter == null) {
-            recycler.adapter =
-                MediaPickerAdapter(
-                    lifecycleScope
-                )
+            recycler.adapter = MediaPickerAdapter(lifecycleScope)
         }
         val adapter = recycler.adapter as MediaPickerAdapter
 
@@ -457,7 +454,7 @@ class MediaPickerFragment : Fragment() {
         recycler.layoutManager?.onRestoreInstanceState(recyclerViewState)
     }
 
-    private fun MediaPickerFragmentBinding.setupFab(fabUiModel: FabUiModel) {
+    private fun MediaPickerLibFragmentBinding.setupFab(fabUiModel: FabUiModel) {
         if (fabUiModel.show) {
             fabTakePicture.show()
             fabTakePicture.setOnClickListener {
@@ -477,7 +474,7 @@ class MediaPickerFragment : Fragment() {
                         if (progressDialog == null || progressDialog?.isShowing == false) {
                             val builder: Builder = MaterialAlertDialogBuilder(requireContext())
                             builder.setTitle(this.title)
-                            builder.setView(R.layout.media_picker_progress_dialog)
+                            builder.setView(R.layout.media_picker_lib_progress_dialog)
                             builder.setNegativeButton(
                                 R.string.cancel
                             ) { _, _ -> this.cancelAction() }
@@ -498,7 +495,7 @@ class MediaPickerFragment : Fragment() {
         })
     }
 
-    private fun MediaPickerFragmentBinding.showSnackbar(holder: SnackbarMessageHolder) {
+    private fun MediaPickerLibFragmentBinding.showSnackbar(holder: SnackbarMessageHolder) {
         val snackbar = Snackbar.make(
             requireContext(),
             coordinator,

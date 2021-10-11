@@ -10,7 +10,7 @@ import org.wordpress.android.mediapicker.model.MediaPickerUiItem
 import org.wordpress.android.mediapicker.util.MediaThumbnailViewUtils
 
 class FileThumbnailViewHolder(parent: ViewGroup, private val mediaThumbnailViewUtils: MediaThumbnailViewUtils) :
-        ThumbnailViewHolder(parent, layout.media_picker_file_item) {
+        ThumbnailViewHolder(parent, layout.media_picker_lib_file_item) {
     private val container: View = itemView.findViewById(id.media_grid_item_file_container)
     private val imgThumbnail: ImageView = itemView.findViewById(id.media_item_filetype_image)
     private val fileType: TextView = itemView.findViewById(id.media_item_filetype)

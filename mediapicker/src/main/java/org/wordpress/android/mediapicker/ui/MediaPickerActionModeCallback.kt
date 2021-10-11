@@ -26,7 +26,7 @@ class MediaPickerActionModeCallback(private val viewModel: MediaPickerViewModel)
         lifecycleRegistry = LifecycleRegistry(this)
         lifecycleRegistry.handleLifecycleEvent(ON_START)
         val inflater = actionMode.menuInflater
-        inflater.inflate(R.menu.photo_picker_action_mode, menu)
+        inflater.inflate(R.menu.media_picker_lib_action_mode, menu)
         viewModel.uiState.observe(this, Observer { uiState ->
             when (val uiModel = uiState.actionModeUiModel) {
                 is ActionModeUiModel.Hidden -> {

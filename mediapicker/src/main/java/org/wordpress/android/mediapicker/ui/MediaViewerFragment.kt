@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
@@ -14,16 +13,17 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.mediapicker.databinding.FragmentMediaViewerBinding
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import org.wordpress.android.mediapicker.R.id
 import org.wordpress.android.mediapicker.R.layout
+import org.wordpress.android.mediapicker.databinding.MediaPickerLibViewerFragmentBinding
 
 /**
  * Fullscreen single image viewer
  */
 @AndroidEntryPoint
-class MediaViewerFragment : Fragment(layout.fragment_media_viewer),
+class MediaViewerFragment : Fragment(layout.media_picker_lib_viewer_fragment),
     RequestListener<Drawable> {
     companion object {
         const val IMAGE_URL_KEY = "image_url_key"
@@ -45,7 +45,7 @@ class MediaViewerFragment : Fragment(layout.fragment_media_viewer),
         }
     }
 
-    private var _binding: FragmentMediaViewerBinding? = null
+    private var _binding: MediaPickerLibViewerFragmentBinding? = null
     private val binding get() = _binding!!
 
     private var imageUrl: String? = null
@@ -67,7 +67,7 @@ class MediaViewerFragment : Fragment(layout.fragment_media_viewer),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        _binding = FragmentMediaViewerBinding.bind(view)
+        _binding = MediaPickerLibViewerFragmentBinding.bind(view)
 
         binding.iconBack.setOnClickListener {
             activity?.onBackPressed()

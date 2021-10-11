@@ -17,4 +17,4 @@
     app:layout_constraintRight_toRightOf="parent"
     tools:ignore="UnusedAttribute"
     tools:text="5"
-    tools:showIn="@layout/media_picker_thumbnail_item" />
+    tools:showIn="@layout/media_picker_lib_thumbnail_item" />
