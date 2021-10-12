@@ -11,6 +11,11 @@ apply from: "$rootDir/publish.gradle"
 android {
     compileSdkVersion 31
     buildToolsVersion "30.0.3"
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 31
+    }
 }
 
 dependencies {
