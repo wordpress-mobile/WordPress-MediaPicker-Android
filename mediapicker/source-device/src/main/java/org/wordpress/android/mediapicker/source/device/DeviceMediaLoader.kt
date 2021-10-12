@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import android.os.Build
+import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore.Audio
@@ -13,19 +14,19 @@ import android.provider.MediaStore.MediaColumns
 import android.provider.MediaStore.Video
 import android.webkit.MimeTypeMap
 import androidx.annotation.RequiresApi
+import dagger.hilt.android.qualifiers.ApplicationContext
 import org.wordpress.android.mediapicker.model.MediaType
 import org.wordpress.android.mediapicker.model.MediaType.AUDIO
 import org.wordpress.android.mediapicker.model.MediaType.IMAGE
 import org.wordpress.android.mediapicker.model.MediaType.VIDEO
-import org.wordpress.android.mediapicker.api.MimeTypeSupportProvider
 import org.wordpress.android.mediapicker.model.MediaUri
 import org.wordpress.android.mediapicker.util.asAndroidUri
 import org.wordpress.android.mediapicker.util.asMediaUri
 import java.io.File
+import javax.inject.Inject
 
-class DeviceMediaLoader(
-    private val context: Context,
-    private val mimeTypeSupportProvider: MimeTypeSupportProvider,
+class DeviceMediaLoader @Inject constructor(
+    @ApplicationContext private val context: Context
 ) {
     fun loadMedia(
         mediaType: MediaType,
@@ -94,6 +95,7 @@ class DeviceMediaLoader(
         return DeviceMediaList(result.take(pageSize), nextItem)
     }
 
+    @RequiresApi(VERSION_CODES.FROYO)
     fun loadDocuments(filter: String?, pageSize: Int, limitDate: Long? = null): DeviceMediaList {
         val storagePublicDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
         val nextPage = (storagePublicDirectory?.listFiles() ?: arrayOf()).filter {
@@ -171,7 +173,7 @@ class DeviceMediaLoader(
             context.contentResolver.getType(uri)
         } else {
             val fileExtension: String = MimeTypeMap.getFileExtensionFromUrl(uri.toString())
-            mimeTypeSupportProvider.getMimeTypeForExtension(fileExtension)
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension)
         }
     }
 

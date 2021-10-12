@@ -9,20 +9,20 @@ import org.wordpress.android.mediapicker.model.MediaType.AUDIO
 import org.wordpress.android.mediapicker.model.MediaType.DOCUMENT
 import org.wordpress.android.mediapicker.model.MediaType.IMAGE
 import org.wordpress.android.mediapicker.model.MediaType.VIDEO
-import org.wordpress.android.mediapicker.api.MimeTypeSupportProvider
+import org.wordpress.android.mediapicker.api.MimeTypeProvider
 import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult
 import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult.Empty
 import org.wordpress.android.mediapicker.model.MediaItem
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier.LocalUri
 import org.wordpress.android.mediapicker.util.UiString.UiStringText
+import javax.inject.Inject
 
 class DeviceMediaSource(
     private val deviceMediaLoader: DeviceMediaLoader,
-    private val siteId: Long,
     private val bgDispatcher: CoroutineDispatcher,
     private val mediaTypes: Set<MediaType>,
     private val pageSize: Int,
-    private val mimeTypeSupportProvider: MimeTypeSupportProvider,
+    private val mimeTypeProvider: MimeTypeProvider,
 ) : MediaSource {
     private val cache = mutableMapOf<MediaType, Result>()
 
@@ -91,8 +91,7 @@ class DeviceMediaSource(
         val result = deviceMediaList.items.mapNotNull {
             val mimeType = deviceMediaLoader.getMimeType(it.mediaUri)
             val isMimeTypeSupported = mimeType != null
-                    && mimeTypeSupportProvider.isMimeTypeSupportedBySitePlan(siteId, mimeType)
-                    && mimeTypeSupportProvider.isSupportedMimeType(mimeType)
+                    && mimeTypeProvider.isMimeTypeSupported(mimeType)
 
             if (isMimeTypeSupported) {
                 MediaItem(
@@ -121,10 +120,10 @@ class DeviceMediaSource(
         val filteredPage = documentsList.items.mapNotNull { document ->
             val mimeType = deviceMediaLoader.getMimeType(document.mediaUri)
             val isMimeTypeSupported = mimeType != null
-                    && mimeTypeSupportProvider.isMimeTypeSupportedBySitePlan(siteId, mimeType)
-                    && mimeTypeSupportProvider.isSupportedMimeType(mimeType)
+                    && mimeTypeProvider.isMimeTypeSupported(mimeType)
 
-            val isSupportedApplicationType = mimeType != null && mimeTypeSupportProvider.isSupportedApplicationType(mimeType)
+            val isSupportedApplicationType = mimeType != null
+                    && mimeTypeProvider.isApplicationTypeSupported(mimeType)
 
             if (isSupportedApplicationType && isMimeTypeSupported) {
                 MediaItem(
@@ -156,19 +155,18 @@ class DeviceMediaSource(
         return this == null || (nextTimestamp != null && this.items.size <= (visibleItems + pageSize))
     }
 
-    class Factory constructor(
+    class Factory @Inject constructor(
         private val deviceMediaLoader: DeviceMediaLoader,
         private val bgDispatcher: CoroutineDispatcher,
-        private val mimeTypeSupportProvider: MimeTypeSupportProvider,
+        private val mimeTypeProvider: MimeTypeProvider,
     ) {
-        fun build(siteId: Long, mediaTypes: Set<MediaType>): MediaSource {
+        fun build(mediaTypes: Set<MediaType>): MediaSource {
             return DeviceMediaSource(
                     deviceMediaLoader,
-                    siteId,
                     bgDispatcher,
                     mediaTypes,
                     PAGE_SIZE,
-                    mimeTypeSupportProvider
+                    mimeTypeProvider
             )
         }
 
