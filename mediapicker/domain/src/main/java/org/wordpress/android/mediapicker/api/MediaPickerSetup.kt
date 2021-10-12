@@ -8,13 +8,13 @@ import org.wordpress.android.mediapicker.model.MediaType
 data class MediaPickerSetup(
     val primaryDataSource: DataSource,
     val availableDataSources: Set<DataSource>,
-    val canMultiselect: Boolean,
-    val requiresStoragePermissions: Boolean,
+    val isMultiSelectEnabled: Boolean,
+    val isStoragePermissionRequired: Boolean,
     val allowedTypes: Set<MediaType>,
     val allowCameraCapture: Boolean,
     val isSystemPickerEnabled: Boolean,
-    val queueResults: Boolean,
-    val defaultSearchView: Boolean,
+    val areResultsQueued: Boolean,
+    val isSearchToggledByDefault: Boolean,
     @StringRes val title: Int
 ) {
     enum class DataSource {
@@ -25,12 +25,12 @@ data class MediaPickerSetup(
         bundle.putInt(KEY_PRIMARY_DATA_SOURCE, primaryDataSource.ordinal)
         bundle.putIntegerArrayList(KEY_AVAILABLE_DATA_SOURCES, ArrayList(availableDataSources.map { it.ordinal }))
         bundle.putIntegerArrayList(KEY_ALLOWED_TYPES, ArrayList(allowedTypes.map { it.ordinal }))
-        bundle.putBoolean(KEY_CAN_MULTISELECT, canMultiselect)
-        bundle.putBoolean(KEY_REQUIRES_STORAGE_PERMISSIONS, requiresStoragePermissions)
+        bundle.putBoolean(KEY_CAN_MULTISELECT, isMultiSelectEnabled)
+        bundle.putBoolean(KEY_REQUIRES_STORAGE_PERMISSIONS, isStoragePermissionRequired)
         bundle.putBoolean(KEY_CAMERA_SETUP, allowCameraCapture)
         bundle.putBoolean(KEY_SYSTEM_PICKER_ENABLED, isSystemPickerEnabled)
-        bundle.putBoolean(KEY_QUEUE_RESULTS, queueResults)
-        bundle.putBoolean(KEY_DEFAULT_SEARCH_VIEW, defaultSearchView)
+        bundle.putBoolean(KEY_QUEUE_RESULTS, areResultsQueued)
+        bundle.putBoolean(KEY_DEFAULT_SEARCH_VIEW, isSearchToggledByDefault)
         bundle.putInt(KEY_TITLE, title)
     }
 
@@ -38,12 +38,12 @@ data class MediaPickerSetup(
         intent.putExtra(KEY_PRIMARY_DATA_SOURCE, primaryDataSource.ordinal)
         intent.putIntegerArrayListExtra(KEY_AVAILABLE_DATA_SOURCES, ArrayList(availableDataSources.map { it.ordinal }))
         intent.putIntegerArrayListExtra(KEY_ALLOWED_TYPES, ArrayList(allowedTypes.map { it.ordinal }))
-        intent.putExtra(KEY_CAN_MULTISELECT, canMultiselect)
-        intent.putExtra(KEY_REQUIRES_STORAGE_PERMISSIONS, requiresStoragePermissions)
+        intent.putExtra(KEY_CAN_MULTISELECT, isMultiSelectEnabled)
+        intent.putExtra(KEY_REQUIRES_STORAGE_PERMISSIONS, isStoragePermissionRequired)
         intent.putExtra(KEY_CAMERA_SETUP, allowCameraCapture)
         intent.putExtra(KEY_SYSTEM_PICKER_ENABLED, isSystemPickerEnabled)
-        intent.putExtra(KEY_QUEUE_RESULTS, queueResults)
-        intent.putExtra(KEY_DEFAULT_SEARCH_VIEW, defaultSearchView)
+        intent.putExtra(KEY_QUEUE_RESULTS, areResultsQueued)
+        intent.putExtra(KEY_DEFAULT_SEARCH_VIEW, isSearchToggledByDefault)
         intent.putExtra(KEY_TITLE, title)
     }
 

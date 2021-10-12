@@ -30,13 +30,13 @@ class DeviceMediaPickerSetup {
             return MediaPickerSetup(
                 primaryDataSource = DEVICE,
                 availableDataSources = setOf(),
-                canMultiselect = canMultiSelect,
-                requiresStoragePermissions = true,
+                isMultiSelectEnabled = canMultiSelect,
+                isStoragePermissionRequired = true,
                 allowedTypes = allowedTypes,
                 allowCameraCapture = true,
                 isSystemPickerEnabled = true,
-                queueResults = false,
-                defaultSearchView = false,
+                areResultsQueued = false,
+                isSearchToggledByDefault = false,
                 title = title
             )
         }

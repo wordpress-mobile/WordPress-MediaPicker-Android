@@ -118,8 +118,8 @@ class MediaPickerTracker @Inject constructor(
             DEVICE -> "device_media_library"
             GIF_LIBRARY -> "gif_library"
         }
-        this["can_multiselect"] = mediaPickerSetup.canMultiselect
-        this["default_search_view"] = mediaPickerSetup.defaultSearchView
+        this["can_multiselect"] = mediaPickerSetup.isMultiSelectEnabled
+        this["default_search_view"] = mediaPickerSetup.isSearchToggledByDefault
         return this
     }
 

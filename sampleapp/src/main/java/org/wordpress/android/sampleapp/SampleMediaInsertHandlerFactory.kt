@@ -14,7 +14,7 @@ class SampleMediaInsertHandlerFactory @Inject constructor(
 ) : MediaInsertHandlerFactory {
     override fun build(mediaPickerSetup: MediaPickerSetup): MediaInsertHandler {
         return when (mediaPickerSetup.primaryDataSource) {
-            DEVICE -> deviceMediaInsertUseCaseFactory.build(mediaPickerSetup.queueResults)
+            DEVICE -> deviceMediaInsertUseCaseFactory.build(mediaPickerSetup.areResultsQueued)
             GIF_LIBRARY -> DefaultMediaInsertUseCase
         }.toMediaInsertHandler()
     }

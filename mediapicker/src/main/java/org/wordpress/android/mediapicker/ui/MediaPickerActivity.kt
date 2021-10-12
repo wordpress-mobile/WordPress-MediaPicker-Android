@@ -151,7 +151,7 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
                         MediaUtils.scanMediaFile(log,this, it)
                         val f = File(it)
                         val capturedImageUri = listOf(Uri.fromFile(f).asMediaUri())
-                        if (mediaPickerSetup.queueResults) {
+                        if (mediaPickerSetup.areResultsQueued) {
                             intent.putQueuedUris(capturedImageUri)
                         } else {
                             intent.putUris(capturedImageUri)
@@ -250,7 +250,9 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
                 startActivityForResult(buildIntent(this, action.mediaPickerSetup), PHOTO_PICKER)
             }
             OpenCameraForPhotos -> {
-                MediaUtils.launchCamera(log,this, applicationContext.packageName) { mediaCapturePath = it }
+                MediaUtils.launchCamera(log,this, applicationContext.packageName) {
+                    mediaCapturePath = it
+                }
             }
         }
     }

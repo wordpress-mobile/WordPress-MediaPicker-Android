@@ -13,9 +13,9 @@ class SampleMediaLoaderFactory @Inject constructor(
     private val deviceMediaSourceFactory: DeviceMediaSource.Factory,
     private val gifMediaDataSource: GifMediaDataSource
 ) : MediaLoaderFactory {
-    override fun build(siteId: Long, mediaPickerSetup: MediaPickerSetup): MediaLoader {
+    override fun build(mediaPickerSetup: MediaPickerSetup): MediaLoader {
         return when (mediaPickerSetup.primaryDataSource) {
-            DEVICE -> deviceMediaSourceFactory.build(siteId, mediaPickerSetup.allowedTypes)
+            DEVICE -> deviceMediaSourceFactory.build(mediaPickerSetup.allowedTypes)
             GIF_LIBRARY -> gifMediaDataSource
         }.toMediaLoader()
     }

@@ -64,7 +64,6 @@ import org.wordpress.android.mediapicker.source.device.MediaLoader
 import org.wordpress.android.mediapicker.source.device.MediaLoader.DomainModel
 import org.wordpress.android.mediapicker.source.device.MediaLoader.LoadAction
 import org.wordpress.android.sampleapp.MediaLoaderFactory
-import org.wordpress.android.ui.photopicker.PermissionsHandler
 import org.wordpress.android.ui.utils.UiString
 import org.wordpress.android.ui.utils.UiString.UiStringRes
 import org.wordpress.android.ui.utils.UiString.UiStringText
@@ -621,7 +620,7 @@ class MediaPickerViewModelTest : BaseUnitTest() {
                 mediaPickerSetup.copy(
                         primaryDataSource = STOCK_LIBRARY,
                         availableDataSources = setOf(),
-                        defaultSearchView = true,
+                        isSearchToggledByDefault = true,
                         isSystemPickerEnabled = false
                 )
         )
@@ -686,7 +685,7 @@ class MediaPickerViewModelTest : BaseUnitTest() {
     fun `does not start loading without storage permissions`() = test {
         setupViewModel(
                 listOf(firstItem),
-                singleSelectMediaPickerSetup.copy(requiresStoragePermissions = true),
+                singleSelectMediaPickerSetup.copy(isStoragePermissionRequired = true),
                 hasStoragePermissions = false
         )
 
@@ -697,7 +696,7 @@ class MediaPickerViewModelTest : BaseUnitTest() {
     fun `starts loading with storage permissions`() = test {
         setupViewModel(
                 listOf(firstItem),
-                singleSelectMediaPickerSetup.copy(requiresStoragePermissions = true),
+                singleSelectMediaPickerSetup.copy(isStoragePermissionRequired = true),
                 hasStoragePermissions = true
         )
 
@@ -708,7 +707,7 @@ class MediaPickerViewModelTest : BaseUnitTest() {
     fun `starts loading when storage permissions not necessary`() = test {
         setupViewModel(
                 listOf(firstItem),
-                singleSelectMediaPickerSetup.copy(requiresStoragePermissions = false),
+                singleSelectMediaPickerSetup.copy(isStoragePermissionRequired = false),
                 hasStoragePermissions = false
         )
 
@@ -757,7 +756,7 @@ class MediaPickerViewModelTest : BaseUnitTest() {
                             isSelected = isSelected,
                             domainItem = photoPickerItem,
                             selectedOrder = selectedItems.indexOfFirst { it.identifier == photoPickerItem.identifier },
-                            isMultiSelection = mediaPickerSetup.canMultiselect
+                            isMultiSelection = mediaPickerSetup.isMultiSelectEnabled
                     )
                 }
             }
@@ -912,14 +911,14 @@ class MediaPickerViewModelTest : BaseUnitTest() {
     ) = MediaPickerSetup(
             primaryDataSource = DEVICE,
             availableDataSources = setOf(),
-            canMultiselect = canMultiselect,
-            requiresStoragePermissions = requiresStoragePermissions,
+            isMultiSelectEnabled = canMultiselect,
+            isStoragePermissionRequired = requiresStoragePermissions,
             allowedTypes = allowedTypes,
             allowCameraCapture = cameraSetup,
             isSystemPickerEnabled = true,
             editingEnabled = editingEnabled,
-            queueResults = false,
-            defaultSearchView = false,
+            areResultsQueued = false,
+            isSearchToggledByDefault = false,
             title = string.wp_media_title
     )
 

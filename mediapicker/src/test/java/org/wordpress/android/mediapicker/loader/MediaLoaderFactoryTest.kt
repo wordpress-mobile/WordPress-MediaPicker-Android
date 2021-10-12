@@ -48,14 +48,14 @@ class MediaLoaderFactoryTest {
         val mediaPickerSetup = MediaPickerSetup(
                 DEVICE,
                 availableDataSources = setOf(),
-                canMultiselect = true,
-                requiresStoragePermissions = true,
+                isMultiSelectEnabled = true,
+                isStoragePermissionRequired = true,
                 allowedTypes = setOf(),
                 allowCameraCapture = HIDDEN,
                 isSystemPickerEnabled = true,
                 editingEnabled = true,
-                queueResults = false,
-                defaultSearchView = false,
+                areResultsQueued = false,
+                isSearchToggledByDefault = false,
                 title = string.wp_media_title
         )
         whenever(deviceListBuilderFactory.build(setOf(), site)).thenReturn(deviceListBuilder)
@@ -74,14 +74,14 @@ class MediaLoaderFactoryTest {
         val mediaPickerSetup = MediaPickerSetup(
                 WP_LIBRARY,
                 availableDataSources = setOf(),
-                canMultiselect = true,
-                requiresStoragePermissions = false,
+                isMultiSelectEnabled = true,
+                isStoragePermissionRequired = false,
                 allowedTypes = setOf(),
                 allowCameraCapture = HIDDEN,
                 isSystemPickerEnabled = false,
                 editingEnabled = false,
-                queueResults = false,
-                defaultSearchView = false,
+                areResultsQueued = false,
+                isSearchToggledByDefault = false,
                 title = string.wp_media_title
         )
         whenever(mediaLibraryDataSourceFactory.build(site, setOf())).thenReturn(mediaLibraryDataSource)
@@ -101,14 +101,14 @@ class MediaLoaderFactoryTest {
         val mediaPickerSetup = MediaPickerSetup(
                 STOCK_LIBRARY,
                 availableDataSources = setOf(),
-                canMultiselect = true,
-                requiresStoragePermissions = false,
+                isMultiSelectEnabled = true,
+                isStoragePermissionRequired = false,
                 allowedTypes = setOf(),
                 allowCameraCapture = HIDDEN,
                 isSystemPickerEnabled = false,
                 editingEnabled = false,
-                queueResults = false,
-                defaultSearchView = false,
+                areResultsQueued = false,
+                isSearchToggledByDefault = false,
                 title = string.wp_media_title
         )
 
@@ -127,14 +127,14 @@ class MediaLoaderFactoryTest {
         val mediaPickerSetup = MediaPickerSetup(
                 GIF_LIBRARY,
                 availableDataSources = setOf(),
-                canMultiselect = true,
-                requiresStoragePermissions = false,
+                isMultiSelectEnabled = true,
+                isStoragePermissionRequired = false,
                 allowedTypes = setOf(),
                 allowCameraCapture = HIDDEN,
                 isSystemPickerEnabled = false,
                 editingEnabled = false,
-                queueResults = false,
-                defaultSearchView = true,
+                areResultsQueued = false,
+                isSearchToggledByDefault = true,
                 title = string.photo_picker_gif
         )
 
