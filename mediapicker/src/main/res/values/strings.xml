@@ -45,4 +45,6 @@
     <string name="media_browse_for_items">Browse for items</string>
     <string name="search">Search</string>
     <string name="reader_toast_err_url_intent">Unable to open %s</string>
+    <string name="photo_picker_choose_file">Choose from device</string>
+    <string name="photo_picker_gif">Choose from Tenor</string>
 </resources>

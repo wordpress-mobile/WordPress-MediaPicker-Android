@@ -11,14 +11,12 @@ data class MediaPickerSetup(
     val isMultiSelectEnabled: Boolean,
     val isStoragePermissionRequired: Boolean,
     val allowedTypes: Set<MediaType>,
-    val allowCameraCapture: Boolean,
-    val isSystemPickerEnabled: Boolean,
     val areResultsQueued: Boolean,
     val isSearchToggledByDefault: Boolean,
     @StringRes val title: Int
 ) {
     enum class DataSource {
-        DEVICE, GIF_LIBRARY
+        DEVICE, GIF_LIBRARY, CAMERA, SYSTEM_PICKER
     }
 
     fun toBundle(bundle: Bundle) {
@@ -27,8 +25,6 @@ data class MediaPickerSetup(
         bundle.putIntegerArrayList(KEY_ALLOWED_TYPES, ArrayList(allowedTypes.map { it.ordinal }))
         bundle.putBoolean(KEY_CAN_MULTISELECT, isMultiSelectEnabled)
         bundle.putBoolean(KEY_REQUIRES_STORAGE_PERMISSIONS, isStoragePermissionRequired)
-        bundle.putBoolean(KEY_CAMERA_SETUP, allowCameraCapture)
-        bundle.putBoolean(KEY_SYSTEM_PICKER_ENABLED, isSystemPickerEnabled)
         bundle.putBoolean(KEY_QUEUE_RESULTS, areResultsQueued)
         bundle.putBoolean(KEY_DEFAULT_SEARCH_VIEW, isSearchToggledByDefault)
         bundle.putInt(KEY_TITLE, title)
@@ -40,8 +36,6 @@ data class MediaPickerSetup(
         intent.putIntegerArrayListExtra(KEY_ALLOWED_TYPES, ArrayList(allowedTypes.map { it.ordinal }))
         intent.putExtra(KEY_CAN_MULTISELECT, isMultiSelectEnabled)
         intent.putExtra(KEY_REQUIRES_STORAGE_PERMISSIONS, isStoragePermissionRequired)
-        intent.putExtra(KEY_CAMERA_SETUP, allowCameraCapture)
-        intent.putExtra(KEY_SYSTEM_PICKER_ENABLED, isSystemPickerEnabled)
         intent.putExtra(KEY_QUEUE_RESULTS, areResultsQueued)
         intent.putExtra(KEY_DEFAULT_SEARCH_VIEW, isSearchToggledByDefault)
         intent.putExtra(KEY_TITLE, title)
@@ -53,8 +47,6 @@ data class MediaPickerSetup(
         private const val KEY_CAN_MULTISELECT = "key_can_multiselect"
         private const val KEY_REQUIRES_STORAGE_PERMISSIONS = "key_requires_storage_permissions"
         private const val KEY_ALLOWED_TYPES = "key_allowed_types"
-        private const val KEY_CAMERA_SETUP = "key_camera_setup"
-        private const val KEY_SYSTEM_PICKER_ENABLED = "key_system_picker_enabled"
         private const val KEY_QUEUE_RESULTS = "key_queue_results"
         private const val KEY_DEFAULT_SEARCH_VIEW = "key_default_search_view"
         private const val KEY_TITLE = "key_title"
@@ -68,9 +60,7 @@ data class MediaPickerSetup(
                 MediaType.values()[it]
             }.toSet()
             val multipleSelectionAllowed = bundle.getBoolean(KEY_CAN_MULTISELECT)
-            val cameraSetup = bundle.getBoolean(KEY_CAMERA_SETUP)
             val requiresStoragePermissions = bundle.getBoolean(KEY_REQUIRES_STORAGE_PERMISSIONS)
-            val systemPickerEnabled = bundle.getBoolean(KEY_SYSTEM_PICKER_ENABLED)
             val queueResults = bundle.getBoolean(KEY_QUEUE_RESULTS)
             val defaultSearchView = bundle.getBoolean(KEY_DEFAULT_SEARCH_VIEW)
             val title = bundle.getInt(KEY_TITLE)
@@ -80,8 +70,6 @@ data class MediaPickerSetup(
                     multipleSelectionAllowed,
                     requiresStoragePermissions,
                     allowedTypes,
-                    cameraSetup,
-                    systemPickerEnabled,
                     queueResults,
                     defaultSearchView,
                     title
@@ -98,9 +86,7 @@ data class MediaPickerSetup(
                 MediaType.values()[it]
             }.toSet()
             val multipleSelectionAllowed = intent.getBooleanExtra(KEY_CAN_MULTISELECT, false)
-            val cameraSetup = intent.getBooleanExtra(KEY_CAMERA_SETUP, false)
             val requiresStoragePermissions = intent.getBooleanExtra(KEY_REQUIRES_STORAGE_PERMISSIONS, false)
-            val systemPickerEnabled = intent.getBooleanExtra(KEY_SYSTEM_PICKER_ENABLED, false)
             val queueResults = intent.getBooleanExtra(KEY_QUEUE_RESULTS, false)
             val defaultSearchView = intent.getBooleanExtra(KEY_DEFAULT_SEARCH_VIEW, false)
             val title = intent.getIntExtra(KEY_TITLE, 0)
@@ -110,8 +96,6 @@ data class MediaPickerSetup(
                     multipleSelectionAllowed,
                     requiresStoragePermissions,
                     allowedTypes,
-                    cameraSetup,
-                    systemPickerEnabled,
                     queueResults,
                     defaultSearchView,
                     title

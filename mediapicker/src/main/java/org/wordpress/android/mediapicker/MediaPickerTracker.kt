@@ -6,8 +6,7 @@ import kotlinx.coroutines.withContext
 import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerIcon
 import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerIcon.*
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
-import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
-import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.GIF_LIBRARY
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.*
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier.LocalUri
 import org.wordpress.android.mediapicker.util.Tracker
@@ -58,13 +57,15 @@ class MediaPickerTracker @Inject constructor(
     fun trackIconClick(icon: MediaPickerIcon, mediaPickerSetup: MediaPickerSetup) {
         when (icon) {
             is ChooseFromAndroidDevice -> tracker.track(
-                    MEDIA_PICKER_OPEN_DEVICE_LIBRARY,
-                    mediaPickerSetup.toProperties()
+                MEDIA_PICKER_OPEN_SYSTEM_PICKER,
+                mediaPickerSetup.toProperties()
             )
             is SwitchSource -> {
                 val event = when (icon.dataSource) {
                     DEVICE -> MEDIA_PICKER_OPEN_DEVICE_LIBRARY
                     GIF_LIBRARY -> MEDIA_PICKER_OPEN_GIF_LIBRARY
+                    CAMERA -> MEDIA_PICKER_CAPTURE_PHOTO
+                    SYSTEM_PICKER -> MEDIA_PICKER_OPEN_SYSTEM_PICKER
                 }
                 tracker.track(event, mediaPickerSetup.toProperties())
             }
@@ -117,6 +118,8 @@ class MediaPickerTracker @Inject constructor(
         this["source"] = when (mediaPickerSetup.primaryDataSource) {
             DEVICE -> "device_media_library"
             GIF_LIBRARY -> "gif_library"
+            SYSTEM_PICKER -> "system_picker"
+            CAMERA -> "camera"
         }
         this["can_multiselect"] = mediaPickerSetup.isMultiSelectEnabled
         this["default_search_view"] = mediaPickerSetup.isSearchToggledByDefault

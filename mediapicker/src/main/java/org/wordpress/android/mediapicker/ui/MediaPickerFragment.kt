@@ -15,6 +15,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AlertDialog.Builder
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -34,7 +35,6 @@ import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.*
-import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction.SYSTEM_PICKER
 import org.wordpress.android.mediapicker.model.MediaType
 import org.wordpress.android.mediapicker.model.MediaUri
 import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerIconType.*
@@ -42,6 +42,7 @@ import org.wordpress.android.mediapicker.util.*
 import org.wordpress.android.mediapicker.util.AnimUtils.Duration.MEDIUM
 import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils.Companion.PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE
 import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils.Companion.PHOTO_PICKER_STORAGE_PERMISSION_REQUEST_CODE
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction.*
 import org.wordpress.android.mediapicker.viewmodel.observeEvent
 import javax.inject.Inject
 
@@ -221,7 +222,7 @@ class MediaPickerFragment : Fragment() {
             }
 
             var isShowingActionMode = false
-            viewModel.uiState.observe(viewLifecycleOwner, Observer {
+            viewModel.uiState.observe(viewLifecycleOwner, {
                 it?.let { uiState ->
                     setupPhotoList(uiState.photoListUiModel)
                     setupSoftAskView(uiState.softAskViewUiModel)
@@ -291,6 +292,13 @@ class MediaPickerFragment : Fragment() {
         val browseMenuItem = checkNotNull(menu.findItem(R.id.mnu_browse_item)) {
             "Menu does not contain mandatory browse item"
         }
+        val deviceMenuItem = checkNotNull(menu.findItem(R.id.mnu_choose_from_device)) {
+            "Menu does not contain device library item"
+        }
+        val tenorLibraryMenuItem = checkNotNull(menu.findItem(R.id.mnu_choose_from_tenor_library)) {
+            "Menu does not contain mandatory tenor library item"
+        }
+
 
         initializeSearchView(searchMenuItem)
         viewModel.uiState.observe(viewLifecycleOwner, { uiState ->
@@ -309,6 +317,8 @@ class MediaPickerFragment : Fragment() {
 
             val shownActions = uiState.browseMenuUiModel.shownActions
             browseMenuItem.isVisible = shownActions.contains(SYSTEM_PICKER)
+            deviceMenuItem.isVisible = shownActions.contains(DEVICE)
+            tenorLibraryMenuItem.isVisible = shownActions.contains(GIF_LIBRARY)
         })
     }
 
@@ -316,6 +326,12 @@ class MediaPickerFragment : Fragment() {
         when (item.itemId) {
             R.id.mnu_browse_item -> {
                 viewModel.onMenuItemClicked(SYSTEM_PICKER)
+            }
+            R.id.mnu_choose_from_device -> {
+                viewModel.onMenuItemClicked(DEVICE)
+            }
+            R.id.mnu_choose_from_tenor_library -> {
+                viewModel.onMenuItemClicked(GIF_LIBRARY)
             }
         }
         return true
@@ -419,6 +435,7 @@ class MediaPickerFragment : Fragment() {
                         )
                     }
                 }
+                actionableEmptyView.button.isVisible = uiModel.retryAction != null
                 actionableEmptyView.setOnClickListener {
                     uiModel.retryAction?.invoke()
                 }

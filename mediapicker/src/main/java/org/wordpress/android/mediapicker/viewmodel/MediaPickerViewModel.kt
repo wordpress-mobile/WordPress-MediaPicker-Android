@@ -15,7 +15,6 @@ import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerActio
 import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerIcon.*
 import org.wordpress.android.mediapicker.MediaPickerTracker
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem
-import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem.*
 import org.wordpress.android.mediapicker.R.drawable
 import org.wordpress.android.mediapicker.R.string
@@ -23,7 +22,6 @@ import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.BrowseMe
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.ProgressDialogUiModel.Hidden
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.ProgressDialogUiModel.Visible
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
-import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.GIF_LIBRARY
 import org.wordpress.android.mediapicker.api.MimeTypeProvider
 import org.wordpress.android.mediapicker.api.MediaInsertHandler
 import org.wordpress.android.mediapicker.api.MediaInsertHandler.InsertModel
@@ -45,6 +43,8 @@ import org.wordpress.android.mediapicker.model.MediaType.*
 import org.wordpress.android.mediapicker.model.MediaUri
 import org.wordpress.android.mediapicker.util.UiString.UiStringRes
 import org.wordpress.android.mediapicker.PermissionsHandler
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.*
 import org.wordpress.android.mediapicker.util.UiString
 import org.wordpress.android.mediapicker.util.distinct
 import org.wordpress.android.mediapicker.util.merge
@@ -87,8 +87,12 @@ class MediaPickerViewModel @Inject constructor(
         MediaPickerUiState(
                 buildUiModel(domainModel, selectedIds, softAskRequest, searchExpanded),
                 buildSoftAskView(softAskRequest),
-                FabUiModel(mediaPickerSetup.allowCameraCapture && selectedIds.isNullOrEmpty(), this::clickOnCamera),
-                buildActionModeUiModel(selectedIds, domainModel?.domainItems),
+                FabUiModel(
+                    mediaPickerSetup.availableDataSources.contains(DataSource.CAMERA)
+                            && selectedIds.isNullOrEmpty(),
+                    this::clickOnCamera
+                ),
+                buildActionModeUiModel(selectedIds),
                 buildSearchUiModel(softAskRequest?.let { !it.show } ?: true, domainModel?.filter, searchExpanded),
                 !domainModel?.domainItems.isNullOrEmpty() && domainModel?.isLoading == true,
                 buildBrowseMenuUiModel(softAskRequest, searchExpanded),
@@ -111,23 +115,20 @@ class MediaPickerViewModel @Inject constructor(
         val isSoftAskRequestVisible = softAskRequest?.show ?: false
         val isSearchExpanded = searchExpanded ?: false
         val showActions = !isSoftAskRequestVisible && !isSearchExpanded
-        val showSystemPicker = mediaPickerSetup.isSystemPickerEnabled && showActions
 
-        return if (showActions && (showSystemPicker || mediaPickerSetup.availableDataSources.isNotEmpty())) {
-            val actions = mutableSetOf<BrowseAction>()
-            if (showSystemPicker) {
-                actions.add(BrowseAction.SYSTEM_PICKER)
-            }
-            actions.addAll(mediaPickerSetup.availableDataSources.map {
+        val actions = if (showActions) {
+            mediaPickerSetup.availableDataSources.mapNotNull {
                 when (it) {
                     DEVICE -> BrowseAction.DEVICE
                     GIF_LIBRARY -> BrowseAction.GIF_LIBRARY
+                    SYSTEM_PICKER -> BrowseAction.SYSTEM_PICKER
+                    else -> null
                 }
-            })
-            BrowseMenuUiModel(actions)
+            }
         } else {
-            BrowseMenuUiModel(setOf())
+            emptyList()
         }
+        return BrowseMenuUiModel(actions.toSet())
     }
 
     var lastTappedIcon: MediaPickerIcon? = null
@@ -239,8 +240,7 @@ class MediaPickerViewModel @Inject constructor(
     }
 
     private fun buildActionModeUiModel(
-        selectedIds: List<Identifier>?,
-        items: List<MediaItem>?
+        selectedIds: List<Identifier>?
     ): ActionModeUiModel {
         val numSelected = selectedIds?.size ?: 0
         if (selectedIds.isNullOrEmpty()) {
@@ -432,7 +432,7 @@ class MediaPickerViewModel @Inject constructor(
     }
 
     private fun clickOnCamera() {
-        if (mediaPickerSetup.allowCameraCapture) {
+        if (mediaPickerSetup.availableDataSources.contains(DataSource.CAMERA)) {
             clickIcon(CapturePhoto)
         }
     }
@@ -468,13 +468,14 @@ class MediaPickerViewModel @Inject constructor(
             }
             is CapturePhoto -> OpenCameraForPhotos
             is SwitchSource -> {
+                val availableSources = mutableSetOf<DataSource>().apply {
+                    if (icon.dataSource == DEVICE) add(SYSTEM_PICKER)
+                }
                 SwitchMediaPicker(
                         mediaPickerSetup.copy(
                                 primaryDataSource = icon.dataSource,
-                                availableDataSources = setOf(),
-                                isSystemPickerEnabled = icon.dataSource == DEVICE,
-                                isSearchToggledByDefault = false,
-                                allowCameraCapture = false
+                                availableDataSources = availableSources,
+                                isSearchToggledByDefault = false
                         )
                 )
             }

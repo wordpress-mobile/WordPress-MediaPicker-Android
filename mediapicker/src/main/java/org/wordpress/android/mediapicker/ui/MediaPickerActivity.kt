@@ -30,8 +30,7 @@ import org.wordpress.android.mediapicker.R.drawable
 import org.wordpress.android.mediapicker.R.id
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
-import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
-import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.GIF_LIBRARY
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.*
 import org.wordpress.android.mediapicker.databinding.MediaPickerLibActivityBinding
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 import org.wordpress.android.mediapicker.model.MediaUri
@@ -50,13 +49,15 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
     @Inject lateinit var log: Log
 
     enum class MediaPickerMediaSource {
-        ANDROID_CAMERA, APP_PICKER, GIF;
+        ANDROID_CAMERA, APP_PICKER, GIF, ANDROID_PICKER;
 
         companion object {
             fun fromDataSource(dataSource: DataSource): MediaPickerMediaSource {
                 return when (dataSource) {
                     DEVICE -> APP_PICKER
                     GIF_LIBRARY -> GIF
+                    CAMERA -> ANDROID_CAMERA
+                    SYSTEM_PICKER -> ANDROID_PICKER
                 }
             }
         }

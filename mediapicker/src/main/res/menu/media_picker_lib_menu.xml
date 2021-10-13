@@ -15,4 +15,14 @@
         android:title="@string/media_browse_for_items"
         app:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/mnu_choose_from_tenor_library"
+        android:title="@string/photo_picker_gif"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/mnu_choose_from_device"
+        android:title="@string/photo_picker_choose_file"
+        app:showAsAction="never" />
+
 </menu>
