@@ -8,7 +8,7 @@ import org.wordpress.android.mediapicker.model.MediaType.VIDEO
 
 class DeviceMediaPickerSetup {
     companion object {
-        fun build(
+        fun buildFilePicker(
             isImagePicker: Boolean,
             isVideoPicker: Boolean,
             canMultiSelect: Boolean
@@ -36,6 +36,19 @@ class DeviceMediaPickerSetup {
                 areResultsQueued = false,
                 isSearchToggledByDefault = false,
                 title = title
+            )
+        }
+
+        fun buildCameraPicker(): MediaPickerSetup {
+            return MediaPickerSetup(
+                primaryDataSource = CAMERA,
+                availableDataSources = emptySet(),
+                isMultiSelectEnabled = false,
+                isStoragePermissionRequired = true,
+                allowedTypes = setOf(IMAGE),
+                areResultsQueued = false,
+                isSearchToggledByDefault = false,
+                title = 0
             )
         }
     }
