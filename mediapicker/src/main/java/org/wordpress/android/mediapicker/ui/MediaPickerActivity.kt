@@ -79,6 +79,7 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
         } else {
             MediaPickerSetup.fromBundle(savedInstanceState)
         }
+
         var fragment = pickerFragment
         if (fragment == null) {
             fragment = newInstance(this, mediaPickerSetup)
@@ -134,38 +135,47 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
         data: Intent?
     ) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode != Activity.RESULT_OK) {
-            return
-        }
         val intent: Intent? = when (requestCode) {
             MEDIA_LIBRARY -> {
-                data?.let {
-                    val uris = MediaUtils.retrieveMediaUris(data)
-                    pickerFragment?.urisSelectedFromSystemPicker(uris)
+                if (resultCode != Activity.RESULT_OK) {
                     return
+                } else {
+                    data?.let {
+                        val uris = MediaUtils.retrieveMediaUris(data)
+                        pickerFragment?.urisSelectedFromSystemPicker(uris)
+                        return
+                    }
                 }
             }
             TAKE_PHOTO -> {
-                try {
-                    val intent = Intent()
-                    mediaCapturePath!!.let {
-                        MediaUtils.scanMediaFile(log,this, it)
-                        val f = File(it)
-                        val capturedImageUri = listOf(Uri.fromFile(f).asMediaUri())
-                        if (mediaPickerSetup.areResultsQueued) {
-                            intent.putQueuedUris(capturedImageUri)
-                        } else {
-                            intent.putUris(capturedImageUri)
-                        }
-                        intent.putExtra(
+                if (resultCode != Activity.RESULT_OK) {
+                    setResult(Activity.RESULT_CANCELED, intent)
+                    if (mediaPickerSetup.primaryDataSource == CAMERA) {
+                        finish()
+                    }
+                    return
+                } else {
+                    try {
+                        val intent = Intent()
+                        mediaCapturePath!!.let {
+                            MediaUtils.scanMediaFile(log, this, it)
+                            val f = File(it)
+                            val capturedImageUri = listOf(Uri.fromFile(f).asMediaUri())
+                            if (mediaPickerSetup.areResultsQueued) {
+                                intent.putQueuedUris(capturedImageUri)
+                            } else {
+                                intent.putUris(capturedImageUri)
+                            }
+                            intent.putExtra(
                                 EXTRA_MEDIA_SOURCE,
                                 ANDROID_CAMERA.name
-                        )
+                            )
+                        }
+                        intent
+                    } catch (e: RuntimeException) {
+                        log.e(e)
+                        null
                     }
-                    intent
-                } catch (e: RuntimeException) {
-                    log.e(e)
-                    null
                 }
             }
             else -> {

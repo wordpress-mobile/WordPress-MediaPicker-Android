@@ -209,6 +209,7 @@ class MediaPickerFragment : Fragment() {
         savedInstanceState?.getParcelable<Parcelable>(KEY_LIST_STATE)?.let {
             layoutManager.onRestoreInstanceState(it)
         }
+
         with(MediaPickerLibFragmentBinding.bind(view)) {
             binding = this
             recycler.layoutManager = layoutManager
@@ -242,23 +243,23 @@ class MediaPickerFragment : Fragment() {
             })
 
             viewModel.onNavigate.observeEvent(viewLifecycleOwner,
-                    { navigationEvent ->
-                        when (navigationEvent) {
-                            is PreviewUrl -> {
-                                MediaViewerFragment.previewUrl(
-                                    requireActivity(),
-                                    navigationEvent.url
-                                )
-                            }
-                            is InsertMedia -> listener?.onItemsChosen(navigationEvent.identifiers)
-                            is IconClickEvent -> listener?.onIconClicked(navigationEvent.action)
-                            Exit -> {
-                                val activity = requireActivity()
-                                activity.setResult(Activity.RESULT_CANCELED)
-                                activity.finish()
-                            }
+                { navigationEvent ->
+                    when (navigationEvent) {
+                        is PreviewUrl -> {
+                            MediaViewerFragment.previewUrl(
+                                requireActivity(),
+                                navigationEvent.url
+                            )
                         }
-                    })
+                        is InsertMedia -> listener?.onItemsChosen(navigationEvent.identifiers)
+                        is IconClickEvent -> listener?.onIconClicked(navigationEvent.action)
+                        Exit -> {
+                            val activity = requireActivity()
+                            activity.setResult(Activity.RESULT_CANCELED)
+                            activity.finish()
+                        }
+                    }
+                })
 
             viewModel.onPermissionsRequested.observeEvent(viewLifecycleOwner, {
                 when (it) {

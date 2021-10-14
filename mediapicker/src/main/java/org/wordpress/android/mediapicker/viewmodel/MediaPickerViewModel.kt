@@ -47,6 +47,7 @@ import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.*
 import org.wordpress.android.mediapicker.util.UiString
 import org.wordpress.android.mediapicker.util.distinct
+import org.wordpress.android.mediapicker.util.filter
 import org.wordpress.android.mediapicker.util.merge
 import javax.inject.Inject
 
@@ -85,20 +86,30 @@ class MediaPickerViewModel @Inject constructor(
             _showProgressDialog.distinct()
     ) { domainModel, selectedIds, softAskRequest, searchExpanded, progressDialogUiModel ->
         MediaPickerUiState(
-                buildUiModel(domainModel, selectedIds, softAskRequest, searchExpanded),
-                buildSoftAskView(softAskRequest),
-                FabUiModel(
-                    mediaPickerSetup.availableDataSources.contains(DataSource.CAMERA)
-                            && selectedIds.isNullOrEmpty(),
-                    this::clickOnCamera
-                ),
-                buildActionModeUiModel(selectedIds),
-                buildSearchUiModel(softAskRequest?.let { !it.show } ?: true, domainModel?.filter, searchExpanded),
-                !domainModel?.domainItems.isNullOrEmpty() && domainModel?.isLoading == true,
-                buildBrowseMenuUiModel(softAskRequest, searchExpanded),
-                progressDialogUiModel ?: Hidden
+            photoListUiModel = buildUiModel(
+                domainModel,
+                selectedIds,
+                softAskRequest,
+                searchExpanded
+            ),
+            softAskViewUiModel = buildSoftAskView(softAskRequest),
+            fabUiModel = FabUiModel(
+                show = mediaPickerSetup.availableDataSources.contains(DataSource.CAMERA)
+                        && selectedIds.isNullOrEmpty(),
+                action = this::clickOnCamera
+            ),
+            actionModeUiModel = buildActionModeUiModel(selectedIds),
+            searchUiModel = buildSearchUiModel(
+                isVisible = softAskRequest?.let { !it.show } ?: true,
+                filter = domainModel?.filter,
+                searchExpanded = searchExpanded
+            ),
+            isRefreshing = !domainModel?.domainItems.isNullOrEmpty()
+                    && domainModel?.isLoading == true,
+            browseMenuUiModel = buildBrowseMenuUiModel(softAskRequest, searchExpanded),
+            progressDialogUiModel = progressDialogUiModel ?: Hidden
         )
-    }
+    }.filter { mediaPickerSetup.primaryDataSource != DataSource.CAMERA }
 
     val selectedIdentifiers: List<Identifier>
         get() = _selectedIds.value ?: listOf()
@@ -232,9 +243,9 @@ class MediaPickerViewModel @Inject constructor(
             Loading
         } else {
             Empty(
-                    UiStringRes(string.media_empty_list),
-                    image = drawable.img_illustration_media_105dp,
-                    isSearching = isSearching == true
+                UiStringRes(string.media_empty_list),
+                image = drawable.img_illustration_media_105dp,
+                isSearching = isSearching == true
             )
         }
     }
@@ -306,7 +317,10 @@ class MediaPickerViewModel @Inject constructor(
         this.mediaPickerSetup = mediaPickerSetup
         this.lastTappedIcon = lastTappedIcon
 
-        if (_domainModel.value == null) {
+        if (mediaPickerSetup.primaryDataSource == DataSource.CAMERA) {
+            onStartCamera()
+        }
+        else if (_domainModel.value == null) {
             mediaPickerTracker.trackMediaPickerOpened(mediaPickerSetup)
 
             this.mediaLoader = mediaSourceFactory.build(mediaPickerSetup)
@@ -419,6 +433,18 @@ class MediaPickerViewModel @Inject constructor(
 
     fun clickOnLastTappedIcon() = clickIcon(lastTappedIcon!!)
 
+    fun onStartCamera() {
+        if (!permissionsHandler.hasPermissionsToAccessPhotos()) {
+            _onPermissionsRequested.value = Event(CAMERA)
+            lastTappedIcon = CapturePhoto
+            return
+        }
+        _onNavigate.postValue(Event(populateIconClickEvent(
+            CapturePhoto,
+            mediaPickerSetup.isMultiSelectEnabled
+        )))
+    }
+
     private fun clickIcon(icon: MediaPickerIcon) {
         mediaPickerTracker.trackIconClick(icon, mediaPickerSetup)
         if (icon is CapturePhoto) {
@@ -428,7 +454,10 @@ class MediaPickerViewModel @Inject constructor(
                 return
             }
         }
-        _onNavigate.postValue(Event(populateIconClickEvent(icon, mediaPickerSetup.isMultiSelectEnabled)))
+        _onNavigate.postValue(Event(populateIconClickEvent(
+            icon,
+            mediaPickerSetup.isMultiSelectEnabled
+        )))
     }
 
     private fun clickOnCamera() {
