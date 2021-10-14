@@ -41,11 +41,19 @@ class MainActivity : AppCompatActivity() {
         binding.devicePickerButton.setOnClickListener {
             val mediaPickerIntent = MediaPickerLauncher.buildMediaPickerIntent(
                 activity = this,
-                DeviceMediaPickerSetup.build(
+                DeviceMediaPickerSetup.buildFilePicker(
                     isImagePicker = true,
                     isVideoPicker = false,
                     canMultiSelect = true
                 )
+            )
+            resultLauncher.launch(mediaPickerIntent)
+        }
+
+        binding.cameraPickerButton.setOnClickListener {
+            val mediaPickerIntent = MediaPickerLauncher.buildMediaPickerIntent(
+                activity = this,
+                DeviceMediaPickerSetup.buildCameraPicker()
             )
             resultLauncher.launch(mediaPickerIntent)
         }
