@@ -138,6 +138,10 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
         val intent: Intent? = when (requestCode) {
             MEDIA_LIBRARY -> {
                 if (resultCode != Activity.RESULT_OK) {
+                    setResult(Activity.RESULT_CANCELED, intent)
+                    if (mediaPickerSetup.primaryDataSource == SYSTEM_PICKER) {
+                        finish()
+                    }
                     return
                 } else {
                     data?.let {

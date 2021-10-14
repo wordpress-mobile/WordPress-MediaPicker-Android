@@ -8,7 +8,7 @@ import org.wordpress.android.mediapicker.model.MediaType.VIDEO
 
 class DeviceMediaPickerSetup {
     companion object {
-        fun buildFilePicker(
+        fun buildMediaPicker(
             isImagePicker: Boolean,
             isVideoPicker: Boolean,
             canMultiSelect: Boolean
@@ -32,6 +32,37 @@ class DeviceMediaPickerSetup {
                 availableDataSources = setOf(CAMERA, SYSTEM_PICKER),
                 isMultiSelectEnabled = canMultiSelect,
                 isStoragePermissionRequired = true,
+                allowedTypes = allowedTypes,
+                areResultsQueued = false,
+                isSearchToggledByDefault = false,
+                title = title
+            )
+        }
+
+        fun buildSystemPicker(
+            isImagePicker: Boolean,
+            isVideoPicker: Boolean,
+            canMultiSelect: Boolean
+        ): MediaPickerSetup {
+            val allowedTypes = mutableSetOf<MediaType>()
+            if (isImagePicker) {
+                allowedTypes.add(IMAGE)
+            }
+            if (isVideoPicker) {
+                allowedTypes.add(VIDEO)
+            }
+            val title = if (isImagePicker && isVideoPicker) {
+                R.string.photo_picker_photo_or_video_title
+            } else if (isVideoPicker) {
+                R.string.photo_picker_video_title
+            } else {
+                R.string.photo_picker_title
+            }
+            return MediaPickerSetup(
+                primaryDataSource = SYSTEM_PICKER,
+                availableDataSources = emptySet(),
+                isMultiSelectEnabled = canMultiSelect,
+                isStoragePermissionRequired = false,
                 allowedTypes = allowedTypes,
                 areResultsQueued = false,
                 isSearchToggledByDefault = false,
