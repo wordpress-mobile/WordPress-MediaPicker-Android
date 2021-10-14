@@ -11,6 +11,7 @@ import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier.LocalUri
 import org.wordpress.android.mediapicker.util.Tracker
 import org.wordpress.android.mediapicker.util.Tracker.Event.*
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PermissionsRequested
 import org.wordpress.android.util.MediaUtils
 import javax.inject.Inject
 
@@ -90,9 +91,14 @@ class MediaPickerTracker @Inject constructor(
         tracker.track(MEDIA_PICKER_SEARCH_COLLAPSED, mediaPickerSetup.toProperties())
     }
 
-    fun trackShowPermissionsScreen(mediaPickerSetup: MediaPickerSetup, isAlwaysDenied: Boolean) {
+    fun trackShowPermissionsScreen(
+        mediaPickerSetup: MediaPickerSetup,
+        permission: PermissionsRequested,
+        isAlwaysDenied: Boolean
+    ) {
         val properties = mediaPickerSetup.toProperties()
         properties["always_denied"] = isAlwaysDenied
+        properties["permission_requested"] = permission.name
         tracker.track(MEDIA_PICKER_SHOW_PERMISSIONS_SCREEN, properties)
     }
 

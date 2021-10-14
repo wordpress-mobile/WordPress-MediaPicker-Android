@@ -173,23 +173,26 @@ fun <S, T, U, V, W> merge(
  * @param sourceC third source
  * @param sourceD fourth source
  * @param sourceE fifth source
+ * @param sourceF sixth source
  * @return new data source
  */
-fun <S, T, U, V, W, X> merge(
+fun <S, T, U, V, W, Y, X> merge(
     sourceA: LiveData<S>,
     sourceB: LiveData<T>,
     sourceC: LiveData<U>,
     sourceD: LiveData<V>,
     sourceE: LiveData<W>,
+    sourceF: LiveData<Y>,
     distinct: Boolean = false,
-    merger: (S?, T?, U?, V?, W?) -> X?
+    merger: (S?, T?, U?, V?, W?, Y?) -> X?
 ): LiveData<X> {
     data class FiveItemContainer(
         val first: S? = null,
         val second: T? = null,
         val third: U? = null,
         val fourth: V? = null,
-        val fifth: W? = null
+        val fifth: W? = null,
+        val sixth: Y? = null
     )
 
     val mediator = MediatorLiveData<FiveItemContainer>()
@@ -224,7 +227,13 @@ fun <S, T, U, V, W, X> merge(
             mediator.value = container?.copy(fifth = it)
         }
     }
-    return mediator.map { (first, second, third, fourth, fifth) -> merger(first, second, third, fourth, fifth) }
+    mediator.addSource(sourceF) {
+        val container = mediator.value
+        if (container?.sixth != it || !distinct) {
+            mediator.value = container?.copy(sixth = it)
+        }
+    }
+    return mediator.map { (first, second, third, fourth, fifth, sixth) -> merger(first, second, third, fourth, fifth, sixth) }
 }
 
 /**

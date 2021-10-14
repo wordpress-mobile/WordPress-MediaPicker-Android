@@ -226,7 +226,10 @@ class MediaPickerFragment : Fragment() {
             viewModel.uiState.observe(viewLifecycleOwner, {
                 it?.let { uiState ->
                     setupPhotoList(uiState.photoListUiModel)
-                    setupSoftAskView(uiState.softAskViewUiModel)
+                    setupSoftAskView(
+                        uiState.storageSoftAskViewUiModel,
+                        uiState.cameraSoftAskViewUiModel
+                    )
                     if (uiState.actionModeUiModel is ActionModeUiModel.Visible && !isShowingActionMode) {
                         isShowingActionMode = true
                         (activity as AppCompatActivity).startSupportActionMode(
@@ -375,25 +378,37 @@ class MediaPickerFragment : Fragment() {
         })
     }
 
-    private fun MediaPickerLibFragmentBinding.setupSoftAskView(uiModel: SoftAskViewUiModel) {
-        when (uiModel) {
-            is SoftAskViewUiModel.Visible -> {
-                softAskView.title.text = Html.fromHtml(uiModel.label)
-                softAskView.button.setText(uiModel.allowId.stringRes)
-                softAskView.button.setOnClickListener {
-                    if (uiModel.isAlwaysDenied) {
-                        permissionUtils.showAppSettings(requireActivity())
-                    } else {
-                        requestStoragePermission()
-                    }
+    private fun MediaPickerLibFragmentBinding.setupSoftAskView(
+        storageModel: SoftAskViewUiModel,
+        cameraModel: SoftAskViewUiModel
+    ) {
+        if (storageModel is SoftAskViewUiModel.Visible) {
+            softAskView.title.text = Html.fromHtml(storageModel.label)
+            softAskView.button.setText(storageModel.allowId.stringRes)
+            softAskView.button.setOnClickListener {
+                if (storageModel.isAlwaysDenied) {
+                    permissionUtils.showAppSettings(requireActivity())
+                } else {
+                    requestStoragePermission()
                 }
-
-                softAskView.visibility = View.VISIBLE
             }
-            is SoftAskViewUiModel.Hidden -> {
-                if (softAskView.visibility == View.VISIBLE) {
-                    AnimUtils.fadeOut(softAskView, MEDIUM)
+
+            softAskView.visibility = View.VISIBLE
+        } else if (cameraModel is SoftAskViewUiModel.Visible) {
+            softAskView.title.text = Html.fromHtml(cameraModel.label)
+            softAskView.button.setText(cameraModel.allowId.stringRes)
+            softAskView.button.setOnClickListener {
+                if (cameraModel.isAlwaysDenied) {
+                    permissionUtils.showAppSettings(requireActivity())
+                } else {
+                    requestCameraPermission()
                 }
+            }
+
+            softAskView.visibility = View.VISIBLE
+        } else {
+            if (softAskView.visibility == View.VISIBLE) {
+                AnimUtils.fadeOut(softAskView, MEDIUM)
             }
         }
     }
@@ -554,7 +569,12 @@ class MediaPickerFragment : Fragment() {
 
     private val isStoragePermissionAlwaysDenied: Boolean
         get() = permissionUtils.isPermissionAlwaysDenied(
-                requireActivity(), READ_EXTERNAL_STORAGE
+            requireActivity(), READ_EXTERNAL_STORAGE
+        )
+
+    private val isCameraPermissionAlwaysDenied: Boolean
+        get() = permissionUtils.isPermissionAlwaysDenied(
+            requireActivity(), CAMERA
         )
 
     /*
@@ -592,8 +612,12 @@ class MediaPickerFragment : Fragment() {
         )
         when (requestCode) {
             PHOTO_PICKER_STORAGE_PERMISSION_REQUEST_CODE -> checkStoragePermission()
-            PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE -> if (allGranted) {
-                viewModel.clickOnLastTappedIcon()
+            PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE -> {
+                if (allGranted) {
+                    viewModel.onCameraPermissionGranted()
+                } else {
+                    viewModel.onCameraPermissionDenied(isCameraPermissionAlwaysDenied)
+                }
             }
         }
     }

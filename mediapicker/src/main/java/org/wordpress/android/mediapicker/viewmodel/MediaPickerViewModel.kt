@@ -31,7 +31,6 @@ import org.wordpress.android.mediapicker.loader.MediaLoader.DomainModel
 import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction
 import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction.NextPage
 import org.wordpress.android.mediapicker.loader.MediaLoaderFactory
-import org.wordpress.android.mediapicker.model.MediaItem
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier.LocalUri
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier.RemoteId
@@ -45,10 +44,15 @@ import org.wordpress.android.mediapicker.util.UiString.UiStringRes
 import org.wordpress.android.mediapicker.PermissionsHandler
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.*
+import org.wordpress.android.mediapicker.model.MediaType
+import org.wordpress.android.mediapicker.model.MediaType.AUDIO
+import org.wordpress.android.mediapicker.model.MediaType.VIDEO
+import org.wordpress.android.mediapicker.ui.MediaPickerFragment.ChooserContext.*
 import org.wordpress.android.mediapicker.util.UiString
 import org.wordpress.android.mediapicker.util.distinct
 import org.wordpress.android.mediapicker.util.filter
 import org.wordpress.android.mediapicker.util.merge
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PermissionsRequested.STORAGE
 import javax.inject.Inject
 
 @HiltViewModel
@@ -67,7 +71,8 @@ class MediaPickerViewModel @Inject constructor(
     private val _domainModel = MutableLiveData<DomainModel>()
     private val _selectedIds = MutableLiveData<List<Identifier>>()
     private val _onPermissionsRequested = MutableLiveData<Event<PermissionsRequested>>()
-    private val _softAskRequest = MutableLiveData<SoftAskRequest>()
+    private val _storageSoftAskRequest = MutableLiveData<SoftAskRequest>()
+    private val _cameraSoftAskRequest = MutableLiveData<SoftAskRequest>()
     private val _searchExpanded = MutableLiveData<Boolean>()
     private val _showProgressDialog = MutableLiveData<ProgressDialogUiModel>()
     private val _onSnackbarMessage = MutableLiveData<Event<SnackbarMessageHolder>>()
@@ -79,20 +84,23 @@ class MediaPickerViewModel @Inject constructor(
     val onPermissionsRequested: LiveData<Event<PermissionsRequested>> = _onPermissionsRequested
 
     val uiState: LiveData<MediaPickerUiState> = merge(
-            _domainModel.distinct(),
-            _selectedIds.distinct(),
-            _softAskRequest,
-            _searchExpanded,
-            _showProgressDialog.distinct()
-    ) { domainModel, selectedIds, softAskRequest, searchExpanded, progressDialogUiModel ->
+        _domainModel.distinct(),
+        _selectedIds.distinct(),
+        _storageSoftAskRequest,
+        _cameraSoftAskRequest,
+        _searchExpanded,
+        _showProgressDialog.distinct()
+    ) { domainModel, selectedIds, storageSoftAskRequest, cameraSoftAskRequest, searchExpanded, progressDialogUiModel ->
         MediaPickerUiState(
             photoListUiModel = buildUiModel(
                 domainModel,
                 selectedIds,
-                softAskRequest,
+                storageSoftAskRequest,
+                cameraSoftAskRequest,
                 searchExpanded
             ),
-            softAskViewUiModel = buildSoftAskView(softAskRequest),
+            storageSoftAskViewUiModel = buildSoftAskView(storageSoftAskRequest),
+            cameraSoftAskViewUiModel = buildSoftAskView(cameraSoftAskRequest),
             fabUiModel = FabUiModel(
                 show = mediaPickerSetup.availableDataSources.contains(DataSource.CAMERA)
                         && selectedIds.isNullOrEmpty(),
@@ -100,16 +108,21 @@ class MediaPickerViewModel @Inject constructor(
             ),
             actionModeUiModel = buildActionModeUiModel(selectedIds),
             searchUiModel = buildSearchUiModel(
-                isVisible = softAskRequest?.let { !it.show } ?: true,
+                isVisible = storageSoftAskRequest?.show == false
+                        && cameraSoftAskRequest?.show == false,
                 filter = domainModel?.filter,
                 searchExpanded = searchExpanded
             ),
             isRefreshing = !domainModel?.domainItems.isNullOrEmpty()
                     && domainModel?.isLoading == true,
-            browseMenuUiModel = buildBrowseMenuUiModel(softAskRequest, searchExpanded),
+            browseMenuUiModel = buildBrowseMenuUiModel(
+                storageSoftAskRequest,
+                cameraSoftAskRequest,
+                searchExpanded
+            ),
             progressDialogUiModel = progressDialogUiModel ?: Hidden
         )
-    }.filter { mediaPickerSetup.primaryDataSource != DataSource.CAMERA }
+    }
 
     val selectedIdentifiers: List<Identifier>
         get() = _selectedIds.value ?: listOf()
@@ -122,8 +135,13 @@ class MediaPickerViewModel @Inject constructor(
         }
     }
 
-    private fun buildBrowseMenuUiModel(softAskRequest: SoftAskRequest?, searchExpanded: Boolean?): BrowseMenuUiModel {
-        val isSoftAskRequestVisible = softAskRequest?.show ?: false
+    private fun buildBrowseMenuUiModel(
+        storageSoftAskRequest: SoftAskRequest?,
+        cameraSoftAskRequest: SoftAskRequest?,
+        searchExpanded: Boolean?
+    ): BrowseMenuUiModel {
+        val isSoftAskRequestVisible = storageSoftAskRequest?.show == true
+                || cameraSoftAskRequest?.show == true
         val isSearchExpanded = searchExpanded ?: false
         val showActions = !isSoftAskRequestVisible && !isSearchExpanded
 
@@ -148,11 +166,12 @@ class MediaPickerViewModel @Inject constructor(
     private fun buildUiModel(
         domainModel: DomainModel?,
         selectedIds: List<Identifier>?,
-        softAskRequest: SoftAskRequest?,
+        storageSoftAskRequest: SoftAskRequest?,
+        cameraSoftAskRequest: SoftAskRequest?,
         isSearching: Boolean?
     ): PhotoListUiModel {
         val data = domainModel?.domainItems
-        return if (null != softAskRequest && softAskRequest.show) {
+        return if (storageSoftAskRequest?.show == true || cameraSoftAskRequest?.show == true ) {
             PhotoListUiModel.Hidden
         } else if (data != null && data.isNotEmpty()) {
             val uiItems = data.map {
@@ -318,18 +337,26 @@ class MediaPickerViewModel @Inject constructor(
         this.lastTappedIcon = lastTappedIcon
 
         if (mediaPickerSetup.primaryDataSource == DataSource.CAMERA) {
-            onStartCamera()
+            startCamera()
+        } else if (mediaPickerSetup.primaryDataSource == SYSTEM_PICKER) {
+            startSystemPicker()
         }
-        else if (_domainModel.value == null) {
+
+        if (_domainModel.value == null) {
             mediaPickerTracker.trackMediaPickerOpened(mediaPickerSetup)
 
             this.mediaLoader = mediaSourceFactory.build(mediaPickerSetup)
-
             this.mediaInsertHandler = mediaInsertHandlerFactory.build(mediaPickerSetup)
 
-            viewModelScope.launch {
-                mediaLoader.loadMedia(loadActions).collect { domainModel ->
-                    _domainModel.value = domainModel
+
+            if (mediaPickerSetup.primaryDataSource == DataSource.CAMERA
+                || mediaPickerSetup.primaryDataSource == SYSTEM_PICKER) {
+                _domainModel.value = DomainModel(isLoading = true)
+            } else {
+                viewModelScope.launch {
+                    mediaLoader.loadMedia(loadActions).collect { domainModel ->
+                        _domainModel.value = domainModel
+                    }
                 }
             }
 
@@ -431,9 +458,18 @@ class MediaPickerViewModel @Inject constructor(
         }
     }
 
-    fun clickOnLastTappedIcon() = clickIcon(lastTappedIcon!!)
+    fun onCameraPermissionGranted() {
+        startCamera()
+    }
 
-    fun onStartCamera() {
+    fun onCameraPermissionDenied(isAlwaysDenied: Boolean) {
+        if (mediaPickerSetup.primaryDataSource == DataSource.CAMERA) {
+            _cameraSoftAskRequest.value = SoftAskRequest(CAMERA, show = true, isAlwaysDenied)
+            _domainModel.value = _domainModel.value?.copy(isLoading = false, emptyState = null)
+        }
+    }
+
+    private fun startCamera() {
         if (!permissionsHandler.hasPermissionsToAccessPhotos()) {
             _onPermissionsRequested.value = Event(CAMERA)
             lastTappedIcon = CapturePhoto
@@ -443,6 +479,10 @@ class MediaPickerViewModel @Inject constructor(
             CapturePhoto,
             mediaPickerSetup.isMultiSelectEnabled
         )))
+    }
+
+    private fun startSystemPicker() {
+        clickIcon(ChooseFromAndroidDevice(mediaPickerSetup.allowedTypes))
     }
 
     private fun clickIcon(icon: MediaPickerIcon) {
@@ -469,31 +509,7 @@ class MediaPickerViewModel @Inject constructor(
     private fun populateIconClickEvent(icon: MediaPickerIcon, canMultiselect: Boolean): IconClickEvent {
         val action: MediaPickerAction = when (icon) {
             is ChooseFromAndroidDevice -> {
-                val allowedTypes = icon.allowedTypes
-                val (context, types) = when {
-                    listOf(IMAGE).containsAll(allowedTypes) -> {
-                        Pair(ChooserContext.PHOTO, mimeTypeProvider.imageTypes)
-                    }
-                    listOf(VIDEO).containsAll(allowedTypes) -> {
-                        Pair(ChooserContext.VIDEO, mimeTypeProvider.videoTypes)
-                    }
-                    listOf(IMAGE, VIDEO).containsAll(allowedTypes) -> {
-                        Pair(
-                            ChooserContext.PHOTO_OR_VIDEO,
-                            mimeTypeProvider.imageTypes + mimeTypeProvider.videoTypes
-                        )
-                    }
-                    listOf(AUDIO).containsAll(allowedTypes) -> {
-                        Pair(ChooserContext.AUDIO, mimeTypeProvider.audioTypes)
-                    }
-                    else -> {
-                        val allTypes = with(mimeTypeProvider) {
-                            imageTypes + videoTypes + audioTypes
-                        }
-                        Pair(ChooserContext.MEDIA_FILE, allTypes)
-                    }
-                }
-                OpenSystemPicker(context, types.toList(), canMultiselect)
+                getSystemPickerAction(icon.allowedTypes, canMultiselect)
             }
             is CapturePhoto -> OpenCameraForPhotos
             is SwitchSource -> {
@@ -513,17 +529,55 @@ class MediaPickerViewModel @Inject constructor(
         return IconClickEvent(action)
     }
 
+    private fun getSystemPickerAction(
+        allowedTypes: Set<MediaType>,
+        canMultiselect: Boolean
+    ): OpenSystemPicker {
+        val (context, types) = when {
+            listOf(IMAGE).containsAll(allowedTypes) -> {
+                Pair(PHOTO, mimeTypeProvider.imageTypes)
+            }
+            listOf(VIDEO).containsAll(allowedTypes) -> {
+                Pair(ChooserContext.VIDEO, mimeTypeProvider.videoTypes)
+            }
+            listOf(IMAGE, VIDEO).containsAll(allowedTypes) -> {
+                Pair(
+                    PHOTO_OR_VIDEO,
+                    mimeTypeProvider.imageTypes + mimeTypeProvider.videoTypes
+                )
+            }
+            listOf(AUDIO).containsAll(allowedTypes) -> {
+                Pair(ChooserContext.AUDIO, mimeTypeProvider.audioTypes)
+            }
+            else -> {
+                val allTypes = with(mimeTypeProvider) {
+                    imageTypes + videoTypes + audioTypes
+                }
+                Pair(MEDIA_FILE, allTypes)
+            }
+        }
+        return OpenSystemPicker(context, types.toList(), canMultiselect)
+    }
+
     fun checkStoragePermission(isAlwaysDenied: Boolean) {
         if (!mediaPickerSetup.isStoragePermissionRequired) {
             return
         }
         if (permissionsHandler.hasStoragePermission()) {
-            _softAskRequest.value = SoftAskRequest(show = false, isAlwaysDenied = isAlwaysDenied)
+            _storageSoftAskRequest.value = SoftAskRequest(
+                STORAGE,
+                show = false,
+                isAlwaysDenied = isAlwaysDenied
+            )
             if (_domainModel.value?.domainItems.isNullOrEmpty()) {
                 refreshData(false)
             }
         } else {
-            _softAskRequest.value = SoftAskRequest(show = true, isAlwaysDenied = isAlwaysDenied)
+            _storageSoftAskRequest.value = SoftAskRequest(
+                STORAGE,
+                show = true,
+                isAlwaysDenied = isAlwaysDenied
+            )
         }
     }
 
@@ -540,17 +594,27 @@ class MediaPickerViewModel @Inject constructor(
 
     private fun buildSoftAskView(softAskRequest: SoftAskRequest?): SoftAskViewUiModel {
         if (softAskRequest != null && softAskRequest.show) {
-            mediaPickerTracker.trackShowPermissionsScreen(mediaPickerSetup, softAskRequest.isAlwaysDenied)
+            mediaPickerTracker.trackShowPermissionsScreen(
+                mediaPickerSetup,
+                softAskRequest.type,
+                softAskRequest.isAlwaysDenied
+            )
             val label = if (softAskRequest.isAlwaysDenied) {
                 val readPermission = ("<strong>${
-                    permissionsHandler.getPermissionName(permission.READ_EXTERNAL_STORAGE)
+                    when (softAskRequest.type) {
+                        STORAGE -> permissionsHandler.getPermissionName(permission.READ_EXTERNAL_STORAGE)
+                        CAMERA -> permissionsHandler.getPermissionName(permission.CAMERA)
+                    }
                 }</strong>")
                 String.format(
-                        resourceProvider.getString(string.media_picker_soft_ask_permissions_denied),
-                        readPermission
+                    resourceProvider.getString(string.media_picker_soft_ask_permissions_denied),
+                    readPermission
                 )
             } else {
-                resourceProvider.getString(string.photo_picker_soft_ask_label)
+                when (softAskRequest.type) {
+                    STORAGE -> resourceProvider.getString(string.photo_picker_soft_ask_label)
+                    CAMERA -> resourceProvider.getString(string.camera_soft_ask_label)
+                }
             }
             val allowId = if (softAskRequest.isAlwaysDenied) {
                 string.button_edit_permissions
@@ -612,7 +676,8 @@ class MediaPickerViewModel @Inject constructor(
 
     data class MediaPickerUiState(
         val photoListUiModel: PhotoListUiModel,
-        val softAskViewUiModel: SoftAskViewUiModel,
+        val storageSoftAskViewUiModel: SoftAskViewUiModel,
+        val cameraSoftAskViewUiModel: SoftAskViewUiModel,
         val fabUiModel: FabUiModel,
         val actionModeUiModel: ActionModeUiModel,
         val searchUiModel: SearchUiModel,
@@ -622,8 +687,7 @@ class MediaPickerViewModel @Inject constructor(
     )
 
     sealed class PhotoListUiModel {
-        data class Data(val items: List<MediaPickerUiItem>) :
-                PhotoListUiModel()
+        data class Data(val items: List<MediaPickerUiItem>) : PhotoListUiModel()
 
         data class Empty(
             val title: UiString,
@@ -644,8 +708,7 @@ class MediaPickerViewModel @Inject constructor(
             val label: String,
             val allowId: UiStringRes,
             val isAlwaysDenied: Boolean
-        ) :
-                SoftAskViewUiModel()
+        ) : SoftAskViewUiModel()
 
         object Hidden : SoftAskViewUiModel()
     }
@@ -676,7 +739,11 @@ class MediaPickerViewModel @Inject constructor(
         CAMERA, STORAGE
     }
 
-    data class SoftAskRequest(val show: Boolean, val isAlwaysDenied: Boolean)
+    data class SoftAskRequest(
+        val type: PermissionsRequested,
+        val show: Boolean,
+        val isAlwaysDenied: Boolean
+    )
 
     data class SnackbarMessageHolder(
         val message: UiString,
