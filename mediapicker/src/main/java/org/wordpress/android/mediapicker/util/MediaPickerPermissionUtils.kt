@@ -50,7 +50,7 @@ class MediaPickerPermissionUtils @Inject constructor(
      * @param checkForAlwaysDenied show dialog if any permissions always denied
      * @return true if all permissions granted
      */
-    fun setPermissionListAsked(
+    suspend fun setPermissionListAsked(
         activity: Activity,
         requestCode: Int,
         permissions: Array<String>,
@@ -85,7 +85,7 @@ class MediaPickerPermissionUtils @Inject constructor(
     /*
      * returns true if we know the app has asked for the passed permission
      */
-    private fun isPermissionAsked(context: Context, permission: String): Boolean {
+    private suspend fun isPermissionAsked(context: Context, permission: String): Boolean {
         val key: Key = getPermissionAskedKey(permission)
             ?: return false
 
@@ -107,7 +107,7 @@ class MediaPickerPermissionUtils @Inject constructor(
      * returns true if the passed permission has been denied AND the user checked "never show again"
      * in the native permission dialog
      */
-    fun isPermissionAlwaysDenied(activity: Activity, permission: String): Boolean {
+    suspend fun isPermissionAlwaysDenied(activity: Activity, permission: String): Boolean {
         // shouldShowRequestPermissionRationale returns false if the permission has been permanently
         // denied, but it also returns false if the app has never requested that permission - so we
         // check it only if we know we've asked for this permission

@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import org.wordpress.android.mediapicker.R
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.*
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
@@ -560,32 +561,35 @@ class MediaPickerFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        checkStoragePermission()
+        lifecycleScope.launch {
+            checkStoragePermission()
+        }
     }
 
     fun setMediaPickerListener(listener: MediaPickerListener?) {
         this.listener = listener
     }
 
-    private val isStoragePermissionAlwaysDenied: Boolean
-        get() = permissionUtils.isPermissionAlwaysDenied(
+    private suspend fun isStoragePermissionAlwaysDenied(): Boolean {
+        return permissionUtils.isPermissionAlwaysDenied(
             requireActivity(), READ_EXTERNAL_STORAGE
         )
+    }
 
-    private val isCameraPermissionAlwaysDenied: Boolean
-        get() = permissionUtils.isPermissionAlwaysDenied(
+    private suspend fun isCameraPermissionAlwaysDenied(): Boolean {
+        return permissionUtils.isPermissionAlwaysDenied(
             requireActivity(), CAMERA
         )
-
+    }
     /*
      * load the photos if we have the necessary permission, otherwise show the "soft ask" view
      * which asks the user to allow the permission
      */
-    private fun checkStoragePermission() {
+    private suspend fun checkStoragePermission() {
         if (!isAdded) {
             return
         }
-        viewModel.checkStoragePermission(isStoragePermissionAlwaysDenied)
+        viewModel.checkStoragePermission(isStoragePermissionAlwaysDenied())
     }
 
     private fun requestStoragePermission() {
@@ -606,17 +610,19 @@ class MediaPickerFragment : Fragment() {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
-        val checkForAlwaysDenied = requestCode == PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE
-        val allGranted = permissionUtils.setPermissionListAsked(
+        lifecycleScope.launch {
+            val checkForAlwaysDenied = requestCode == PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE
+            val allGranted = permissionUtils.setPermissionListAsked(
                 requireActivity(), requestCode, permissions, grantResults, checkForAlwaysDenied
-        )
-        when (requestCode) {
-            PHOTO_PICKER_STORAGE_PERMISSION_REQUEST_CODE -> checkStoragePermission()
-            PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE -> {
-                if (allGranted) {
-                    viewModel.onCameraPermissionGranted()
-                } else {
-                    viewModel.onCameraPermissionDenied(isCameraPermissionAlwaysDenied)
+            )
+            when (requestCode) {
+                PHOTO_PICKER_STORAGE_PERMISSION_REQUEST_CODE -> checkStoragePermission()
+                PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE -> {
+                    if (allGranted) {
+                        viewModel.onCameraPermissionGranted()
+                    } else {
+                        viewModel.onCameraPermissionDenied(isCameraPermissionAlwaysDenied())
+                    }
                 }
             }
         }

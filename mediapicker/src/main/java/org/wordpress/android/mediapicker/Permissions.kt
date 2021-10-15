@@ -9,6 +9,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -26,7 +27,6 @@ class Permissions @Inject constructor(
     }
 
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore("permissions")
-    private lateinit var preferences: Preferences
 
     fun markAsAsked(key: Key) {
         scope.launch {
@@ -34,15 +34,7 @@ class Permissions @Inject constructor(
         }
     }
 
-    fun wasPermissionAsked(key: Key) = preferences.contains(key)
-
-    init {
-        scope.launch {
-            context.dataStore.data.collect {
-                preferences = it
-            }
-        }
-    }
+    suspend fun wasPermissionAsked(key: Key) = context.dataStore.data.first().contains(key)
 
     private suspend fun savePermissionAsked(key: Key) {
         context.dataStore.edit { settings ->
