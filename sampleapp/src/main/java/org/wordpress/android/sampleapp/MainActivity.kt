@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
             val mediaPickerIntent = MediaPickerLauncher.buildMediaPickerIntent(
                 activity = this,
                 DeviceMediaPickerSetup.buildSystemPicker(
-                    mediaTypes = VIDEOS,
+                    mediaTypes = IMAGES,
                     canMultiSelect = false
                 )
             )

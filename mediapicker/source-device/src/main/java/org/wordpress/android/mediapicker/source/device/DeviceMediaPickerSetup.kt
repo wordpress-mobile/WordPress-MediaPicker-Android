@@ -54,7 +54,7 @@ class DeviceMediaPickerSetup {
                 allowedTypes = setOf(IMAGE),
                 areResultsQueued = false,
                 isSearchToggledByDefault = false,
-                title = 0
+                title = string.photo_picker_camera_title
             )
         }
     }
