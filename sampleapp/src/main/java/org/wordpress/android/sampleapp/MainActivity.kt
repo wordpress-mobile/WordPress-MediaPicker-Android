@@ -10,6 +10,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.mediapicker.MediaPickerConstants
 import org.wordpress.android.mediapicker.MediaPickerLauncher
 import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup
+import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup.MediaTypes.IMAGES
+import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup.MediaTypes.VIDEOS
 import org.wordpress.android.mediapicker.source.device.GifMediaPickerSetup
 import org.wordpress.android.sampleapp.R.id
 import org.wordpress.android.sampleapp.databinding.ActivityMainBinding
@@ -42,8 +44,7 @@ class MainActivity : AppCompatActivity() {
             val mediaPickerIntent = MediaPickerLauncher.buildMediaPickerIntent(
                 activity = this,
                 DeviceMediaPickerSetup.buildMediaPicker(
-                    isImagePicker = true,
-                    isVideoPicker = false,
+                    mediaTypes = IMAGES,
                     canMultiSelect = true
                 )
             )
@@ -54,9 +55,8 @@ class MainActivity : AppCompatActivity() {
             val mediaPickerIntent = MediaPickerLauncher.buildMediaPickerIntent(
                 activity = this,
                 DeviceMediaPickerSetup.buildSystemPicker(
-                    isImagePicker = true,
-                    isVideoPicker = false,
-                    canMultiSelect = true
+                    mediaTypes = VIDEOS,
+                    canMultiSelect = false
                 )
             )
             resultLauncher.launch(mediaPickerIntent)
