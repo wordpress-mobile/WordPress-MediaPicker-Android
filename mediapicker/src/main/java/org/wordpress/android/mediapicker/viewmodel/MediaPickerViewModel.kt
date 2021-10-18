@@ -559,7 +559,7 @@ class MediaPickerViewModel @Inject constructor(
         return OpenSystemPicker(context, types.toList(), canMultiselect)
     }
 
-    suspend fun checkStoragePermission(isAlwaysDenied: Boolean) {
+    fun checkStoragePermission(isAlwaysDenied: Boolean) {
         if (!mediaPickerSetup.isStoragePermissionRequired) {
             return
         }

@@ -16,6 +16,7 @@ import androidx.core.app.ActivityCompat
 import org.wordpress.android.mediapicker.Key
 import org.wordpress.android.mediapicker.Permissions
 import org.wordpress.android.mediapicker.R.string
+import org.wordpress.android.mediapicker.util.Tracker.Event
 import java.util.HashMap
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -23,7 +24,8 @@ import javax.inject.Singleton
 @Singleton
 class MediaPickerPermissionUtils @Inject constructor(
     private val perms: Permissions,
-    private val log: Log
+    private val log: Log,
+    private val tracker: Tracker
 ) {
     // permission request codes - note these are reported to analytics so they shouldn't be changed
     companion object {
@@ -133,9 +135,9 @@ class MediaPickerPermissionUtils @Inject constructor(
         props["request_code"] = requestCode.toString()
         props["is_first_time"] = java.lang.Boolean.toString(isFirstTime)
         if (result == PackageManager.PERMISSION_GRANTED) {
-//            AnalyticsTracker.track(AnalyticsTracker.Stat.APP_PERMISSION_GRANTED, props)
+            tracker.track(Event.MEDIA_PERMISSION_GRANTED, props)
         } else if (result == PackageManager.PERMISSION_DENIED) {
-//            AnalyticsTracker.track(AnalyticsTracker.Stat.APP_PERMISSION_DENIED, props)
+            tracker.track(Event.MEDIA_PERMISSION_DENIED, props)
         }
     }
 
