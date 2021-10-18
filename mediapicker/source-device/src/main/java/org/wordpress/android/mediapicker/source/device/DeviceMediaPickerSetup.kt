@@ -13,7 +13,7 @@ class DeviceMediaPickerSetup {
         fun buildMediaPicker(mediaTypes: MediaTypes, canMultiSelect: Boolean): MediaPickerSetup {
             return MediaPickerSetup(
                 primaryDataSource = DEVICE,
-                availableDataSources = setOf(CAMERA, SYSTEM_PICKER),
+                availableDataSources = setOf(SYSTEM_PICKER),
                 isMultiSelectEnabled = canMultiSelect,
                 isStoragePermissionRequired = true,
                 allowedTypes = mediaTypes.allowedTypes,
