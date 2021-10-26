@@ -86,7 +86,7 @@ public class MediaUtils {
 
     private static Intent getLaunchCameraIntent(Log log, Context context, String applicationId, LaunchCameraCallback callback)
             throws IOException {
-        File externalStoragePublicDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+        File externalStoragePublicDirectory = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         String mediaCapturePath =
                 externalStoragePublicDirectory + File.separator + "Camera" + File.separator + "wp-" + System
                         .currentTimeMillis() + ".jpg";

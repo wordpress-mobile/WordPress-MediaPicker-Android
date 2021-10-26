@@ -97,7 +97,7 @@ class DeviceMediaLoader @Inject constructor(
 
     @RequiresApi(VERSION_CODES.FROYO)
     fun loadDocuments(filter: String?, pageSize: Int, limitDate: Long? = null): DeviceMediaList {
-        val storagePublicDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+        val storagePublicDirectory = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
         val nextPage = (storagePublicDirectory?.listFiles() ?: arrayOf()).filter {
             (limitDate == null || it.lastModifiedInSecs() <= limitDate) &&
                     (filter == null || it.name.lowercase().contains(filter))
