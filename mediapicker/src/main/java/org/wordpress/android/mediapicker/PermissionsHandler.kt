@@ -40,7 +40,12 @@ class PermissionsHandler @Inject constructor(
      */
     fun getPermissionName(permission: String): String {
         return when (permission) {
-            Manifest.permission.READ_EXTERNAL_STORAGE -> context.getString(R.string.permission_storage)
+            Manifest.permission.READ_EXTERNAL_STORAGE -> {
+                if (android.os.Build.VERSION.SDK_INT > 29)
+                    context.getString(R.string.permission_files_and_media)
+                else
+                    context.getString(R.string.permission_storage)
+            }
             Manifest.permission.CAMERA -> context.getString(R.string.permission_camera)
             Manifest.permission.RECORD_AUDIO -> context.getString(R.string.permission_microphone)
             else -> {

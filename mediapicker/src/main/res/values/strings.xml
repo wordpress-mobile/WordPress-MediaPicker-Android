@@ -20,6 +20,7 @@
     <string name="button_edit_permissions">Edit permissions</string>
     <string name="photo_picker_soft_ask_allow">Allow</string>
     <string name="permission_storage">Storage</string>
+    <string name="permission_files_and_media">Files and media</string>
     <string name="permission_camera">Camera</string>
     <string name="permission_microphone">Microphone</string>
     <string name="unknown">Unknown</string>
