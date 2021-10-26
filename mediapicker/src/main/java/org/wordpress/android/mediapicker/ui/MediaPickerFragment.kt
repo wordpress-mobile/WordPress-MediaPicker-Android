@@ -15,6 +15,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AlertDialog.Builder
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -44,6 +45,7 @@ import org.wordpress.android.mediapicker.util.AnimUtils.Duration.MEDIUM
 import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils.Companion.PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE
 import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils.Companion.PHOTO_PICKER_STORAGE_PERMISSION_REQUEST_CODE
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction.*
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PermissionsRequested.STORAGE
 import org.wordpress.android.mediapicker.viewmodel.observeEvent
 import javax.inject.Inject
 
@@ -166,6 +168,7 @@ class MediaPickerFragment : Fragment() {
 
     private val viewModel: MediaPickerViewModel by viewModels()
     private var binding: MediaPickerLibFragmentBinding? = null
+    private lateinit var mediaPickerSetup: MediaPickerSetup
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -187,7 +190,7 @@ class MediaPickerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val mediaPickerSetup = MediaPickerSetup.fromBundle(requireArguments())
+        mediaPickerSetup = MediaPickerSetup.fromBundle(requireArguments())
         var selectedIds: List<Identifier> = emptyList()
         var lastTappedIcon: MediaPickerIcon? = null
         if (savedInstanceState != null) {
@@ -227,10 +230,7 @@ class MediaPickerFragment : Fragment() {
             viewModel.uiState.observe(viewLifecycleOwner, {
                 it?.let { uiState ->
                     setupPhotoList(uiState.photoListUiModel)
-                    setupSoftAskView(
-                        uiState.storageSoftAskViewUiModel,
-                        uiState.cameraSoftAskViewUiModel
-                    )
+                    setupSoftAskView(uiState.softAskViewUiModel)
                     if (uiState.actionModeUiModel is ActionModeUiModel.Visible && !isShowingActionMode) {
                         isShowingActionMode = true
                         (activity as AppCompatActivity).startSupportActionMode(
@@ -262,15 +262,13 @@ class MediaPickerFragment : Fragment() {
                             activity.setResult(Activity.RESULT_CANCELED)
                             activity.finish()
                         }
+                        RequestCameraPermission -> requestCameraPermissions()
+                        RequestStoragePermission -> requestStoragePermission()
+                        ShowAppSettings -> permissionUtils.showAppSettings(requireActivity())
+                        is PreviewMedia -> TODO()
                     }
                 })
 
-            viewModel.onPermissionsRequested.observeEvent(viewLifecycleOwner, {
-                when (it) {
-                    PermissionsRequested.CAMERA -> requestCameraPermission()
-                    PermissionsRequested.STORAGE -> requestStoragePermission()
-                }
-            })
             viewModel.onSnackbarMessage.observeEvent(viewLifecycleOwner, { messageHolder ->
                 showSnackbar(messageHolder)
             })
@@ -380,30 +378,13 @@ class MediaPickerFragment : Fragment() {
     }
 
     private fun MediaPickerLibFragmentBinding.setupSoftAskView(
-        storageModel: SoftAskViewUiModel,
-        cameraModel: SoftAskViewUiModel
+        softAskViewUiModel: SoftAskViewUiModel,
     ) {
-        if (storageModel is SoftAskViewUiModel.Visible) {
-            softAskView.title.text = Html.fromHtml(storageModel.label)
-            softAskView.button.setText(storageModel.allowId.stringRes)
+        if (softAskViewUiModel is SoftAskViewUiModel.Visible) {
+            softAskView.title.text = Html.fromHtml(softAskViewUiModel.label)
+            softAskView.button.setText(softAskViewUiModel.allowId.stringRes)
             softAskView.button.setOnClickListener {
-                if (storageModel.isAlwaysDenied) {
-                    permissionUtils.showAppSettings(requireActivity())
-                } else {
-                    requestStoragePermission()
-                }
-            }
-
-            softAskView.visibility = View.VISIBLE
-        } else if (cameraModel is SoftAskViewUiModel.Visible) {
-            softAskView.title.text = Html.fromHtml(cameraModel.label)
-            softAskView.button.setText(cameraModel.allowId.stringRes)
-            softAskView.button.setOnClickListener {
-                if (cameraModel.isAlwaysDenied) {
-                    permissionUtils.showAppSettings(requireActivity())
-                } else {
-                    requestCameraPermission()
-                }
+                softAskViewUiModel.onClick()
             }
 
             softAskView.visibility = View.VISIBLE
@@ -561,8 +542,17 @@ class MediaPickerFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+
+        checkPermissions()
+    }
+
+    private fun checkPermissions() {
         lifecycleScope.launch {
-            checkStoragePermission()
+            if (mediaPickerSetup.primaryDataSource == DataSource.CAMERA) {
+                checkCameraPermissions()
+            } else {
+                checkStoragePermission()
+            }
         }
     }
 
@@ -592,18 +582,34 @@ class MediaPickerFragment : Fragment() {
         viewModel.checkStoragePermission(isStoragePermissionAlwaysDenied())
     }
 
-    private fun requestStoragePermission() {
-        val permissions = arrayOf(READ_EXTERNAL_STORAGE)
-        requestPermissions(
-                permissions, PHOTO_PICKER_STORAGE_PERMISSION_REQUEST_CODE
+    private suspend fun checkCameraPermissions() {
+        if (!isAdded) {
+            return
+        }
+        viewModel.checkCameraPermission(
+            isCameraPermissionAlwaysDenied(),
+            isStoragePermissionAlwaysDenied()
         )
     }
 
-    private fun requestCameraPermission() {
-//        // in addition to CAMERA permission we also need a storage permission, to store media from the camera
-        val permissions = arrayOf(CAMERA,  READ_EXTERNAL_STORAGE)
-        requestPermissions(permissions, PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE)
+    private fun requestStoragePermission() {
+        val permissions = arrayOf(READ_EXTERNAL_STORAGE)
+        requestPermissions(
+            permissions,
+            PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE
+        )
     }
+
+    private fun requestCameraPermissions() {
+        // in addition to CAMERA permission we also need a storage permission,
+        // to store media from the camera
+        val permissions = arrayOf(CAMERA,  READ_EXTERNAL_STORAGE)
+        requestPermissions(
+            permissions,
+            PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE
+        )
+    }
+
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -619,9 +625,9 @@ class MediaPickerFragment : Fragment() {
                 PHOTO_PICKER_STORAGE_PERMISSION_REQUEST_CODE -> checkStoragePermission()
                 PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE -> {
                     if (allGranted) {
-                        viewModel.onCameraPermissionGranted()
+                        viewModel.onCameraPermissionsGranted()
                     } else {
-                        viewModel.onCameraPermissionDenied(isCameraPermissionAlwaysDenied())
+                        checkCameraPermissions()
                     }
                 }
             }

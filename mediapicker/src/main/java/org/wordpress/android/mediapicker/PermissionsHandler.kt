@@ -28,7 +28,7 @@ class PermissionsHandler @Inject constructor(
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    private fun hasCameraPermission(): Boolean {
+    fun hasCameraPermission(): Boolean {
         return ContextCompat.checkSelfPermission(
                 context,
                 permission.CAMERA

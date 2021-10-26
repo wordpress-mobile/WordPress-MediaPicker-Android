@@ -9,4 +9,7 @@ sealed class MediaNavigationEvent {
     data class InsertMedia(val identifiers: List<Identifier>) : MediaNavigationEvent()
     data class IconClickEvent(val action: MediaPickerAction) : MediaNavigationEvent()
     object Exit : MediaNavigationEvent()
+    object ShowAppSettings : MediaNavigationEvent()
+    object RequestStoragePermission : MediaNavigationEvent()
+    object RequestCameraPermission : MediaNavigationEvent()
 }
