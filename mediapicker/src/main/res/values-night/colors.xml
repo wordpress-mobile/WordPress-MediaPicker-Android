@@ -3,9 +3,8 @@
     <color name="color_primary">@color/blue_20</color>
     <color name="color_primary_variant">@color/blue_70</color>
     <color name="color_secondary">@color/blue_50</color>
-    <color name="color_secondary_variant">@color/blue_80</color>
+    <color name="color_secondary_variant">@color/white_alpha_087</color>
 
     <color name="color_on_surface_high">@color/white_alpha_087</color>
     <color name="color_on_surface">@android:color/white</color>
-    <color name="color_on_surface_inverted">@android:color/black</color>
 </resources>

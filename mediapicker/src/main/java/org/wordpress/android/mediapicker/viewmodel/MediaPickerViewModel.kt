@@ -100,7 +100,8 @@ class MediaPickerViewModel @Inject constructor(
             ),
             actionModeUiModel = buildActionModeUiModel(selectedIds),
             searchUiModel = buildSearchUiModel(
-                isVisible = softAskRequest?.show != true,
+                isVisible = softAskRequest?.show != true
+                        && mediaPickerSetup.primaryDataSource != DataSource.CAMERA,
                 filter = domainModel?.filter,
                 searchExpanded = searchExpanded
             ),

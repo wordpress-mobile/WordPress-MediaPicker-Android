@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="MediaPicker.ActionBar" parent="Theme.MediaPicker">
-        <item name="android:textColorSecondary">?attr/colorOnSecondary</item>
         <item name="iconTint">?attr/colorOnSecondary</item>
         <item name="colorControlNormal">?attr/colorOnSecondary</item>
+        <item name="android:colorControlNormal">?attr/colorOnSecondary</item>
         <item name="android:editTextColor">?attr/colorOnSecondary</item>
         <item name="android:textColorHint">?attr/colorOnSecondary</item>
     </style>
@@ -20,12 +20,9 @@
 
     <style name="MediaPicker.ToolBar" parent="Widget.MaterialComponents.Toolbar.Surface">
         <item name="titleTextColor">?attr/colorOnSecondary</item>
-        <item name="android:textColor">?attr/colorOnSecondary</item>
         <item name="android:background">?attr/colorPrimary</item>
         <item name="theme">@style/Theme.MediaPicker</item>
-        <item name="popupTheme">@style/ThemeOverlay.AppCompat.DayNight.ActionBar</item>
-        <item name="android:elevation">0dp</item>
-        <item name="colorControlNormal">?attr/colorOnSecondary</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
     </style>
 
     <style name="Subtitle">
