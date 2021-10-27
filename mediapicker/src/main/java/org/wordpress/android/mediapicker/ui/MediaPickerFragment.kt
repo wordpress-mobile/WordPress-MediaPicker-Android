@@ -596,7 +596,7 @@ class MediaPickerFragment : Fragment() {
         val permissions = arrayOf(READ_EXTERNAL_STORAGE)
         requestPermissions(
             permissions,
-            PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE
+            PHOTO_PICKER_STORAGE_PERMISSION_REQUEST_CODE
         )
     }
 
