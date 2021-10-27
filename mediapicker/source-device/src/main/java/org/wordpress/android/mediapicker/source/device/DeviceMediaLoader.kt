@@ -2,13 +2,13 @@ package org.wordpress.android.mediapicker.source.device
 
 import android.content.ContentResolver
 import android.content.Context
-import android.database.Cursor
 import android.net.Uri
-import android.os.Build
+import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore.Audio
+import android.provider.MediaStore.Files.FileColumns
 import android.provider.MediaStore.Images.Media
 import android.provider.MediaStore.MediaColumns
 import android.provider.MediaStore.Video
@@ -54,16 +54,8 @@ class DeviceMediaLoader @Inject constructor(
             dateCondition ?: filterCondition
         } ?: ""
 
-        val cursor = createCursor(
-            context.contentResolver,
-            baseUri,
-            projection,
-            condition,
-            emptyArray(),
-            ID_DATE_MODIFIED,
-            false,
-            pageSize + 1
-        ) ?: return DeviceMediaList(listOf(), null)
+        val cursor = getCursor(condition, pageSize, baseUri, projection)
+            ?: return DeviceMediaList(listOf(), null)
 
         try {
             val idIndex = cursor.getColumnIndexOrThrow(ID_COL)
@@ -119,50 +111,35 @@ class DeviceMediaLoader @Inject constructor(
         return DeviceMediaList(result, nextItem)
     }
 
-    private fun createCursor(
-        contentResolver: ContentResolver,
-        collection: Uri,
-        projection: Array<String>,
-        whereCondition: String,
-        selectionArgs: Array<String>,
-        orderBy: String,
-        orderAscending: Boolean,
-        limit: Int = 20,
-        offset: Int = 0
-    ): Cursor? = when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> {
-            val selection = createSelectionBundle(whereCondition, selectionArgs, orderBy, orderAscending, limit, offset)
-            contentResolver.query(collection, projection, selection, null)
+    private fun getCursor(
+        condition: String?,
+        pageSize: Int,
+        baseUri: Uri,
+        projection: Array<String>
+    ) = if (VERSION.SDK_INT >= VERSION_CODES.Q /*29*/) {
+        val bundle = Bundle().apply {
+            putString(ContentResolver.QUERY_ARG_SQL_SELECTION, condition)
+            putStringArray(
+                ContentResolver.QUERY_ARG_SORT_COLUMNS, arrayOf(FileColumns.DATE_MODIFIED)
+            )
+            putInt(ContentResolver.QUERY_ARG_SORT_DIRECTION, ContentResolver.QUERY_SORT_DIRECTION_DESCENDING)
+            putInt(ContentResolver.QUERY_ARG_LIMIT, pageSize + 1)
+            putInt(ContentResolver.QUERY_ARG_OFFSET, 0)
         }
-        else -> {
-            val orderDirection = if (orderAscending) "ASC" else "DESC"
-            var order = "$orderBy $orderDirection"
-            order += " LIMIT $limit OFFSET $offset"
-            contentResolver.query(collection, projection, whereCondition, selectionArgs, order)
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun createSelectionBundle(
-        whereCondition: String,
-        selectionArgs: Array<String>,
-        orderBy: String,
-        orderAscending: Boolean,
-        limit: Int = 20,
-        offset: Int = 0
-    ): Bundle = Bundle().apply {
-        // Limit & Offset
-        putInt(ContentResolver.QUERY_ARG_LIMIT, limit)
-        putInt(ContentResolver.QUERY_ARG_OFFSET, offset)
-        // Sort function
-        putStringArray(ContentResolver.QUERY_ARG_SORT_COLUMNS, arrayOf(orderBy))
-        // Sorting direction
-        val orderDirection =
-            if (orderAscending) ContentResolver.QUERY_SORT_DIRECTION_ASCENDING else ContentResolver.QUERY_SORT_DIRECTION_DESCENDING
-        putInt(ContentResolver.QUERY_ARG_SORT_DIRECTION, orderDirection)
-        // Selection
-        putString(ContentResolver.QUERY_ARG_SQL_SELECTION, whereCondition)
-        putStringArray(ContentResolver.QUERY_ARG_SQL_SELECTION_ARGS, selectionArgs)
+        context.contentResolver.query(
+            baseUri,
+            projection,
+            bundle,
+            null
+        )
+    } else {
+        context.contentResolver.query(
+            baseUri,
+            projection,
+            condition,
+            null,
+            "$ID_DATE_MODIFIED DESC LIMIT ${(pageSize + 1)}"
+        )
     }
 
     private fun File.lastModifiedInSecs() = this.lastModified() / 1000
