@@ -25,7 +25,7 @@
                 android:adjustViewBounds="true"
                 android:contentDescription="@string/media_empty_list"
                 android:visibility="gone"
-                tool:src="@drawable/img_illustration_empty_results_216dp"
+                tool:src="@drawable/media_picker_lib_empty_search_image"
                 tool:visibility="visible" />
 
             <com.google.android.material.textview.MaterialTextView

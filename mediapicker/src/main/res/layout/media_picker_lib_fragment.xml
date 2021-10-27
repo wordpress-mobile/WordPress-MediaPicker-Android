@@ -41,7 +41,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:visibility="gone"
-                app:aevImage="@drawable/img_illustration_media_105dp"
+                app:aevImage="@drawable/media_picker_lib_empty_gallery_image"
                 app:aevButton="@string/retry"
                 app:aevTitle="@string/media_empty_list"
                 tools:visibility="visible" />
@@ -75,7 +75,7 @@
                 android:layout_height="match_parent"
                 android:visibility="gone"
                 app:aevButton="@string/photo_picker_soft_ask_allow"
-                app:aevImage="@drawable/img_illustration_add_media_150dp"
+                app:aevImage="@drawable/media_picker_lib_missing_permission_image"
                 app:aevTitle="@string/photo_picker_soft_ask_label"
                 tools:visibility="visible" />
 

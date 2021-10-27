@@ -12,6 +12,7 @@ import org.wordpress.android.mediapicker.model.MediaItem.Identifier.GifMediaId
 import org.wordpress.android.mediapicker.model.MediaType.IMAGE
 import org.wordpress.android.mediapicker.source.device.util.UriUtilsWrapper
 import org.wordpress.android.mediapicker.source.gif.R
+import org.wordpress.android.mediapicker.api.R as ApiR
 import org.wordpress.android.mediapicker.util.UiString.UiStringRes
 import org.wordpress.android.mediapicker.util.UiString.UiStringText
 import org.wordpress.android.util.NetworkUtils
@@ -40,7 +41,7 @@ class GifMediaDataSource
             return Failure(
                     UiStringRes(R.string.no_network_title),
                     htmlSubtitle = UiStringRes(R.string.no_network_message),
-                    image = R.drawable.img_illustration_cloud_off_152dp,
+                    image = ApiR.drawable.media_picker_lib_load_error_image,
                     data = items
             )
         }
@@ -71,7 +72,7 @@ class GifMediaDataSource
                                     Failure(
                                             UiStringRes(R.string.media_loading_failed),
                                             htmlSubtitle = UiStringText(errorMessage),
-                                            image = R.drawable.img_illustration_cloud_off_152dp,
+                                            image = ApiR.drawable.media_picker_lib_load_error_image,
                                             data = items
                                     )
                             )
@@ -88,7 +89,7 @@ class GifMediaDataSource
         return Empty(
                 title,
                 null,
-                R.drawable.img_illustration_media_105dp,
+                ApiR.drawable.media_picker_lib_empty_gallery_image,
                 R.drawable.img_tenor_100dp,
                 UiStringRes(R.string.gif_powered_by_tenor)
         )

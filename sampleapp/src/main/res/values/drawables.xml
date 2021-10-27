@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Example of how to replace references to drawables used in the library -->
+    <drawable name="media_picker_lib_load_error_image" tools:ignore="MissingDefaultResource">@drawable/img_illustration_cloud_off_152dp</drawable>
+    <drawable name="media_picker_lib_empty_search_image" tools:ignore="MissingDefaultResource">@drawable/img_illustration_empty_results_216dp</drawable>
+    <drawable name="media_picker_lib_empty_gallery_image" tools:ignore="MissingDefaultResource">@drawable/img_illustration_media_105dp</drawable>
+    <drawable name="media_picker_lib_missing_permission_image" tools:ignore="MissingDefaultResource">@drawable/img_illustration_add_media_150dp</drawable>
+</resources>

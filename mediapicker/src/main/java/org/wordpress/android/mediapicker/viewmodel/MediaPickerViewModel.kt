@@ -231,7 +231,7 @@ class MediaPickerViewModel @Inject constructor(
                 Empty(
                     title,
                     htmlSubtitle,
-                    image ?: drawable.img_illustration_empty_results_216dp,
+                    image ?: drawable.media_picker_lib_empty_search_image,
                     bottomImage,
                     bottomImageDescription,
                     isSearching == true,
@@ -248,7 +248,7 @@ class MediaPickerViewModel @Inject constructor(
         } else {
             Empty(
                 UiStringRes(string.media_empty_list),
-                image = drawable.img_illustration_media_105dp,
+                image = drawable.media_picker_lib_empty_gallery_image,
                 isSearching = isSearching == true
             )
         }
