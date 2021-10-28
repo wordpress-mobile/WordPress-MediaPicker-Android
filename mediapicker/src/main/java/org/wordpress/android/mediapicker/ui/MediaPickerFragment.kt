@@ -275,7 +275,6 @@ class MediaPickerFragment : Fragment() {
 
             setupProgressDialog()
 
-            // FIXME: Site
             viewModel.start(selectedIds, mediaPickerSetup, lastTappedIcon)
         }
     }

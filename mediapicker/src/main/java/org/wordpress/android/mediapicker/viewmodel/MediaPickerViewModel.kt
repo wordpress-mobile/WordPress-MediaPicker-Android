@@ -1,6 +1,7 @@
 package org.wordpress.android.mediapicker.viewmodel
 
 import android.Manifest.permission
+import android.os.Parcelable
 import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -8,6 +9,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.*
 import org.wordpress.android.mediapicker.ui.MediaPickerFragment.*
@@ -56,6 +58,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MediaPickerViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val mediaSourceFactory: MediaLoaderFactory,
     private val mediaInsertHandlerFactory: MediaInsertHandlerFactory,
     private val mediaPickerTracker: MediaPickerTracker,
@@ -67,12 +70,12 @@ class MediaPickerViewModel @Inject constructor(
     private lateinit var mediaInsertHandler: MediaInsertHandler
     private val loadActions = Channel<LoadAction>()
     private var searchJob: Job? = null
-    private val _domainModel = MutableLiveData<DomainModel>()
-    private val _selectedIds = MutableLiveData<List<Identifier>>()
-    private val _softAskRequest = MutableLiveData<SoftAskRequest>()
-    private val _searchExpanded = MutableLiveData<Boolean>()
-    private val _showProgressDialog = MutableLiveData<ProgressDialogUiModel>()
-    private val _onSnackbarMessage = MutableLiveData<Event<SnackbarMessageHolder>>()
+    private val _domainModel = savedStateHandle.getLiveData<DomainModel>("domain")
+    private val _selectedIds = savedStateHandle.getLiveData<List<Identifier>>("selectedIds")
+    private val _softAskRequest = savedStateHandle.getLiveData<SoftAskRequest>("softAsk")
+    private val _searchExpanded = savedStateHandle.getLiveData<Boolean>("searchExpanded")
+    private val _showProgressDialog = savedStateHandle.getLiveData<ProgressDialogUiModel>("progress")
+    private val _onSnackbarMessage = savedStateHandle.getLiveData<Event<SnackbarMessageHolder>>("snackbar")
     private val _onNavigate = MutableLiveData<Event<MediaNavigationEvent>>()
 
     val onSnackbarMessage: LiveData<Event<SnackbarMessageHolder>> = _onSnackbarMessage
@@ -318,21 +321,20 @@ class MediaPickerViewModel @Inject constructor(
         lastTappedIcon: MediaPickerIcon?
     ) {
         _selectedIds.value = selectedIds
+
         this.mediaPickerSetup = mediaPickerSetup
         this.lastTappedIcon = lastTappedIcon
-
-        if (mediaPickerSetup.primaryDataSource == DataSource.CAMERA) {
-            startCamera()
-        } else if (mediaPickerSetup.primaryDataSource == SYSTEM_PICKER) {
-            startSystemPicker()
-        }
+        this.mediaLoader = mediaSourceFactory.build(mediaPickerSetup)
+        this.mediaInsertHandler = mediaInsertHandlerFactory.build(mediaPickerSetup)
 
         if (_domainModel.value == null) {
+            if (mediaPickerSetup.primaryDataSource == DataSource.CAMERA) {
+                startCamera()
+            } else if (mediaPickerSetup.primaryDataSource == SYSTEM_PICKER) {
+                startSystemPicker()
+            }
+
             mediaPickerTracker.trackMediaPickerOpened(mediaPickerSetup)
-
-            this.mediaLoader = mediaSourceFactory.build(mediaPickerSetup)
-            this.mediaInsertHandler = mediaInsertHandlerFactory.build(mediaPickerSetup)
-
 
             if (mediaPickerSetup.primaryDataSource == DataSource.CAMERA
                 || mediaPickerSetup.primaryDataSource == SYSTEM_PICKER) {
@@ -762,22 +764,24 @@ class MediaPickerViewModel @Inject constructor(
         CAMERA, STORAGE
     }
 
+    @Parcelize
     data class SoftAskRequest(
         val show: Boolean,
         val type: PermissionsRequested = STORAGE,
         val isAlwaysDenied: Boolean = false,
         val onClick: () -> Unit = {}
-    )
+    ) : Parcelable
 
+    @Parcelize
     data class SnackbarMessageHolder(
         val message: UiString,
         val buttonTitle: UiString? = null,
         val buttonAction: () -> Unit = {},
         val onDismissAction: () -> Unit = {}
-    )
+    ) : Parcelable
 
-    sealed class ProgressDialogUiModel {
-        object Hidden : ProgressDialogUiModel()
-        data class Visible(val title: Int, val cancelAction: () -> Unit) : ProgressDialogUiModel()
+    sealed class ProgressDialogUiModel : Parcelable {
+        @Parcelize object Hidden : ProgressDialogUiModel()
+        @Parcelize data class Visible(val title: Int, val cancelAction: () -> Unit) : ProgressDialogUiModel()
     }
 }
