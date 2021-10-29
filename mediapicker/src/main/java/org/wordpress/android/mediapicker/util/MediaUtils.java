@@ -8,12 +8,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
+import org.wordpress.android.mediapicker.BuildConfig;
 import org.wordpress.android.mediapicker.ui.MediaPickerFragment;
 import org.wordpress.android.mediapicker.R;
 import org.wordpress.android.mediapicker.model.EditImageData;
@@ -69,14 +72,14 @@ public class MediaUtils {
         }
     }
 
-    private static Intent prepareLaunchCamera(Log log, Context context, String applicationId, LaunchCameraCallback callback) {
+    private static Intent prepareLaunchCamera(Log log, Activity activity, String applicationId, LaunchCameraCallback callback) {
         String state = Environment.getExternalStorageState();
         if (!state.equals(Environment.MEDIA_MOUNTED)) {
-            showSDCardRequiredDialog(context);
+            showSDCardRequiredDialog(activity);
             return null;
         } else {
             try {
-                return getLaunchCameraIntent(log, context, applicationId, callback);
+                return getLaunchCameraIntent(log, activity, applicationId, callback);
             } catch (IOException e) {
                 // No need to write log here
                 return null;
@@ -84,11 +87,21 @@ public class MediaUtils {
         }
     }
 
-    private static Intent getLaunchCameraIntent(Log log, Context context, String applicationId, LaunchCameraCallback callback)
+    private static Intent getLaunchCameraIntent(Log log,
+                                                Activity activity,
+                                                String applicationId,
+                                                LaunchCameraCallback callback)
             throws IOException {
-        File externalStoragePublicDirectory = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+
+        File externalStorageDirectory;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            externalStorageDirectory = activity.getExternalFilesDir(Environment.DIRECTORY_DCIM);
+        } else {
+            externalStorageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+        }
+
         String mediaCapturePath =
-                externalStoragePublicDirectory + File.separator + "Camera" + File.separator + "wp-" + System
+                externalStorageDirectory + File.separator + "Camera" + File.separator + "wp-" + System
                         .currentTimeMillis() + ".jpg";
 
         // make sure the directory we plan to store the recording in exists
@@ -104,7 +117,7 @@ public class MediaUtils {
 
         Uri fileUri;
         try {
-            fileUri = FileProvider.getUriForFile(context, applicationId + ".provider", new File(mediaCapturePath));
+            fileUri = FileProvider.getUriForFile(activity, applicationId + ".provider", new File(mediaCapturePath));
         } catch (IllegalArgumentException e) {
             log.e("Cannot access the file planned to store the new media", e);
             throw new IOException("Cannot access the file planned to store the new media");

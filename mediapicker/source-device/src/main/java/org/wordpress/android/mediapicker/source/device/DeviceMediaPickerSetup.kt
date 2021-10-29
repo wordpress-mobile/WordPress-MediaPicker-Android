@@ -1,5 +1,7 @@
 package org.wordpress.android.mediapicker.source.device
 
+import android.os.Build
+import android.os.Build.VERSION_CODES
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.*
 import org.wordpress.android.mediapicker.model.MediaType
@@ -50,7 +52,7 @@ class DeviceMediaPickerSetup {
                 primaryDataSource = CAMERA,
                 availableDataSources = emptySet(),
                 isMultiSelectEnabled = false,
-                isStoragePermissionRequired = true,
+                isStoragePermissionRequired = Build.VERSION.SDK_INT < VERSION_CODES.Q,
                 allowedTypes = setOf(IMAGE),
                 areResultsQueued = false,
                 isSearchToggledByDefault = false,

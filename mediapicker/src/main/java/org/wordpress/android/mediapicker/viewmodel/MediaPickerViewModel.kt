@@ -294,7 +294,7 @@ class MediaPickerViewModel @Inject constructor(
     }
 
     fun refreshData(forceReload: Boolean) {
-        if (!permissionsHandler.hasStoragePermission()) {
+        if (!permissionsHandler.hasReadStoragePermission()) {
             return
         }
         viewModelScope.launch {
@@ -347,7 +347,7 @@ class MediaPickerViewModel @Inject constructor(
                 }
             }
 
-            if (!mediaPickerSetup.isStoragePermissionRequired || permissionsHandler.hasStoragePermission()) {
+            if (!mediaPickerSetup.isStoragePermissionRequired || permissionsHandler.hasReadStoragePermission()) {
                 viewModelScope.launch {
                     loadActions.send(LoadAction.Start())
                 }
@@ -450,8 +450,9 @@ class MediaPickerViewModel @Inject constructor(
     }
 
     private fun startCamera() {
-        if (!permissionsHandler.hasPermissionsToAccessPhotos()) {
-            _onNavigate.value = Event(RequestCameraPermission)
+        if (!permissionsHandler.hasPermissionsToTakePhotos(
+                mediaPickerSetup.isStoragePermissionRequired
+            )) {
             lastTappedIcon = CapturePhoto
             return
         }
@@ -468,7 +469,7 @@ class MediaPickerViewModel @Inject constructor(
     private fun clickIcon(icon: MediaPickerIcon) {
         mediaPickerTracker.trackIconClick(icon, mediaPickerSetup)
         if (icon is CapturePhoto) {
-            if (!permissionsHandler.hasPermissionsToAccessPhotos()) {
+            if (!permissionsHandler.hasPermissionsToTakePhotos(mediaPickerSetup.isStoragePermissionRequired)) {
                 _onNavigate.value = Event(RequestCameraPermission)
                 lastTappedIcon = icon
                 return
@@ -544,36 +545,31 @@ class MediaPickerViewModel @Inject constructor(
             return
         }
 
-        if (permissionsHandler.hasStoragePermission()) {
-            hideSoftRequest()
+        if (permissionsHandler.hasReadStoragePermission()) {
+            hideSoftRequest(STORAGE)
         } else {
-            showSoftRequest(
-                permission = STORAGE,
-                isAlwaysDenied = isAlwaysDenied
-            )
+            showSoftRequest(permission = STORAGE, isAlwaysDenied = isAlwaysDenied)
         }
     }
 
-    fun checkCameraPermission(
-        isCameraPermissionAlwaysDenied: Boolean,
-        isStoragePermissionAlwaysDenied: Boolean
-    ) {
-        if (!permissionsHandler.hasCameraPermission()
-            || !permissionsHandler.hasStoragePermission()) {
-            val isAlwaysDenied = isCameraPermissionAlwaysDenied || isStoragePermissionAlwaysDenied
-            showSoftRequest(
-                permission = CAMERA,
-                isAlwaysDenied = isAlwaysDenied
-            )
+    fun checkCameraPermission(isCameraPermissionAlwaysDenied: Boolean) {
+        if (!permissionsHandler.hasPermissionsToTakePhotos(
+                mediaPickerSetup.isStoragePermissionRequired
+            )) {
+            showSoftRequest(permission = CAMERA, isAlwaysDenied = isCameraPermissionAlwaysDenied)
         } else {
-            hideSoftRequest()
+            _domainModel.value = _domainModel.value?.copy(isLoading = true, emptyState = null)
+            if (_softAskRequest.value?.show == true) {
+                startCamera()
+                hideSoftRequest(CAMERA)
+            }
         }
     }
 
-    private fun hideSoftRequest() {
+    private fun hideSoftRequest(permission: PermissionsRequested) {
         _softAskRequest.value = SoftAskRequest(show = false)
 
-        if (_domainModel.value?.domainItems.isNullOrEmpty()) {
+        if (permission == STORAGE && _domainModel.value?.domainItems.isNullOrEmpty()) {
             refreshData(false)
         }
     }
@@ -582,8 +578,7 @@ class MediaPickerViewModel @Inject constructor(
         _softAskRequest.value = SoftAskRequest(
             show = true,
             type = permission,
-            isAlwaysDenied = isAlwaysDenied,
-            onClick = { onPermissionRequested(permission, isAlwaysDenied) }
+            isAlwaysDenied = isAlwaysDenied
         )
         _domainModel.value = _domainModel.value?.copy(isLoading = false, emptyState = null)
     }
@@ -606,13 +601,14 @@ class MediaPickerViewModel @Inject constructor(
                 softAskRequest.type,
                 softAskRequest.isAlwaysDenied
             )
+            val alsoStorageAccess = mediaPickerSetup.isStoragePermissionRequired
             val label = if (softAskRequest.isAlwaysDenied) {
                 val storage = permissionsHandler.getPermissionName(permission.READ_EXTERNAL_STORAGE)
                 val camera = permissionsHandler.getPermissionName(permission.CAMERA)
                 val permission = ("<strong>${
                     when (softAskRequest.type) {
                         STORAGE -> storage
-                        CAMERA -> "$storage & $camera"
+                        CAMERA -> camera + if (alsoStorageAccess) "& $storage" else ""
                     }
                 }</strong>")
                 String.format(
@@ -622,7 +618,12 @@ class MediaPickerViewModel @Inject constructor(
             } else {
                 when (softAskRequest.type) {
                     STORAGE -> resourceProvider.getString(string.photo_picker_soft_ask_label)
-                    CAMERA -> resourceProvider.getString(string.camera_soft_ask_label)
+                    CAMERA ->
+                        if (alsoStorageAccess) {
+                            resourceProvider.getString(string.camera_and_files_soft_ask_label)
+                        } else {
+                            resourceProvider.getString(string.camera_soft_ask_label)
+                        }
                 }
             }
             val allowId = if (softAskRequest.isAlwaysDenied) {
@@ -634,7 +635,9 @@ class MediaPickerViewModel @Inject constructor(
                 label,
                 UiStringRes(allowId),
                 softAskRequest.isAlwaysDenied,
-                softAskRequest.onClick
+                onClick = {
+                    onPermissionRequested(softAskRequest.type, softAskRequest.isAlwaysDenied)
+                }
             )
         } else {
             return SoftAskViewUiModel.Hidden
@@ -769,7 +772,6 @@ class MediaPickerViewModel @Inject constructor(
         val show: Boolean,
         val type: PermissionsRequested = STORAGE,
         val isAlwaysDenied: Boolean = false,
-        val onClick: () -> Unit = {}
     ) : Parcelable
 
     @Parcelize

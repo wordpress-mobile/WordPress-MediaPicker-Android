@@ -1,7 +1,6 @@
 package org.wordpress.android.mediapicker.ui
 
-import android.Manifest.permission.CAMERA
-import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.Manifest.permission.*
 import android.app.Activity
 import android.content.Intent.ACTION_GET_CONTENT
 import android.content.Intent.ACTION_OPEN_DOCUMENT
@@ -45,7 +44,6 @@ import org.wordpress.android.mediapicker.util.AnimUtils.Duration.MEDIUM
 import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils.Companion.PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE
 import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils.Companion.PHOTO_PICKER_STORAGE_PERMISSION_REQUEST_CODE
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction.*
-import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PermissionsRequested.STORAGE
 import org.wordpress.android.mediapicker.viewmodel.observeEvent
 import javax.inject.Inject
 
@@ -560,15 +558,11 @@ class MediaPickerFragment : Fragment() {
     }
 
     private suspend fun isStoragePermissionAlwaysDenied(): Boolean {
-        return permissionUtils.isPermissionAlwaysDenied(
-            requireActivity(), READ_EXTERNAL_STORAGE
-        )
+        return permissionUtils.isPermissionAlwaysDenied(requireActivity(), READ_EXTERNAL_STORAGE)
     }
 
     private suspend fun isCameraPermissionAlwaysDenied(): Boolean {
-        return permissionUtils.isPermissionAlwaysDenied(
-            requireActivity(), CAMERA
-        )
+        return permissionUtils.isPermissionAlwaysDenied(requireActivity(), CAMERA)
     }
     /*
      * load the photos if we have the necessary permission, otherwise show the "soft ask" view
@@ -586,8 +580,8 @@ class MediaPickerFragment : Fragment() {
             return
         }
         viewModel.checkCameraPermission(
-            isCameraPermissionAlwaysDenied(),
-            isStoragePermissionAlwaysDenied()
+            isCameraPermissionAlwaysDenied() || mediaPickerSetup.isStoragePermissionRequired
+                    && isStoragePermissionAlwaysDenied()
         )
     }
 
@@ -600,9 +594,11 @@ class MediaPickerFragment : Fragment() {
     }
 
     private fun requestCameraPermissions() {
-        // in addition to CAMERA permission we also need a storage permission,
-        // to store media from the camera
-        val permissions = arrayOf(CAMERA,  READ_EXTERNAL_STORAGE)
+        val permissions = if (mediaPickerSetup.isStoragePermissionRequired) {
+            arrayOf(CAMERA, WRITE_EXTERNAL_STORAGE)
+        } else {
+            arrayOf(CAMERA)
+        }
         requestPermissions(
             permissions,
             PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE

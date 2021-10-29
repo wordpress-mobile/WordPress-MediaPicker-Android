@@ -1,15 +1,33 @@
 package org.wordpress.android.mediapicker.ui
 
 import android.app.Activity
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
+import android.os.Build.VERSION_CODES
 import android.os.Bundle
+import android.os.Environment
+import android.os.ParcelFileDescriptor
+import android.provider.MediaStore
+import android.provider.MediaStore.Images
+import android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+import android.provider.MediaStore.MediaColumns
 import android.text.TextUtils
 import android.view.MenuItem
+import android.webkit.MimeTypeMap
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.fragment.app.FragmentTransaction
+import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.wordpress.android.mediapicker.MediaPickerConstants
 import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_MEDIA_ID
 import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_MEDIA_QUEUED_URIS
@@ -39,6 +57,8 @@ import org.wordpress.android.mediapicker.util.asAndroidUri
 import org.wordpress.android.mediapicker.util.asMediaUri
 import org.wordpress.android.mediapicker.util.MediaUtils
 import java.io.File
+import java.io.FileDescriptor
+import java.io.IOException
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -135,61 +155,110 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
         data: Intent?
     ) {
         super.onActivityResult(requestCode, resultCode, data)
-        val intent: Intent? = when (requestCode) {
-            MEDIA_LIBRARY -> {
-                if (resultCode != Activity.RESULT_OK) {
-                    setResult(Activity.RESULT_CANCELED, intent)
-                    if (mediaPickerSetup.primaryDataSource == SYSTEM_PICKER) {
-                        finish()
-                    }
-                    return
-                } else {
-                    data?.let {
-                        val uris = MediaUtils.retrieveMediaUris(data)
-                        pickerFragment?.urisSelectedFromSystemPicker(uris)
-                        return
-                    }
-                }
-            }
-            TAKE_PHOTO -> {
-                if (resultCode != Activity.RESULT_OK) {
-                    setResult(Activity.RESULT_CANCELED, intent)
-                    if (mediaPickerSetup.primaryDataSource == CAMERA) {
-                        finish()
-                    }
-                    return
-                } else {
-                    try {
-                        val intent = Intent()
-                        mediaCapturePath!!.let {
-                            MediaUtils.scanMediaFile(log, this, it)
-                            val f = File(it)
-                            val capturedImageUri = listOf(Uri.fromFile(f).asMediaUri())
-                            if (mediaPickerSetup.areResultsQueued) {
-                                intent.putQueuedUris(capturedImageUri)
-                            } else {
-                                intent.putUris(capturedImageUri)
-                            }
-                            intent.putExtra(
-                                EXTRA_MEDIA_SOURCE,
-                                ANDROID_CAMERA.name
-                            )
+        lifecycleScope.launch {
+            val intent: Intent? = when (requestCode) {
+                MEDIA_LIBRARY -> {
+                    if (resultCode != Activity.RESULT_OK) {
+                        setResult(Activity.RESULT_CANCELED, intent)
+                        if (mediaPickerSetup.primaryDataSource == SYSTEM_PICKER) {
+                            finish()
                         }
-                        intent
-                    } catch (e: RuntimeException) {
-                        log.e(e)
-                        null
+                        return@launch
+                    } else {
+                        data?.let {
+                            val uris = MediaUtils.retrieveMediaUris(data)
+                            pickerFragment?.urisSelectedFromSystemPicker(uris)
+                            return@launch
+                        }
                     }
                 }
+                TAKE_PHOTO -> {
+                    if (resultCode != Activity.RESULT_OK) {
+                        setResult(Activity.RESULT_CANCELED, intent)
+                        if (mediaPickerSetup.primaryDataSource == CAMERA) {
+                            finish()
+                        }
+                        return@launch
+                    } else {
+                        try {
+                            val intent = Intent()
+                            mediaCapturePath!!.let {
+                                saveImage(it)?.let { uri ->
+                                    val capturedImageUri = listOf(uri.asMediaUri())
+                                    if (mediaPickerSetup.areResultsQueued) {
+                                        intent.putQueuedUris(capturedImageUri)
+                                    } else {
+                                        intent.putUris(capturedImageUri)
+                                    }
+                                    intent.putExtra(
+                                        EXTRA_MEDIA_SOURCE,
+                                        ANDROID_CAMERA.name
+                                    )
+                                }
+                            }
+                            intent
+                        } catch (e: RuntimeException) {
+                            log.e(e)
+                            finish()
+                            null
+                        }
+                    }
+                }
+                else -> {
+                    data
+                }
             }
-            else -> {
-                data
+            intent?.let {
+                setResult(Activity.RESULT_OK, intent)
+                finish()
             }
         }
-        intent?.let {
-            setResult(Activity.RESULT_OK, intent)
-            finish()
+    }
+
+    private suspend fun saveImage(path: String): Uri? {
+        return if (Build.VERSION.SDK_INT >= VERSION_CODES.Q) {
+            saveImageInQ(path)
+        } else {
+            MediaUtils.scanMediaFile(log, this, path)
+            Uri.parse(path)
         }
+    }
+
+    @RequiresApi(VERSION_CODES.Q)
+    private suspend fun saveImageInQ(path: String): Uri? {
+        val uri: Uri?
+        withContext(Dispatchers.IO) {
+            val image = File(path)
+            val contentValues = ContentValues().apply {
+                put(MediaColumns.DISPLAY_NAME, image.name)
+                put(
+                    MediaColumns.MIME_TYPE,
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension(image.extension)
+                )
+                put(MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DCIM)
+                put(MediaColumns.DATE_TAKEN, System.currentTimeMillis())
+                put(MediaColumns.DATE_ADDED, System.currentTimeMillis())
+                put(MediaColumns.IS_PENDING, 1)
+            }
+
+            val contentResolver = applicationContext.contentResolver
+            uri = contentResolver.insert(Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL), contentValues)
+            if (uri != null) {
+                val result = runCatching {
+                    contentResolver.openOutputStream(uri)?.use { outputStream ->
+                        outputStream.write(image.readBytes())
+                        outputStream.flush()
+                        outputStream.close()
+                    }
+                }
+                result.exceptionOrNull()?.let { log.e(it) }
+
+                contentValues.clear()
+                contentValues.put(MediaColumns.IS_PENDING, 0)
+                contentResolver.update(uri, contentValues, null, null)
+            }
+        }
+        return uri
     }
 
     private fun launchChooserWithContext(openSystemPicker: OpenSystemPicker) {
