@@ -1,18 +1,21 @@
 package org.wordpress.android.mediapicker.util
 
 import android.Manifest
+import android.Manifest.permission
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
-import org.wordpress.android.mediapicker.viewmodel.ResourceProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.text.Html
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
+import android.os.Build.VERSION_CODES
 import android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
 import androidx.appcompat.app.AlertDialog.Builder
 import androidx.core.app.ActivityCompat
+import dagger.hilt.android.qualifiers.ApplicationContext
 import org.wordpress.android.mediapicker.Key
 import org.wordpress.android.mediapicker.Permissions
 import org.wordpress.android.mediapicker.R.string
@@ -25,7 +28,8 @@ import javax.inject.Singleton
 class MediaPickerPermissionUtils @Inject constructor(
     private val perms: Permissions,
     private val log: Log,
-    private val tracker: Tracker
+    private val tracker: Tracker,
+    @ApplicationContext private val context: Context
 ) {
     // permission request codes - note these are reported to analytics so they shouldn't be changed
     companion object {
@@ -84,6 +88,30 @@ class MediaPickerPermissionUtils @Inject constructor(
         return allGranted
     }
 
+
+    fun hasPermissionsToTakePhotos(isStorageAccessRequired: Boolean): Boolean {
+        return hasCameraPermission() && (!isStorageAccessRequired || hasWriteStoragePermission())
+    }
+
+    fun hasReadStoragePermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            context, permission.READ_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun hasWriteStoragePermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            context, permission.WRITE_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun hasCameraPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            context,
+            permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
     /*
      * returns true if we know the app has asked for the passed permission
      */
@@ -113,8 +141,8 @@ class MediaPickerPermissionUtils @Inject constructor(
         // shouldShowRequestPermissionRationale returns false if the permission has been permanently
         // denied, but it also returns false if the app has never requested that permission - so we
         // check it only if we know we've asked for this permission
-        if (isPermissionAsked(activity, permission) &&
-            ContextCompat.checkSelfPermission(activity, permission) ==
+        if (isPermissionAsked(context, permission) &&
+            ContextCompat.checkSelfPermission(context, permission) ==
             PackageManager.PERMISSION_DENIED
         ) {
             val shouldShow =
@@ -159,10 +187,14 @@ class MediaPickerPermissionUtils @Inject constructor(
     /*
      * returns the name to display for a permission, ex: "permission.WRITE_EXTERNAL_STORAGE" > "Storage"
      */
-    fun getPermissionName(context: Context, permission: String): String {
+    fun getPermissionName(permission: String): String {
         return when (permission) {
-            Manifest.permission.READ_EXTERNAL_STORAGE -> context.getString(
-                string.permission_storage
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE -> context.getString(
+                if (Build.VERSION.SDK_INT > VERSION_CODES.Q)
+                    string.permission_files_and_media
+                else
+                    string.permission_storage
             )
             Manifest.permission.CAMERA -> context.getString(string.permission_camera)
             Manifest.permission.RECORD_AUDIO -> context.getString(string.permission_microphone)
@@ -174,30 +206,13 @@ class MediaPickerPermissionUtils @Inject constructor(
     }
 
     /*
-     * returns the name to display for a permission, ex: "permission.WRITE_EXTERNAL_STORAGE" > "Storage"
-     */
-    fun getPermissionName(resourceProvider: ResourceProvider, permission: String): String {
-        return when (permission) {
-            Manifest.permission.READ_EXTERNAL_STORAGE -> resourceProvider.getString(
-                string.permission_storage
-            )
-            Manifest.permission.CAMERA -> resourceProvider.getString(string.permission_camera)
-            Manifest.permission.RECORD_AUDIO -> resourceProvider.getString(string.permission_microphone)
-            else -> {
-                log.w("No name for requested permission")
-                resourceProvider.getString(string.unknown)
-            }
-        }
-    }
-
-    /*
      * called when the app detects that the user has permanently denied a permission, shows a dialog
      * alerting them to this fact and enabling them to visit the app settings to edit permissions
      */
-    fun showPermissionAlwaysDeniedDialog(context: Context, permission: String) {
+    private fun showPermissionAlwaysDeniedDialog(context: Context, permission: String) {
         val message = String.format(
             context.getString(string.permissions_denied_message),
-            getPermissionName(context, permission)
+            getPermissionName(permission)
         )
         val builder: Builder = MaterialAlertDialogBuilder(context)
             .setTitle(context.getString(string.permissions_denied_title))

@@ -43,13 +43,13 @@ import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.SearchUi
 import org.wordpress.android.mediapicker.model.MediaType.*
 import org.wordpress.android.mediapicker.model.MediaUri
 import org.wordpress.android.mediapicker.util.UiString.UiStringRes
-import org.wordpress.android.mediapicker.PermissionsHandler
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.*
 import org.wordpress.android.mediapicker.model.MediaType
 import org.wordpress.android.mediapicker.model.MediaType.AUDIO
 import org.wordpress.android.mediapicker.model.MediaType.VIDEO
 import org.wordpress.android.mediapicker.ui.MediaPickerFragment.ChooserContext.*
+import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils
 import org.wordpress.android.mediapicker.util.UiString
 import org.wordpress.android.mediapicker.util.distinct
 import org.wordpress.android.mediapicker.util.merge
@@ -62,7 +62,7 @@ class MediaPickerViewModel @Inject constructor(
     private val mediaSourceFactory: MediaLoaderFactory,
     private val mediaInsertHandlerFactory: MediaInsertHandlerFactory,
     private val mediaPickerTracker: MediaPickerTracker,
-    private val permissionsHandler: PermissionsHandler,
+    private val permissionsHandler: MediaPickerPermissionUtils,
     private val resourceProvider: ResourceProvider,
     private val mimeTypeProvider: MimeTypeProvider
 ) : ViewModel() {
