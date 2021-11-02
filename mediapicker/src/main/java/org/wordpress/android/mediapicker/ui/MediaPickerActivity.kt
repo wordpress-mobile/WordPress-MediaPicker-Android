@@ -28,6 +28,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.wordpress.android.mediapicker.MediaManager
 import org.wordpress.android.mediapicker.MediaPickerConstants
 import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_MEDIA_ID
 import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_MEDIA_QUEUED_URIS
@@ -67,6 +68,7 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
     private lateinit var mediaPickerSetup: MediaPickerSetup
 
     @Inject lateinit var log: Log
+    @Inject lateinit var mediaManager: MediaManager
 
     enum class MediaPickerMediaSource {
         ANDROID_CAMERA, APP_PICKER, GIF, ANDROID_PICKER;
@@ -183,7 +185,7 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
                         try {
                             val intent = Intent()
                             mediaCapturePath!!.let {
-                                saveImage(it)?.let { uri ->
+                                mediaManager.saveImage(it)?.let { uri ->
                                     val capturedImageUri = listOf(uri.asMediaUri())
                                     if (mediaPickerSetup.areResultsQueued) {
                                         intent.putQueuedUris(capturedImageUri)
@@ -213,52 +215,6 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
                 finish()
             }
         }
-    }
-
-    private suspend fun saveImage(path: String): Uri? {
-        return if (Build.VERSION.SDK_INT >= VERSION_CODES.Q) {
-            saveImageInQ(path)
-        } else {
-            MediaUtils.scanMediaFile(log, this, path)
-            Uri.parse(path)
-        }
-    }
-
-    @RequiresApi(VERSION_CODES.Q)
-    private suspend fun saveImageInQ(path: String): Uri? {
-        val uri: Uri?
-        withContext(Dispatchers.IO) {
-            val image = File(path)
-            val contentValues = ContentValues().apply {
-                put(MediaColumns.DISPLAY_NAME, image.name)
-                put(
-                    MediaColumns.MIME_TYPE,
-                    MimeTypeMap.getSingleton().getMimeTypeFromExtension(image.extension)
-                )
-                put(MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DCIM)
-                put(MediaColumns.DATE_TAKEN, System.currentTimeMillis())
-                put(MediaColumns.DATE_ADDED, System.currentTimeMillis())
-                put(MediaColumns.IS_PENDING, 1)
-            }
-
-            val contentResolver = applicationContext.contentResolver
-            uri = contentResolver.insert(Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL), contentValues)
-            if (uri != null) {
-                val result = runCatching {
-                    contentResolver.openOutputStream(uri)?.use { outputStream ->
-                        outputStream.write(image.readBytes())
-                        outputStream.flush()
-                        outputStream.close()
-                    }
-                }
-                result.exceptionOrNull()?.let { log.e(it) }
-
-                contentValues.clear()
-                contentValues.put(MediaColumns.IS_PENDING, 0)
-                contentResolver.update(uri, contentValues, null, null)
-            }
-        }
-        return uri
     }
 
     private fun launchChooserWithContext(openSystemPicker: OpenSystemPicker) {

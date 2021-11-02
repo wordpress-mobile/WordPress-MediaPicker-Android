@@ -47,6 +47,8 @@ class DeviceMediaPickerSetup {
             )
         }
 
+        // Storage permission isn't required for Android API 29+ because there is a new storage
+        // access concept - a scoped storage
         fun buildCameraPicker(): MediaPickerSetup {
             return MediaPickerSetup(
                 primaryDataSource = CAMERA,
