@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import androidx.annotation.NonNull;
@@ -16,7 +15,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import org.wordpress.android.mediapicker.BuildConfig;
 import org.wordpress.android.mediapicker.ui.MediaPickerFragment;
 import org.wordpress.android.mediapicker.R;
 import org.wordpress.android.mediapicker.model.EditImageData;
@@ -93,12 +91,7 @@ public class MediaUtils {
                                                 LaunchCameraCallback callback)
             throws IOException {
 
-        File externalStorageDirectory;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            externalStorageDirectory = activity.getExternalFilesDir(Environment.DIRECTORY_DCIM);
-        } else {
-            externalStorageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
-        }
+        File externalStorageDirectory = MediaFileUtils.getExternalStorageDir(activity);
 
         String mediaCapturePath =
                 externalStorageDirectory + File.separator + "Camera" + File.separator + "wp-" + System

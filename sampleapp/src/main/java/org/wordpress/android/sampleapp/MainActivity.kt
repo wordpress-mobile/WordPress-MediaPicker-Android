@@ -1,5 +1,6 @@
 package org.wordpress.android.sampleapp
 
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
 import androidx.activity.result.ActivityResult
@@ -13,6 +14,7 @@ import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup
 import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup.MediaTypes.IMAGES
 import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup.MediaTypes.VIDEOS
 import org.wordpress.android.mediapicker.source.device.GifMediaPickerSetup
+import org.wordpress.android.mediapicker.util.MediaFileUtils
 import org.wordpress.android.sampleapp.R.id
 import org.wordpress.android.sampleapp.databinding.ActivityMainBinding
 
@@ -83,7 +85,7 @@ class MainActivity : AppCompatActivity() {
         if (result.resultCode == RESULT_OK) {
             val message =
                 (result.data?.extras?.get(MediaPickerConstants.EXTRA_MEDIA_URIS) as? Array<*>)
-                    ?.map { it as? String }
+                    ?.map { MediaFileUtils.getMediaStoreFilePath(this, Uri.parse(it as String)) }
                     ?.joinToString("\n") ?: ""
 
             Snackbar.make(findViewById<Button>(id.content), message, Snackbar.LENGTH_LONG).show()
