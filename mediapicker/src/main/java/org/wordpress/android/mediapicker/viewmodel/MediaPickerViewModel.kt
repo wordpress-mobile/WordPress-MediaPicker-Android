@@ -13,7 +13,7 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.*
 import org.wordpress.android.mediapicker.ui.MediaPickerFragment.*
-import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerAction.*
+import org.wordpress.android.mediapicker.model.MediaPickerAction.*
 import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerIcon.*
 import org.wordpress.android.mediapicker.MediaPickerTracker
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem
@@ -48,7 +48,9 @@ import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.*
 import org.wordpress.android.mediapicker.model.MediaType
 import org.wordpress.android.mediapicker.model.MediaType.AUDIO
 import org.wordpress.android.mediapicker.model.MediaType.VIDEO
-import org.wordpress.android.mediapicker.ui.MediaPickerFragment.ChooserContext.*
+import org.wordpress.android.mediapicker.model.MediaPickerContext
+import org.wordpress.android.mediapicker.model.MediaPickerContext.*
+import org.wordpress.android.mediapicker.model.MediaPickerAction
 import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils
 import org.wordpress.android.mediapicker.util.UiString
 import org.wordpress.android.mediapicker.util.distinct
@@ -519,7 +521,7 @@ class MediaPickerViewModel @Inject constructor(
                 Pair(PHOTO, mimeTypeProvider.imageTypes)
             }
             listOf(VIDEO).containsAll(allowedTypes) -> {
-                Pair(ChooserContext.VIDEO, mimeTypeProvider.videoTypes)
+                Pair(MediaPickerContext.VIDEO, mimeTypeProvider.videoTypes)
             }
             listOf(IMAGE, VIDEO).containsAll(allowedTypes) -> {
                 Pair(
@@ -528,7 +530,7 @@ class MediaPickerViewModel @Inject constructor(
                 )
             }
             listOf(AUDIO).containsAll(allowedTypes) -> {
-                Pair(ChooserContext.AUDIO, mimeTypeProvider.audioTypes)
+                Pair(MediaPickerContext.AUDIO, mimeTypeProvider.audioTypes)
             }
             else -> {
                 val allTypes = with(mimeTypeProvider) {

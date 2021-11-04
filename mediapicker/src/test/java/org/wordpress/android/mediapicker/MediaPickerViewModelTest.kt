@@ -22,9 +22,9 @@ import org.wordpress.android.fluxc.utils.MimeTypes
 import org.wordpress.android.test
 import org.wordpress.android.mediapicker.MediaItem.Identifier.LocalUri
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.IconClickEvent
-import org.wordpress.android.mediapicker.ui.MediaPickerFragment.ChooserContext
-import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerAction.OpenSystemPicker
-import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerAction.SwitchMediaPicker
+import org.wordpress.android.mediapicker.model.MediaPickerContext
+import org.wordpress.android.mediapicker.model.MediaPickerAction.OpenSystemPicker
+import org.wordpress.android.mediapicker.model.MediaPickerAction.SwitchMediaPicker
 import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerIcon.ChooseFromAndroidDevice
 import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerIcon.SwitchSource
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.CameraSetup
@@ -467,7 +467,8 @@ class MediaPickerViewModelTest : BaseUnitTest() {
         )
         assertThat(iconClickEvents).hasSize(1)
         assertThat(iconClickEvents[0].action is OpenSystemPicker).isTrue()
-        assertThat((iconClickEvents[0].action as OpenSystemPicker).chooserContext).isEqualTo(ChooserContext.PHOTO)
+        assertThat((iconClickEvents[0].action as OpenSystemPicker).pickerContext).isEqualTo(
+            MediaPickerContext.PHOTO)
     }
 
     @Test
@@ -488,7 +489,8 @@ class MediaPickerViewModelTest : BaseUnitTest() {
 
         assertThat(iconClickEvents).hasSize(1)
         assertThat(iconClickEvents[0].action is OpenSystemPicker).isTrue()
-        assertThat((iconClickEvents[0].action as OpenSystemPicker).chooserContext).isEqualTo(ChooserContext.VIDEO)
+        assertThat((iconClickEvents[0].action as OpenSystemPicker).pickerContext).isEqualTo(
+            MediaPickerContext.VIDEO)
     }
 
     @Test
@@ -509,8 +511,8 @@ class MediaPickerViewModelTest : BaseUnitTest() {
 
         assertThat(iconClickEvents).hasSize(1)
         assertThat(iconClickEvents[0].action is OpenSystemPicker).isTrue()
-        assertThat((iconClickEvents[0].action as OpenSystemPicker).chooserContext)
-                .isEqualTo(ChooserContext.PHOTO_OR_VIDEO)
+        assertThat((iconClickEvents[0].action as OpenSystemPicker).pickerContext)
+                .isEqualTo(MediaPickerContext.PHOTO_OR_VIDEO)
     }
 
     @Test
@@ -531,7 +533,8 @@ class MediaPickerViewModelTest : BaseUnitTest() {
 
         assertThat(iconClickEvents).hasSize(1)
         assertThat(iconClickEvents[0].action is OpenSystemPicker).isTrue()
-        assertThat((iconClickEvents[0].action as OpenSystemPicker).chooserContext).isEqualTo(ChooserContext.AUDIO)
+        assertThat((iconClickEvents[0].action as OpenSystemPicker).pickerContext).isEqualTo(
+            MediaPickerContext.AUDIO)
     }
 
     @Test
@@ -552,7 +555,8 @@ class MediaPickerViewModelTest : BaseUnitTest() {
 
         assertThat(iconClickEvents).hasSize(1)
         assertThat(iconClickEvents[0].action is OpenSystemPicker).isTrue()
-        assertThat((iconClickEvents[0].action as OpenSystemPicker).chooserContext).isEqualTo(ChooserContext.MEDIA_FILE)
+        assertThat((iconClickEvents[0].action as OpenSystemPicker).pickerContext).isEqualTo(
+            MediaPickerContext.MEDIA_FILE)
     }
 
     @Test

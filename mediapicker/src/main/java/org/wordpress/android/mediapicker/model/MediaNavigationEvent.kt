@@ -1,6 +1,5 @@
 package org.wordpress.android.mediapicker.model
 
-import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerAction
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 
 sealed class MediaNavigationEvent {

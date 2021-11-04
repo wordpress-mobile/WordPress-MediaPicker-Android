@@ -23,7 +23,7 @@ class MediaManager @Inject constructor(
     private val log: Log,
     @ApplicationContext private val applicationContext: Context
 ) {
-    suspend fun saveImage(path: String): Uri? {
+    suspend fun addImageToMediaStore(path: String): Uri? {
         return if (Build.VERSION.SDK_INT >= VERSION_CODES.Q) {
             saveImageInQ(path)
         } else {

@@ -12,16 +12,18 @@ import org.wordpress.android.mediapicker.MediaPickerConstants
 import org.wordpress.android.mediapicker.MediaPickerLauncher
 import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup
 import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup.MediaTypes.IMAGES
-import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup.MediaTypes.VIDEOS
 import org.wordpress.android.mediapicker.source.device.GifMediaPickerSetup
-import org.wordpress.android.mediapicker.util.MediaFileUtils
+import org.wordpress.android.mediapicker.util.MediaPickerUtils
 import org.wordpress.android.sampleapp.R.id
 import org.wordpress.android.sampleapp.databinding.ActivityMainBinding
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private var _binding: ActivityMainBinding? = null
     private val binding get() = _binding!!
+
+    @Inject lateinit var mediaPickerUtils: MediaPickerUtils
 
     private val resultLauncher = registerForActivityResult(StartActivityForResult()) {
         handleMediaPickerResult(it)
@@ -85,7 +87,7 @@ class MainActivity : AppCompatActivity() {
         if (result.resultCode == RESULT_OK) {
             val message =
                 (result.data?.extras?.get(MediaPickerConstants.EXTRA_MEDIA_URIS) as? Array<*>)
-                    ?.map { MediaFileUtils.getMediaStoreFilePath(this, Uri.parse(it as String)) }
+                    ?.map { mediaPickerUtils.getMediaStoreFilePath(this, Uri.parse(it as String)) }
                     ?.joinToString("\n") ?: ""
 
             Snackbar.make(findViewById<Button>(id.content), message, Snackbar.LENGTH_LONG).show()

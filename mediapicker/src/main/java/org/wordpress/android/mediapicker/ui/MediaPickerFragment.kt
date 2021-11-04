@@ -2,8 +2,6 @@ package org.wordpress.android.mediapicker.ui
 
 import android.Manifest.permission.*
 import android.app.Activity
-import android.content.Intent.ACTION_GET_CONTENT
-import android.content.Intent.ACTION_OPEN_DOCUMENT
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
@@ -14,7 +12,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AlertDialog.Builder
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -33,6 +30,7 @@ import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.Progress
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.databinding.MediaPickerLibFragmentBinding
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
+import org.wordpress.android.mediapicker.model.MediaPickerAction
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.*
@@ -63,34 +61,6 @@ class MediaPickerFragment : Fragment() {
                         ?: throw IllegalArgumentException("MediaPickerIconType not found with name $iconTypeName")
             }
         }
-    }
-
-    enum class ChooserContext(
-        val intentAction: String,
-        val title: Int,
-        val mediaTypeFilter: String
-    ) {
-        PHOTO(ACTION_GET_CONTENT,
-            R.string.pick_photo, "image/*"),
-        VIDEO(ACTION_GET_CONTENT,
-            R.string.pick_video, "video/*"),
-        PHOTO_OR_VIDEO(ACTION_GET_CONTENT,
-            R.string.pick_media, "*/*"),
-        AUDIO(ACTION_GET_CONTENT,
-            R.string.pick_audio, "*/*"),
-        MEDIA_FILE(ACTION_OPEN_DOCUMENT,
-            R.string.pick_file, "*/*");
-    }
-
-    sealed class MediaPickerAction {
-        data class OpenSystemPicker(
-            val chooserContext: ChooserContext,
-            val mimeTypes: List<String>,
-            val allowMultipleSelection: Boolean
-        ) : MediaPickerAction()
-
-        object OpenCameraForPhotos : MediaPickerAction()
-        data class SwitchMediaPicker(val mediaPickerSetup: MediaPickerSetup) : MediaPickerAction()
     }
 
     sealed class MediaPickerIcon(val type: MediaPickerIconType) {

@@ -27,11 +27,6 @@
     <string name="unknown">Unknown</string>
     <string name="confirm">Confirm</string>
     <string name="error_generic_network">A network error occurred. Please check your connection and try again.</string>
-    <string name="pick_photo">Select photo</string>
-    <string name="pick_video">Select video</string>
-    <string name="pick_audio">Select audio</string>
-    <string name="pick_media">Add image or video</string>
-    <string name="pick_file">Add file</string>
     <string name="retry">Retry</string>
     <string name="loading">Loading…</string>
     <string name="stock_media_picker_search_hint">Search free photo library</string>

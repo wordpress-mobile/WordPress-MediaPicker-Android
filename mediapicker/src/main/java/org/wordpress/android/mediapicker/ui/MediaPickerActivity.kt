@@ -1,33 +1,18 @@
 package org.wordpress.android.mediapicker.ui
 
 import android.app.Activity
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
-import android.os.Build
-import android.os.Build.VERSION_CODES
 import android.os.Bundle
-import android.os.Environment
-import android.os.ParcelFileDescriptor
-import android.provider.MediaStore
-import android.provider.MediaStore.Images
-import android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-import android.provider.MediaStore.MediaColumns
-import android.text.TextUtils
 import android.view.MenuItem
-import android.webkit.MimeTypeMap
-import androidx.annotation.RequiresApi
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.FileProvider
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.wordpress.android.mediapicker.MediaManager
 import org.wordpress.android.mediapicker.MediaPickerConstants
 import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_MEDIA_ID
@@ -37,14 +22,12 @@ import org.wordpress.android.mediapicker.MediaPickerConstants.EXTRA_MEDIA_URIS
 import org.wordpress.android.mediapicker.MediaPickerConstants.RESULT_IDS
 import org.wordpress.android.mediapicker.ui.MediaPickerActivity.MediaPickerMediaSource.ANDROID_CAMERA
 import org.wordpress.android.mediapicker.ui.MediaPickerFragment.Companion.newInstance
-import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerAction
-import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerAction.OpenCameraForPhotos
-import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerAction.OpenSystemPicker
-import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerAction.SwitchMediaPicker
+import org.wordpress.android.mediapicker.model.MediaPickerAction.OpenCameraForPhotos
+import org.wordpress.android.mediapicker.model.MediaPickerAction.OpenSystemPicker
+import org.wordpress.android.mediapicker.model.MediaPickerAction.SwitchMediaPicker
 import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerListener
 import org.wordpress.android.mediapicker.MediaPickerRequestCodes.MEDIA_LIBRARY
 import org.wordpress.android.mediapicker.MediaPickerRequestCodes.PHOTO_PICKER
-import org.wordpress.android.mediapicker.MediaPickerRequestCodes.TAKE_PHOTO
 import org.wordpress.android.mediapicker.R.drawable
 import org.wordpress.android.mediapicker.R.id
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
@@ -52,23 +35,19 @@ import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.*
 import org.wordpress.android.mediapicker.databinding.MediaPickerLibActivityBinding
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
+import org.wordpress.android.mediapicker.model.MediaPickerAction
 import org.wordpress.android.mediapicker.model.MediaUri
-import org.wordpress.android.mediapicker.util.Log
-import org.wordpress.android.mediapicker.util.asAndroidUri
-import org.wordpress.android.mediapicker.util.asMediaUri
-import org.wordpress.android.mediapicker.util.MediaUtils
-import java.io.File
-import java.io.FileDescriptor
-import java.io.IOException
+import org.wordpress.android.mediapicker.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
-    private var mediaCapturePath: String? = null
     private lateinit var mediaPickerSetup: MediaPickerSetup
+    private var capturedPhotoPath: String? = null
 
     @Inject lateinit var log: Log
     @Inject lateinit var mediaManager: MediaManager
+    @Inject lateinit var mediaPickerUtils: MediaPickerUtils
 
     enum class MediaPickerMediaSource {
         ANDROID_CAMERA, APP_PICKER, GIF, ANDROID_PICKER;
@@ -102,6 +81,10 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
             MediaPickerSetup.fromBundle(savedInstanceState)
         }
 
+        savedInstanceState?.let { bundle ->
+            capturedPhotoPath = bundle.getString(KEY_CAPTURED_PHOTO_PATH)
+        }
+
         var fragment = pickerFragment
         if (fragment == null) {
             fragment = newInstance(this, mediaPickerSetup)
@@ -132,15 +115,9 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         mediaPickerSetup.toBundle(outState)
-        if (!TextUtils.isEmpty(mediaCapturePath)) {
-            outState.putString(KEY_MEDIA_CAPTURE_PATH, mediaCapturePath)
-        }
+        outState.putString(KEY_CAPTURED_PHOTO_PATH, capturedPhotoPath)
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        mediaCapturePath = savedInstanceState.getString(KEY_MEDIA_CAPTURE_PATH)
-    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
@@ -149,76 +126,6 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
             return true
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    override fun onActivityResult(
-        requestCode: Int,
-        resultCode: Int,
-        data: Intent?
-    ) {
-        super.onActivityResult(requestCode, resultCode, data)
-        lifecycleScope.launch {
-            val intent: Intent? = when (requestCode) {
-                MEDIA_LIBRARY -> {
-                    if (resultCode != Activity.RESULT_OK) {
-                        setResult(Activity.RESULT_CANCELED, intent)
-                        if (mediaPickerSetup.primaryDataSource == SYSTEM_PICKER) {
-                            finish()
-                        }
-                        return@launch
-                    } else {
-                        data?.let {
-                            val uris = MediaUtils.retrieveMediaUris(data)
-                            pickerFragment?.urisSelectedFromSystemPicker(uris)
-                            return@launch
-                        }
-                    }
-                }
-                TAKE_PHOTO -> {
-                    if (resultCode != Activity.RESULT_OK) {
-                        setResult(Activity.RESULT_CANCELED, intent)
-                        if (mediaPickerSetup.primaryDataSource == CAMERA) {
-                            finish()
-                        }
-                        return@launch
-                    } else {
-                        try {
-                            val intent = Intent()
-                            mediaCapturePath!!.let {
-                                mediaManager.saveImage(it)?.let { uri ->
-                                    val capturedImageUri = listOf(uri.asMediaUri())
-                                    if (mediaPickerSetup.areResultsQueued) {
-                                        intent.putQueuedUris(capturedImageUri)
-                                    } else {
-                                        intent.putUris(capturedImageUri)
-                                    }
-                                    intent.putExtra(
-                                        EXTRA_MEDIA_SOURCE,
-                                        ANDROID_CAMERA.name
-                                    )
-                                }
-                            }
-                            intent
-                        } catch (e: RuntimeException) {
-                            log.e(e)
-                            finish()
-                            null
-                        }
-                    }
-                }
-                else -> {
-                    data
-                }
-            }
-            intent?.let {
-                setResult(Activity.RESULT_OK, intent)
-                finish()
-            }
-        }
-    }
-
-    private fun launchChooserWithContext(openSystemPicker: OpenSystemPicker) {
-        MediaUtils.launchChooserWithContext(this, openSystemPicker, MEDIA_LIBRARY)
     }
 
     private fun Intent.putUris(
@@ -281,17 +188,67 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
         finish()
     }
 
+    private val systemPicker = registerForActivityResult(StartActivityForResult()) {
+        handleSystemPickerResult(it)
+    }
+
+    private fun handleSystemPickerResult(result: ActivityResult) {
+        lifecycleScope.launch {
+            val resultIntent = Intent()
+            if (result.resultCode == Activity.RESULT_OK) {
+                result.data?.let {
+                    val uris = MediaUtils.retrieveMediaUris(it)
+                    pickerFragment?.urisSelectedFromSystemPicker(uris)
+                    return@launch
+                }
+            }
+            setResult(result.resultCode, resultIntent)
+            finish()
+        }
+    }
+
+    private val camera = registerForActivityResult(StartActivityForResult()) {
+        handleImageCaptureResult(it)
+    }
+
+    private fun handleImageCaptureResult(result: ActivityResult) {
+        lifecycleScope.launch {
+            val resultIntent = Intent()
+            if (result.resultCode == Activity.RESULT_OK) {
+                capturedPhotoPath?.let {
+                    val mediaStoreUri = mediaManager.addImageToMediaStore(it)
+                    if (mediaStoreUri != null) {
+                        val capturedImageUri = listOf(mediaStoreUri.asMediaUri())
+                        if (mediaPickerSetup.areResultsQueued) {
+                            resultIntent.putQueuedUris(capturedImageUri)
+                        } else {
+                            resultIntent.putUris(capturedImageUri)
+                        }
+                        resultIntent.putExtra(
+                            EXTRA_MEDIA_SOURCE,
+                            ANDROID_CAMERA.name
+                        )
+                    }
+                }
+            }
+            setResult(result.resultCode, resultIntent)
+            finish()
+        }
+    }
+
     override fun onIconClicked(action: MediaPickerAction) {
         when (action) {
             is OpenSystemPicker -> {
-                launchChooserWithContext(action)
+                val systemPickerIntent = mediaPickerUtils.createSystemPickerIntent(action)
+                systemPicker.launch(systemPickerIntent)
             }
             is SwitchMediaPicker -> {
                 startActivityForResult(buildIntent(this, action.mediaPickerSetup), PHOTO_PICKER)
             }
             OpenCameraForPhotos -> {
-                MediaUtils.launchCamera(log,this, applicationContext.packageName) {
-                    mediaCapturePath = it
+                mediaPickerUtils.createCapturedImageFile(this)?.let {
+                    capturedPhotoPath = it.path
+                    camera.launch(mediaPickerUtils.createCaptureImageIntent(this, it))
                 }
             }
         }
@@ -301,7 +258,7 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
 
     companion object {
         private const val PICKER_FRAGMENT_TAG = "picker_fragment_tag"
-        private const val KEY_MEDIA_CAPTURE_PATH = "media_capture_path"
+        private const val KEY_CAPTURED_PHOTO_PATH = "key_captured_photo_uri"
 
         fun buildIntent(
             context: Context,

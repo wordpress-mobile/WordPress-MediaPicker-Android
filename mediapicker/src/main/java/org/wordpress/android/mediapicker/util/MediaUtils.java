@@ -26,110 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MediaUtils {
-    
-    public interface LaunchCameraCallback {
-        void onMediaCapturePathReady(String mediaCapturePath);
-    }
-
-    private static void showSDCardRequiredDialog(Context context) {
-        AlertDialog.Builder dialogBuilder = new MaterialAlertDialogBuilder(context);
-        dialogBuilder.setTitle(context.getResources().getText(R.string.sdcard_title));
-        dialogBuilder.setMessage(context.getResources().getText(R.string.sdcard_message));
-        dialogBuilder.setPositiveButton(context.getString(android.R.string.ok), (dialog, whichButton) -> dialog.dismiss());
-        dialogBuilder.setCancelable(true);
-        dialogBuilder.create().show();
-    }
-
-    public static void launchChooserWithContext(
-            Activity activity,
-            MediaPickerFragment.MediaPickerAction.OpenSystemPicker openSystemPicker,
-            int requestCode
-    ) {
-        activity.startActivityForResult(prepareChooserIntent(activity, openSystemPicker),
-                requestCode);
-    }
-
-    private static Intent prepareChooserIntent(
-            Context context,
-            MediaPickerFragment.MediaPickerAction.OpenSystemPicker openSystemPicker
-    ) {
-        MediaPickerFragment.ChooserContext chooserContext = openSystemPicker.getChooserContext();
-        Intent intent = new Intent(chooserContext.getIntentAction());
-        intent.setType(chooserContext.getMediaTypeFilter());
-        intent.putExtra(Intent.EXTRA_MIME_TYPES, openSystemPicker.getMimeTypes().toArray(new String[0]));
-        if (openSystemPicker.getAllowMultipleSelection()) {
-            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        }
-        return Intent.createChooser(intent, context.getString(chooserContext.getTitle()));
-    }
-
-    public static void launchCamera(Log log, Activity activity, String applicationId, LaunchCameraCallback callback) {
-        Intent intent = prepareLaunchCamera(log, activity, applicationId, callback);
-        if (intent != null) {
-            activity.startActivityForResult(intent, TAKE_PHOTO);
-        }
-    }
-
-    private static Intent prepareLaunchCamera(Log log, Activity activity, String applicationId, LaunchCameraCallback callback) {
-        String state = Environment.getExternalStorageState();
-        if (!state.equals(Environment.MEDIA_MOUNTED)) {
-            showSDCardRequiredDialog(activity);
-            return null;
-        } else {
-            try {
-                return getLaunchCameraIntent(log, activity, applicationId, callback);
-            } catch (IOException e) {
-                // No need to write log here
-                return null;
-            }
-        }
-    }
-
-    private static Intent getLaunchCameraIntent(Log log,
-                                                Activity activity,
-                                                String applicationId,
-                                                LaunchCameraCallback callback)
-            throws IOException {
-
-        File externalStorageDirectory = MediaFileUtils.getExternalStorageDir(activity);
-
-        String mediaCapturePath =
-                externalStorageDirectory + File.separator + "Camera" + File.separator + "wp-" + System
-                        .currentTimeMillis() + ".jpg";
-
-        // make sure the directory we plan to store the recording in exists
-        File directory = new File(mediaCapturePath).getParentFile();
-        if (directory == null || (!directory.exists() && !directory.mkdirs())) {
-            try {
-                throw new IOException("Path to file could not be created: " + mediaCapturePath);
-            } catch (IOException e) {
-                log.e(e);
-                throw e;
-            }
-        }
-
-        Uri fileUri;
-        try {
-            fileUri = FileProvider.getUriForFile(activity, applicationId + ".provider", new File(mediaCapturePath));
-        } catch (IllegalArgumentException e) {
-            log.e("Cannot access the file planned to store the new media", e);
-            throw new IOException("Cannot access the file planned to store the new media");
-        } catch (NullPointerException e) {
-            log.e("Cannot access the file planned to store the new media - "
-                    + "FileProvider.getUriForFile cannot find a valid provider for the authority: "
-                    + applicationId + ".provider", e);
-            throw new IOException("Cannot access the file planned to store the new media");
-        }
-
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-
-        if (callback != null) {
-            callback.onMediaCapturePathReady(mediaCapturePath);
-        }
-        return intent;
-    }
-
     public static int getPlaceholder(String url) {
         if (org.wordpress.android.util.MediaUtils.isValidImage(url)) {
             return R.drawable.ic_image_white_24dp;
@@ -157,15 +53,6 @@ public class MediaUtils {
         MediaScannerConnection.scanFile(context,
                 new String[]{localMediaPath}, null,
                 (path, uri) -> log.d("Media scanner finished scanning " + path));
-    }
-
-    private static List<MediaUri> convertEditImageOutputToListOfUris(List<EditImageData.OutputData> data) {
-        List<MediaUri> uris = new ArrayList<>(data.size());
-        for (EditImageData.OutputData item : data) {
-            final Uri uri = Uri.parse(item.getOutputFilePath());
-            uris.add(MediaUriExtKt.asMediaUri(uri));
-        }
-        return uris;
     }
 
     public static List<Uri> retrieveMediaUris(Intent data) {
