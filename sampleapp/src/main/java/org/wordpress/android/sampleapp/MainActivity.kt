@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity() {
         if (result.resultCode == RESULT_OK) {
             val message =
                 (result.data?.extras?.get(MediaPickerConstants.EXTRA_MEDIA_URIS) as? Array<*>)
-                    ?.map { mediaPickerUtils.getMediaStoreFilePath(this, Uri.parse(it as String)) }
+                    ?.map { mediaPickerUtils.getMediaStoreFilePath(Uri.parse(it as String)) }
                     ?.joinToString("\n") ?: ""
 
             Snackbar.make(findViewById<Button>(id.content), message, Snackbar.LENGTH_LONG).show()

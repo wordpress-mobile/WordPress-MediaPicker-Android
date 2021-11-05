@@ -10,11 +10,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.mediapicker.MediaManager
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.*
-import org.wordpress.android.mediapicker.ui.MediaPickerFragment.*
 import org.wordpress.android.mediapicker.model.MediaPickerAction.*
-import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerIcon.*
+import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.*
 import org.wordpress.android.mediapicker.MediaPickerTracker
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem.*
@@ -51,23 +51,25 @@ import org.wordpress.android.mediapicker.model.MediaType.VIDEO
 import org.wordpress.android.mediapicker.model.MediaPickerContext
 import org.wordpress.android.mediapicker.model.MediaPickerContext.*
 import org.wordpress.android.mediapicker.model.MediaPickerAction
-import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils
-import org.wordpress.android.mediapicker.util.UiString
-import org.wordpress.android.mediapicker.util.distinct
-import org.wordpress.android.mediapicker.util.merge
+import org.wordpress.android.mediapicker.util.*
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PermissionsRequested.STORAGE
 import javax.inject.Inject
 
 @HiltViewModel
 class MediaPickerViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
     private val mediaSourceFactory: MediaLoaderFactory,
     private val mediaInsertHandlerFactory: MediaInsertHandlerFactory,
     private val mediaPickerTracker: MediaPickerTracker,
     private val permissionsHandler: MediaPickerPermissionUtils,
     private val resourceProvider: ResourceProvider,
-    private val mimeTypeProvider: MimeTypeProvider
+    private val mimeTypeProvider: MimeTypeProvider,
+    private val mediaPickerUtils: MediaPickerUtils,
+    private val mediaManager: MediaManager
 ) : ViewModel() {
+    companion object {
+        private const val CAPTURED_PHOTO_PATH = "CAPTURED_PHOTO_PATH"
+    }
     private lateinit var mediaLoader: MediaLoader
     private lateinit var mediaInsertHandler: MediaInsertHandler
     private val loadActions = Channel<LoadAction>()
@@ -117,6 +119,12 @@ class MediaPickerViewModel @Inject constructor(
         )
     }
 
+    private var capturedPhotoPath: String?
+        get() = savedStateHandle.get<String>(CAPTURED_PHOTO_PATH)
+        set(value) {
+            savedStateHandle[CAPTURED_PHOTO_PATH] = value
+        }
+
     val selectedIdentifiers: List<Identifier>
         get() = _selectedIds.value ?: listOf()
 
@@ -151,7 +159,7 @@ class MediaPickerViewModel @Inject constructor(
         return BrowseMenuUiModel(actions.toSet())
     }
 
-    var lastTappedIcon: MediaPickerIcon? = null
+    var lastTappedAction: org.wordpress.android.mediapicker.ui.MediaPickerActionEvent? = null
     private lateinit var mediaPickerSetup: MediaPickerSetup
 
     private fun buildUiModel(
@@ -320,12 +328,12 @@ class MediaPickerViewModel @Inject constructor(
     fun start(
         selectedIds: List<Identifier>,
         mediaPickerSetup: MediaPickerSetup,
-        lastTappedIcon: MediaPickerIcon?
+        lastTappedAction: org.wordpress.android.mediapicker.ui.MediaPickerActionEvent?
     ) {
         _selectedIds.value = selectedIds
 
         this.mediaPickerSetup = mediaPickerSetup
-        this.lastTappedIcon = lastTappedIcon
+        this.lastTappedAction = lastTappedAction
         this.mediaLoader = mediaSourceFactory.build(mediaPickerSetup)
         this.mediaInsertHandler = mediaInsertHandlerFactory.build(mediaPickerSetup)
 
@@ -440,7 +448,7 @@ class MediaPickerViewModel @Inject constructor(
                         if (_searchExpanded.value == true) {
                             _searchExpanded.value = false
                         }
-                        _onNavigate.value = Event(InsertMedia(it.identifiers))
+                        _onNavigate.value = Event(ReturnSelectedMedia(it.identifiers))
                     }
                 }
             }
@@ -455,7 +463,7 @@ class MediaPickerViewModel @Inject constructor(
         if (!permissionsHandler.hasPermissionsToTakePhotos(
                 mediaPickerSetup.isStoragePermissionRequired
             )) {
-            lastTappedIcon = CapturePhoto
+            lastTappedAction = CapturePhoto
             return
         }
         _onNavigate.postValue(Event(populateIconClickEvent(
@@ -468,17 +476,17 @@ class MediaPickerViewModel @Inject constructor(
         clickIcon(ChooseFromAndroidDevice(mediaPickerSetup.allowedTypes))
     }
 
-    private fun clickIcon(icon: MediaPickerIcon) {
-        mediaPickerTracker.trackIconClick(icon, mediaPickerSetup)
-        if (icon is CapturePhoto) {
+    private fun clickIcon(action: org.wordpress.android.mediapicker.ui.MediaPickerActionEvent) {
+        mediaPickerTracker.trackIconClick(action, mediaPickerSetup)
+        if (action is CapturePhoto) {
             if (!permissionsHandler.hasPermissionsToTakePhotos(mediaPickerSetup.isStoragePermissionRequired)) {
                 _onNavigate.value = Event(RequestCameraPermission)
-                lastTappedIcon = icon
+                lastTappedAction = action
                 return
             }
         }
         _onNavigate.postValue(Event(populateIconClickEvent(
-            icon,
+            action,
             mediaPickerSetup.isMultiSelectEnabled
         )))
     }
@@ -489,19 +497,22 @@ class MediaPickerViewModel @Inject constructor(
         }
     }
 
-    private fun populateIconClickEvent(icon: MediaPickerIcon, canMultiselect: Boolean): IconClickEvent {
-        val action: MediaPickerAction = when (icon) {
+    private fun populateIconClickEvent(action: org.wordpress.android.mediapicker.ui.MediaPickerActionEvent, canMultiselect: Boolean): ChooseMediaPickerAction {
+        val actionEvent: MediaPickerAction = when (action) {
             is ChooseFromAndroidDevice -> {
-                getSystemPickerAction(icon.allowedTypes, canMultiselect)
+                getSystemPickerAction(action.allowedTypes, canMultiselect)
             }
-            is CapturePhoto -> OpenCameraForPhotos
+            is CapturePhoto -> {
+                capturedPhotoPath = mediaPickerUtils.generateCapturedImagePath()
+                OpenCameraForPhotos(capturedPhotoPath)
+            }
             is SwitchSource -> {
                 val availableSources = mutableSetOf<DataSource>().apply {
-                    if (icon.dataSource == DEVICE) add(SYSTEM_PICKER)
+                    if (action.dataSource == DEVICE) add(SYSTEM_PICKER)
                 }
                 SwitchMediaPicker(
                         mediaPickerSetup.copy(
-                                primaryDataSource = icon.dataSource,
+                                primaryDataSource = action.dataSource,
                                 availableDataSources = availableSources,
                                 isSearchToggledByDefault = false
                         )
@@ -509,7 +520,7 @@ class MediaPickerViewModel @Inject constructor(
             }
         }
 
-        return IconClickEvent(action)
+        return ChooseMediaPickerAction(actionEvent)
     }
 
     private fun getSystemPickerAction(
@@ -682,11 +693,30 @@ class MediaPickerViewModel @Inject constructor(
         searchJob?.cancel()
     }
 
-    fun urisSelectedFromSystemPicker(uris: List<MediaUri>) {
+    fun onUrisSelectedFromSystemPicker(uris: List<MediaUri>) {
         viewModelScope.launch {
             delay(100)
             insertIdentifiers(uris.map { LocalUri(it) })
         }
+    }
+
+    fun onImageCaptured() {
+        capturedPhotoPath?.let {
+            viewModelScope.launch {
+                mediaManager.addImageToMediaStore(it)?.let { mediaStoreUri ->
+                    _onNavigate.value = Event(
+                        ReturnCapturedImage(
+                            mediaPickerSetup.areResultsQueued,
+                            mediaStoreUri
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    fun onMediaPickerActionFailed() {
+        _onNavigate.value = Event(Exit)
     }
 
     private fun onPermissionRequested(

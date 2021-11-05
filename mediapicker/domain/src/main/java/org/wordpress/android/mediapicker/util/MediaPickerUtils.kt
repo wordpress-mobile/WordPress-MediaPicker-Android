@@ -1,6 +1,5 @@
 package org.wordpress.android.mediapicker.util
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -89,7 +88,7 @@ class MediaPickerUtils @Inject constructor(
                 val imageUri = FileProvider.getUriForFile(
                     context,
                     authority,
-                    tempFile
+                    File(tempFilePath)
                 )
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
                 return intent
@@ -98,7 +97,7 @@ class MediaPickerUtils @Inject constructor(
         return null
     }
 
-    fun getMediaStoreFilePath(context: Context, uri: Uri): String? {
+    fun getMediaStoreFilePath(uri: Uri): String? {
         var path: String? = null
         if (VERSION.SDK_INT >= VERSION_CODES.Q) {
             try {

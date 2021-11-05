@@ -2,12 +2,13 @@ package org.wordpress.android.mediapicker.ui
 
 import android.Manifest.permission.*
 import android.app.Activity
-import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
 import android.text.Html
 import android.view.*
 import android.view.MenuItem.OnActionExpandListener
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AlertDialog.Builder
 import androidx.appcompat.app.AppCompatActivity
@@ -31,12 +32,11 @@ import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.databinding.MediaPickerLibFragmentBinding
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 import org.wordpress.android.mediapicker.model.MediaPickerAction
+import org.wordpress.android.mediapicker.model.MediaPickerAction.*
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.*
-import org.wordpress.android.mediapicker.model.MediaType
 import org.wordpress.android.mediapicker.model.MediaUri
-import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerIconType.*
 import org.wordpress.android.mediapicker.util.*
 import org.wordpress.android.mediapicker.util.AnimUtils.Duration.MEDIUM
 import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils.Companion.PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE
@@ -47,96 +47,32 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MediaPickerFragment : Fragment() {
-    @Inject lateinit var log: Log
-
-    enum class MediaPickerIconType {
-        ANDROID_CHOOSE_FROM_DEVICE,
-        SWITCH_SOURCE,
-        CAPTURE_PHOTO;
-
-        companion object {
-            @JvmStatic
-            fun fromNameString(iconTypeName: String): MediaPickerIconType {
-                return values().firstOrNull { it.name == iconTypeName }
-                        ?: throw IllegalArgumentException("MediaPickerIconType not found with name $iconTypeName")
-            }
-        }
+    companion object {
+        private const val KEY_SELECTED_IDS = "selected_ids"
+        private const val KEY_LIST_STATE = "list_state"
+        const val NUM_COLUMNS = 3
     }
 
-    sealed class MediaPickerIcon(val type: MediaPickerIconType) {
-        data class ChooseFromAndroidDevice(
-            val allowedTypes: Set<MediaType>
-        ) : MediaPickerIcon(ANDROID_CHOOSE_FROM_DEVICE)
-
-        data class SwitchSource(val dataSource: DataSource) : MediaPickerIcon(SWITCH_SOURCE)
-
-        object CapturePhoto : MediaPickerIcon(CAPTURE_PHOTO)
-
-        fun toBundle(bundle: Bundle) {
-            bundle.putString(KEY_LAST_TAPPED_ICON, type.name)
-            when (this) {
-                is ChooseFromAndroidDevice -> {
-                    bundle.putStringArrayList(
-                            KEY_LAST_TAPPED_ICON_ALLOWED_TYPES,
-                            ArrayList(allowedTypes.map { it.name })
-                    )
-                }
-                is SwitchSource -> {
-                    bundle.putInt(KEY_LAST_TAPPED_ICON_DATA_SOURCE, this.dataSource.ordinal)
-                }
-            }
-        }
-
-        companion object {
-            @JvmStatic
-            fun fromBundle(bundle: Bundle): MediaPickerIcon? {
-                val iconTypeName = bundle.getString(KEY_LAST_TAPPED_ICON) ?: return null
-
-                return when (iconTypeName.let {
-                    MediaPickerIconType.fromNameString(
-                        iconTypeName
-                    )
-                }) {
-                    ANDROID_CHOOSE_FROM_DEVICE -> {
-                        val allowedTypes = (bundle.getStringArrayList(
-                            KEY_LAST_TAPPED_ICON_ALLOWED_TYPES
-                        )
-                                ?: listOf<String>()).map {
-                            MediaType.valueOf(it)
-                        }.toSet()
-                        ChooseFromAndroidDevice(allowedTypes)
-                    }
-                    CAPTURE_PHOTO -> CapturePhoto
-                    SWITCH_SOURCE -> {
-                        val ordinal = bundle.getInt(KEY_LAST_TAPPED_ICON_DATA_SOURCE, -1)
-                        if (ordinal != -1) {
-                            val dataSource = DataSource.values()[ordinal]
-                            SwitchSource(dataSource)
-                        } else {
-                            null
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /*
-     * parent activity must implement this listener
-     */
-    interface MediaPickerListener {
-        fun onItemsChosen(identifiers: List<Identifier>)
-        fun onIconClicked(action: MediaPickerAction)
-    }
-
-    private var listener: MediaPickerListener? = null
-
-//    @Inject lateinit var imageManager: ImageManager
-    @Inject lateinit var permissionUtils: MediaPickerPermissionUtils
+    @Inject
+    lateinit var log: Log
+    @Inject
+    lateinit var mediaPickerUtils: MediaPickerUtils
+    @Inject
+    lateinit var permissionUtils: MediaPickerPermissionUtils
 
     private val viewModel: MediaPickerViewModel by viewModels()
     private var binding: MediaPickerLibFragmentBinding? = null
     private lateinit var mediaPickerSetup: MediaPickerSetup
+
+    private val switchSource = registerForActivityResult(StartActivityForResult()) {}
+
+    private val systemPicker = registerForActivityResult(StartActivityForResult()) {
+        handleSystemPickerResult(it)
+    }
+
+    private val camera = registerForActivityResult(StartActivityForResult()) {
+        handleImageCaptureResult(it)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -150,20 +86,44 @@ class MediaPickerFragment : Fragment() {
     ): View? {
         return inflater.inflate(
             R.layout.media_picker_lib_fragment,
-                container,
-                false
+            container,
+            false
         )
+    }
+
+    private fun handleSystemPickerResult(result: ActivityResult) {
+        if (result.resultCode == Activity.RESULT_OK) {
+            result.data?.let { data ->
+                val uris = MediaUtils.retrieveMediaUris(data).map { MediaUri(it.toString()) }
+                viewModel.onUrisSelectedFromSystemPicker(uris)
+            }
+        } else {
+            viewModel.onMediaPickerActionFailed()
+        }
+    }
+
+    private fun handleImageCaptureResult(result: ActivityResult) {
+        if (result.resultCode == Activity.RESULT_OK) {
+            viewModel.onImageCaptured()
+        } else {
+            viewModel.onMediaPickerActionFailed()
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mediaPickerSetup = MediaPickerSetup.fromBundle(requireArguments())
+        mediaPickerSetup = if (savedInstanceState == null) {
+            MediaPickerSetup.fromIntent(requireActivity().intent)
+        } else {
+            MediaPickerSetup.fromBundle(savedInstanceState)
+        }
+
         var selectedIds: List<Identifier> = emptyList()
-        var lastTappedIcon: MediaPickerIcon? = null
+        var lastTappedAction: MediaPickerActionEvent? = null
         if (savedInstanceState != null) {
-            lastTappedIcon =
-                MediaPickerIcon.fromBundle(
+            lastTappedAction =
+                MediaPickerActionEvent.fromBundle(
                     savedInstanceState
                 )
             if (savedInstanceState.containsKey(KEY_SELECTED_IDS)) {
@@ -174,8 +134,8 @@ class MediaPickerFragment : Fragment() {
         }
 
         val layoutManager = GridLayoutManager(
-                activity,
-                NUM_COLUMNS
+            activity,
+            NUM_COLUMNS
         )
 
         savedInstanceState?.getParcelable<Parcelable>(KEY_LIST_STATE)?.let {
@@ -223,17 +183,38 @@ class MediaPickerFragment : Fragment() {
                                 navigationEvent.url
                             )
                         }
-                        is InsertMedia -> listener?.onItemsChosen(navigationEvent.identifiers)
-                        is IconClickEvent -> listener?.onIconClicked(navigationEvent.action)
+                        is ReturnSelectedMedia -> {
+                            val resultIntent = ResultIntentHelper.getSelectedMediaResultIntent(
+                                navigationEvent.identifiers,
+                                mediaPickerSetup.primaryDataSource
+                            )
+                            requireActivity().apply {
+                                setResult(Activity.RESULT_OK, resultIntent)
+                                finish()
+                            }
+                        }
+                        is ReturnCapturedImage -> {
+                            val resultIntent = ResultIntentHelper.getCapturedImageResultIntent(
+                                navigationEvent.areResultsQueued,
+                                navigationEvent.capturedImageUri
+                            )
+                            requireActivity().apply {
+                                setResult(Activity.RESULT_OK, resultIntent)
+                                finish()
+                            }
+                        }
+                        is ChooseMediaPickerAction -> onActionSelected(navigationEvent.action)
                         Exit -> {
-                            val activity = requireActivity()
-                            activity.setResult(Activity.RESULT_CANCELED)
-                            activity.finish()
+                            requireActivity().apply {
+                                setResult(Activity.RESULT_CANCELED)
+                                finish()
+                            }
                         }
                         RequestCameraPermission -> requestCameraPermissions()
                         RequestStoragePermission -> requestStoragePermission()
                         ShowAppSettings -> permissionUtils.showAppSettings(requireActivity())
-                        is PreviewMedia -> TODO()
+                        is PreviewMedia -> {
+                        }
                     }
                 })
 
@@ -243,7 +224,31 @@ class MediaPickerFragment : Fragment() {
 
             setupProgressDialog()
 
-            viewModel.start(selectedIds, mediaPickerSetup, lastTappedIcon)
+            requireActivity().actionBar?.setTitle(mediaPickerSetup.title)
+
+            viewModel.start(selectedIds, mediaPickerSetup, lastTappedAction)
+        }
+    }
+
+    private fun onActionSelected(action: MediaPickerAction) {
+        when (action) {
+            is OpenSystemPicker -> {
+                val systemPickerIntent = mediaPickerUtils.createSystemPickerIntent(action)
+                systemPicker.launch(systemPickerIntent)
+            }
+            is SwitchMediaPicker -> {
+                switchSource.launch(
+                    MediaPickerActivity.buildIntent(
+                        requireContext(),
+                        action.mediaPickerSetup
+                    )
+                )
+            }
+            is OpenCameraForPhotos -> {
+                action.imagePath?.let {
+                    camera.launch(mediaPickerUtils.createCaptureImageIntent(it))
+                }
+            }
         }
     }
 
@@ -307,12 +312,6 @@ class MediaPickerFragment : Fragment() {
         return true
     }
 
-    fun urisSelectedFromSystemPicker(uris: List<Uri>) {
-        viewModel.urisSelectedFromSystemPicker(uris.map {
-            MediaUri(it.toString())
-        })
-    }
-
     private fun initializeSearchView(actionMenuItem: MenuItem) {
         var isExpanding = false
         actionMenuItem.setOnActionExpandListener(object : OnActionExpandListener {
@@ -363,8 +362,10 @@ class MediaPickerFragment : Fragment() {
     }
 
     private fun MediaPickerLibFragmentBinding.setupPhotoList(uiModel: PhotoListUiModel) {
-        loadingView.visibility = if (uiModel == PhotoListUiModel.Loading) View.VISIBLE else View.GONE
-        actionableEmptyView.visibility = if (uiModel is PhotoListUiModel.Empty) View.VISIBLE else View.GONE
+        loadingView.visibility =
+            if (uiModel == PhotoListUiModel.Loading) View.VISIBLE else View.GONE
+        actionableEmptyView.visibility =
+            if (uiModel is PhotoListUiModel.Empty) View.VISIBLE else View.GONE
         recycler.visibility = if (uiModel is PhotoListUiModel.Data) View.VISIBLE else View.INVISIBLE
         when (uiModel) {
             is PhotoListUiModel.Data -> {
@@ -380,10 +381,10 @@ class MediaPickerFragment : Fragment() {
 
                 actionableEmptyView.subtitle.applyOrHide(uiModel.htmlSubtitle) { htmlSubtitle ->
                     actionableEmptyView.subtitle.text = Html.fromHtml(
-                            UiHelpers.getTextOfUiString(
-                                    requireContext(),
-                                    htmlSubtitle
-                            )
+                        UiHelpers.getTextOfUiString(
+                            requireContext(),
+                            htmlSubtitle
+                        )
                     )
                     actionableEmptyView.subtitle.movementMethod =
                         MediaPickerLinkMovementMethod.getInstance(log)
@@ -395,8 +396,8 @@ class MediaPickerFragment : Fragment() {
                     this.setImageResource(bottomImage)
                     if (uiModel.bottomImageDescription != null) {
                         this.contentDescription = UiHelpers.getTextOfUiString(
-                                requireContext(),
-                                uiModel.bottomImageDescription
+                            requireContext(),
+                            uiModel.bottomImageDescription
                         )
                     }
                 }
@@ -424,13 +425,13 @@ class MediaPickerFragment : Fragment() {
         val adapter = recycler.adapter as MediaPickerAdapter
 
         (recycler.layoutManager as? GridLayoutManager)?.spanSizeLookup =
-                object : SpanSizeLookup() {
-                    override fun getSpanSize(position: Int) = if (items[position].fullWidthItem) {
-                        NUM_COLUMNS
-                    } else {
-                        1
-                    }
+            object : SpanSizeLookup() {
+                override fun getSpanSize(position: Int) = if (items[position].fullWidthItem) {
+                    NUM_COLUMNS
+                } else {
+                    1
                 }
+            }
         val recyclerViewState = recycler.layoutManager?.onSaveInstanceState()
         adapter.loadData(items)
         recycler.layoutManager?.onRestoreInstanceState(recyclerViewState)
@@ -494,7 +495,8 @@ class MediaPickerFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        viewModel.lastTappedIcon?.toBundle(outState)
+
+        viewModel.lastTappedAction?.toBundle(outState)
         val selectedIds = viewModel.selectedIdentifiers
         if (selectedIds.isNotEmpty()) {
             outState.putParcelableArrayList(
@@ -505,6 +507,8 @@ class MediaPickerFragment : Fragment() {
         binding!!.recycler.layoutManager?.let {
             outState.putParcelable(KEY_LIST_STATE, it.onSaveInstanceState())
         }
+
+        mediaPickerSetup.toBundle(outState)
     }
 
     override fun onResume() {
@@ -523,10 +527,6 @@ class MediaPickerFragment : Fragment() {
         }
     }
 
-    fun setMediaPickerListener(listener: MediaPickerListener?) {
-        this.listener = listener
-    }
-
     private suspend fun isStoragePermissionAlwaysDenied(): Boolean {
         return permissionUtils.isPermissionAlwaysDenied(requireActivity(), READ_EXTERNAL_STORAGE)
     }
@@ -534,10 +534,11 @@ class MediaPickerFragment : Fragment() {
     private suspend fun isCameraPermissionAlwaysDenied(): Boolean {
         return permissionUtils.isPermissionAlwaysDenied(requireActivity(), CAMERA)
     }
+
     /*
-     * load the photos if we have the necessary permission, otherwise show the "soft ask" view
-     * which asks the user to allow the permission
-     */
+         * load the photos if we have the necessary permission, otherwise show the "soft ask" view
+         * which asks the user to allow the permission
+         */
     private suspend fun checkStoragePermission() {
         if (!isAdded) {
             return
@@ -598,24 +599,5 @@ class MediaPickerFragment : Fragment() {
             }
         }
     }
-
-    companion object {
-        private const val KEY_LAST_TAPPED_ICON = "last_tapped_icon"
-        private const val KEY_LAST_TAPPED_ICON_ALLOWED_TYPES = "last_tapped_icon_allowed_types"
-        private const val KEY_LAST_TAPPED_ICON_DATA_SOURCE = "last_tapped_icon_data_source"
-        private const val KEY_SELECTED_IDS = "selected_ids"
-        private const val KEY_LIST_STATE = "list_state"
-        const val NUM_COLUMNS = 3
-        @JvmStatic fun newInstance(
-            listener: MediaPickerListener,
-            mediaPickerSetup: MediaPickerSetup
-        ): MediaPickerFragment {
-            val args = Bundle()
-            mediaPickerSetup.toBundle(args)
-            val fragment = MediaPickerFragment()
-            fragment.setMediaPickerListener(listener)
-            fragment.arguments = args
-            return fragment
-        }
-    }
 }
+
