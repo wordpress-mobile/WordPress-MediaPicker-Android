@@ -224,7 +224,8 @@ class MediaPickerFragment : Fragment() {
 
             setupProgressDialog()
 
-            requireActivity().actionBar?.setTitle(mediaPickerSetup.title)
+            (requireActivity() as AppCompatActivity).supportActionBar
+                ?.setTitle(mediaPickerSetup.title)
 
             viewModel.start(selectedIds, mediaPickerSetup, lastTappedAction)
         }

@@ -23,10 +23,9 @@ class MediaPickerActivity : AppCompatActivity() {
         setContentView(binding.root)
         binding.toolbarMain.setNavigationIcon(drawable.ic_close_white_24dp)
         setSupportActionBar(binding.toolbarMain)
-        val actionBar = supportActionBar
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true)
-            actionBar.setDisplayShowTitleEnabled(true)
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setDisplayShowTitleEnabled(true)
         }
     }
 
