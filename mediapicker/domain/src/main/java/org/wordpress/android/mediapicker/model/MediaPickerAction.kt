@@ -9,6 +9,6 @@ sealed class MediaPickerAction {
         val allowMultipleSelection: Boolean
     ) : MediaPickerAction()
 
-    object OpenCameraForPhotos : MediaPickerAction()
+    data class OpenCameraForPhotos(val imagePath: String?) : MediaPickerAction()
     data class SwitchMediaPicker(val mediaPickerSetup: MediaPickerSetup) : MediaPickerAction()
 }

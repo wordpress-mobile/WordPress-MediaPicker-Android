@@ -9,7 +9,6 @@ import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Environment
 import android.provider.MediaStore
-import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.wordpress.android.mediapicker.model.MediaPickerAction.OpenSystemPicker
@@ -29,7 +28,6 @@ class MediaPickerUtils @Inject constructor(
 ) {
     @Suppress("Deprecation")
     val externalStorageDir: File?
-        @RequiresApi(VERSION_CODES.FROYO)
         get() {
             return if (VERSION.SDK_INT >= VERSION_CODES.Q) {
                 context.getExternalFilesDir(Environment.DIRECTORY_DCIM)
@@ -38,7 +36,9 @@ class MediaPickerUtils @Inject constructor(
             }
         }
 
-    @RequiresApi(VERSION_CODES.KITKAT)
+    private val isCameraAvailable: Boolean
+        get() = context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
+
     fun createSystemPickerIntent(
         openSystemPicker: OpenSystemPicker
     ): Intent? {
@@ -55,8 +55,7 @@ class MediaPickerUtils @Inject constructor(
     /**
      * Creates a temporary file for storing captured photos
      */
-    @RequiresApi(VERSION_CODES.FROYO)
-    fun createCapturedImageFile(context: Context): File? {
+    private fun generateCapturedImageFile(): File? {
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
         val storageDir = context.getExternalFilesDir(Environment.DIRECTORY_DCIM)
         var file: File? = null
@@ -72,12 +71,13 @@ class MediaPickerUtils @Inject constructor(
         return file
     }
 
+    fun generateCapturedImagePath(): String? = generateCapturedImageFile()?.path
+
     /**
      * Create an intent for capturing a device photo
      */
-    @RequiresApi(VERSION_CODES.JELLY_BEAN_MR1)
-    fun createCaptureImageIntent(context: Context, tempFile: File): Intent? {
-        if (!hasCamera(context)) {
+    fun createCaptureImageIntent(tempFilePath: String): Intent? {
+        if (!isCameraAvailable) {
             return null
         }
 
@@ -125,10 +125,6 @@ class MediaPickerUtils @Inject constructor(
         }
         return path
     }
-
-    @RequiresApi(VERSION_CODES.JELLY_BEAN_MR1)
-    private fun hasCamera(context: Context): Boolean =
-        context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
 
     private fun createTempFile(context: Context): File? {
         var file: File? = null

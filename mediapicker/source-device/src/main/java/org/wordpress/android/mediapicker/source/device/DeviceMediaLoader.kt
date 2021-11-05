@@ -7,11 +7,9 @@ import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.os.Environment
-import android.provider.MediaStore
 import android.provider.MediaStore.*
 import android.provider.MediaStore.Files.FileColumns
 import android.webkit.MimeTypeMap
-import androidx.annotation.RequiresApi
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.wordpress.android.mediapicker.model.MediaType
 import org.wordpress.android.mediapicker.model.MediaType.AUDIO
@@ -94,7 +92,6 @@ class DeviceMediaLoader @Inject constructor(
         return DeviceMediaList(result.take(pageSize), nextItem)
     }
 
-    @RequiresApi(VERSION_CODES.FROYO)
     fun loadDocuments(filter: String?, pageSize: Int, limitDate: Long? = null): DeviceMediaList {
         val storagePublicDirectory = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
         val nextPage = (storagePublicDirectory?.listFiles() ?: arrayOf()).filter {

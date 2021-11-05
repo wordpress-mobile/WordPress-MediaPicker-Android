@@ -5,7 +5,6 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
 import android.content.Context
-import android.os.Build.VERSION_CODES
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AccelerateInterpolator
@@ -14,7 +13,6 @@ import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import android.view.animation.RotateAnimation
 import android.view.animation.TranslateAnimation
-import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 import org.wordpress.android.mediapicker.util.AnimUtils.Duration.EXTRA_LONG
 import org.wordpress.android.mediapicker.util.AnimUtils.Duration.SHORT
@@ -24,7 +22,6 @@ private const val DEGREES_0 = 0f
 private const val DEGREES_360 = 360f
 private const val PIVOT_CENTER = 0.5f
 
-@RequiresApi(VERSION_CODES.ICE_CREAM_SANDWICH)
 @Suppress("TooManyFunctions")
 object AnimUtils {
     enum class Duration {
