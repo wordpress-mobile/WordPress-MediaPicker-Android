@@ -16,7 +16,8 @@
     <string name="media_insert_failed">Media insert failed.</string>
     <string name="media_picker_soft_ask_permissions_denied">Denied access to your photos. To fix this, edit your permissions and turn on %1$s.</string>
     <string name="photo_picker_soft_ask_label">We need permission to access your images</string>
-    <string name="camera_soft_ask_label">We need permission to access your camera and files to store the captured images</string>
+    <string name="camera_soft_ask_label">We need permission to access your camera</string>
+    <string name="camera_and_files_soft_ask_label">We need permission to access your camera &amp; files to save the captured images</string>
     <string name="button_edit_permissions">Edit permissions</string>
     <string name="photo_picker_soft_ask_allow">Allow</string>
     <string name="permission_storage">Storage</string>
@@ -26,11 +27,6 @@
     <string name="unknown">Unknown</string>
     <string name="confirm">Confirm</string>
     <string name="error_generic_network">A network error occurred. Please check your connection and try again.</string>
-    <string name="pick_photo">Select photo</string>
-    <string name="pick_video">Select video</string>
-    <string name="pick_audio">Select audio</string>
-    <string name="pick_media">Add image or video</string>
-    <string name="pick_file">Add file</string>
     <string name="retry">Retry</string>
     <string name="loading">Loading…</string>
     <string name="stock_media_picker_search_hint">Search free photo library</string>

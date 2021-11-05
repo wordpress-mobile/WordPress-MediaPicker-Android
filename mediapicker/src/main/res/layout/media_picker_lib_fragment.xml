@@ -34,6 +34,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:fadeScrollbars="true"
+                android:padding="@dimen/minor_25"
                 android:scrollbars="vertical" />
 
             <org.wordpress.android.mediapicker.widget.ActionableEmptyView

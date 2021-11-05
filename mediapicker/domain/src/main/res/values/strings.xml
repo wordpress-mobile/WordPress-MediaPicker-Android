@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="media_uploading_default">Uploading media</string>
+    <string name="pick_photo">Select photo</string>
+    <string name="pick_video">Select video</string>
+    <string name="pick_audio">Select audio</string>
+    <string name="pick_media">Add image or video</string>
+    <string name="pick_file">Add file</string>
 </resources>

@@ -21,12 +21,12 @@ import org.wordpress.android.fluxc.store.MediaStore
 import org.wordpress.android.fluxc.utils.MimeTypes
 import org.wordpress.android.test
 import org.wordpress.android.mediapicker.MediaItem.Identifier.LocalUri
-import org.wordpress.android.mediapicker.model.MediaNavigationEvent.IconClickEvent
-import org.wordpress.android.mediapicker.ui.MediaPickerFragment.ChooserContext
-import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerAction.OpenSystemPicker
-import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerAction.SwitchMediaPicker
-import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerIcon.ChooseFromAndroidDevice
-import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerIcon.SwitchSource
+import org.wordpress.android.mediapicker.model.MediaNavigationEvent.ChooseMediaPickerAction
+import org.wordpress.android.mediapicker.model.MediaPickerContext
+import org.wordpress.android.mediapicker.model.MediaPickerAction.OpenSystemPicker
+import org.wordpress.android.mediapicker.model.MediaPickerAction.SwitchMediaPicker
+import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.ChooseFromAndroidDevice
+import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.SwitchSource
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.CameraSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.CameraSetup.ENABLED
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.CameraSetup.HIDDEN
@@ -449,11 +449,11 @@ class MediaPickerViewModelTest : BaseUnitTest() {
     fun `system picker opened for photo when allowed types is IMAGE only`() = test {
         setupViewModel(listOf(), singleSelectMediaPickerSetup, true)
 
-        val iconClickEvents = mutableListOf<IconClickEvent>()
+        val iconClickEvents = mutableListOf<ChooseMediaPickerAction>()
 
         viewModel.onNavigate.observeForever {
             it.peekContent().let { clickEvent ->
-                if (clickEvent is IconClickEvent) {
+                if (clickEvent is ChooseMediaPickerAction) {
                     iconClickEvents.add(clickEvent)
                 }
             }
@@ -467,18 +467,19 @@ class MediaPickerViewModelTest : BaseUnitTest() {
         )
         assertThat(iconClickEvents).hasSize(1)
         assertThat(iconClickEvents[0].action is OpenSystemPicker).isTrue()
-        assertThat((iconClickEvents[0].action as OpenSystemPicker).chooserContext).isEqualTo(ChooserContext.PHOTO)
+        assertThat((iconClickEvents[0].action as OpenSystemPicker).pickerContext).isEqualTo(
+            MediaPickerContext.PHOTO)
     }
 
     @Test
     fun `system picker opened for video when allowed types is VIDEO only`() = test {
         setupViewModel(listOf(), singleSelectVideoPickerSetup, true)
 
-        val iconClickEvents = mutableListOf<IconClickEvent>()
+        val iconClickEvents = mutableListOf<ChooseMediaPickerAction>()
 
         viewModel.onNavigate.observeForever {
             it.peekContent().let { clickEvent ->
-                if (clickEvent is IconClickEvent) {
+                if (clickEvent is ChooseMediaPickerAction) {
                     iconClickEvents.add(clickEvent)
                 }
             }
@@ -488,18 +489,19 @@ class MediaPickerViewModelTest : BaseUnitTest() {
 
         assertThat(iconClickEvents).hasSize(1)
         assertThat(iconClickEvents[0].action is OpenSystemPicker).isTrue()
-        assertThat((iconClickEvents[0].action as OpenSystemPicker).chooserContext).isEqualTo(ChooserContext.VIDEO)
+        assertThat((iconClickEvents[0].action as OpenSystemPicker).pickerContext).isEqualTo(
+            MediaPickerContext.VIDEO)
     }
 
     @Test
     fun `system picker opened for image and video when allowed types is IMAGE and VIDEO`() = test {
         setupViewModel(listOf(), multiSelectMediaPickerSetup, true)
 
-        val iconClickEvents = mutableListOf<IconClickEvent>()
+        val iconClickEvents = mutableListOf<ChooseMediaPickerAction>()
 
         viewModel.onNavigate.observeForever {
             it.peekContent().let { clickEvent ->
-                if (clickEvent is IconClickEvent) {
+                if (clickEvent is ChooseMediaPickerAction) {
                     iconClickEvents.add(clickEvent)
                 }
             }
@@ -509,19 +511,19 @@ class MediaPickerViewModelTest : BaseUnitTest() {
 
         assertThat(iconClickEvents).hasSize(1)
         assertThat(iconClickEvents[0].action is OpenSystemPicker).isTrue()
-        assertThat((iconClickEvents[0].action as OpenSystemPicker).chooserContext)
-                .isEqualTo(ChooserContext.PHOTO_OR_VIDEO)
+        assertThat((iconClickEvents[0].action as OpenSystemPicker).pickerContext)
+                .isEqualTo(MediaPickerContext.PHOTO_OR_VIDEO)
     }
 
     @Test
     fun `system picker opened for audio when allowed types is AUDIO only`() = test {
         setupViewModel(listOf(), singleSelectAudioPickerSetup, true)
 
-        val iconClickEvents = mutableListOf<IconClickEvent>()
+        val iconClickEvents = mutableListOf<ChooseMediaPickerAction>()
 
         viewModel.onNavigate.observeForever {
             it.peekContent().let { clickEvent ->
-                if (clickEvent is IconClickEvent) {
+                if (clickEvent is ChooseMediaPickerAction) {
                     iconClickEvents.add(clickEvent)
                 }
             }
@@ -531,18 +533,19 @@ class MediaPickerViewModelTest : BaseUnitTest() {
 
         assertThat(iconClickEvents).hasSize(1)
         assertThat(iconClickEvents[0].action is OpenSystemPicker).isTrue()
-        assertThat((iconClickEvents[0].action as OpenSystemPicker).chooserContext).isEqualTo(ChooserContext.AUDIO)
+        assertThat((iconClickEvents[0].action as OpenSystemPicker).pickerContext).isEqualTo(
+            MediaPickerContext.AUDIO)
     }
 
     @Test
     fun `system picker opened for all supported files when is browser picker`() = test {
         setupViewModel(listOf(), multiSelectFilePickerSetup, true)
 
-        val iconClickEvents = mutableListOf<IconClickEvent>()
+        val iconClickEvents = mutableListOf<ChooseMediaPickerAction>()
 
         viewModel.onNavigate.observeForever {
             it.peekContent().let { clickEvent ->
-                if (clickEvent is IconClickEvent) {
+                if (clickEvent is ChooseMediaPickerAction) {
                     iconClickEvents.add(clickEvent)
                 }
             }
@@ -552,7 +555,8 @@ class MediaPickerViewModelTest : BaseUnitTest() {
 
         assertThat(iconClickEvents).hasSize(1)
         assertThat(iconClickEvents[0].action is OpenSystemPicker).isTrue()
-        assertThat((iconClickEvents[0].action as OpenSystemPicker).chooserContext).isEqualTo(ChooserContext.MEDIA_FILE)
+        assertThat((iconClickEvents[0].action as OpenSystemPicker).pickerContext).isEqualTo(
+            MediaPickerContext.MEDIA_FILE)
     }
 
     @Test
@@ -563,11 +567,11 @@ class MediaPickerViewModelTest : BaseUnitTest() {
         )
         setupViewModel(listOf(), mediaPickerSetup, true)
 
-        val iconClickEvents = mutableListOf<IconClickEvent>()
+        val iconClickEvents = mutableListOf<ChooseMediaPickerAction>()
 
         viewModel.onNavigate.observeForever {
             it.peekContent().let { clickEvent ->
-                if (clickEvent is IconClickEvent) {
+                if (clickEvent is ChooseMediaPickerAction) {
                     iconClickEvents.add(clickEvent)
                 }
             }
@@ -597,11 +601,11 @@ class MediaPickerViewModelTest : BaseUnitTest() {
         val mediaPickerSetup = singleSelectMediaPickerSetup.copy(availableDataSources = setOf(STOCK_LIBRARY))
         setupViewModel(listOf(), mediaPickerSetup, true)
 
-        val iconClickEvents = mutableListOf<IconClickEvent>()
+        val iconClickEvents = mutableListOf<ChooseMediaPickerAction>()
 
         viewModel.onNavigate.observeForever {
             it.peekContent().let { clickEvent ->
-                if (clickEvent is IconClickEvent) {
+                if (clickEvent is ChooseMediaPickerAction) {
                     iconClickEvents.add(clickEvent)
                 }
             }
