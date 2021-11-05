@@ -26,8 +26,6 @@ import org.wordpress.android.mediapicker.model.MediaPickerAction.OpenCameraForPh
 import org.wordpress.android.mediapicker.model.MediaPickerAction.OpenSystemPicker
 import org.wordpress.android.mediapicker.model.MediaPickerAction.SwitchMediaPicker
 import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerListener
-import org.wordpress.android.mediapicker.MediaPickerRequestCodes.MEDIA_LIBRARY
-import org.wordpress.android.mediapicker.MediaPickerRequestCodes.PHOTO_PICKER
 import org.wordpress.android.mediapicker.R.drawable
 import org.wordpress.android.mediapicker.R.id
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
@@ -188,6 +186,9 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
         finish()
     }
 
+    private val switchSource = registerForActivityResult(StartActivityForResult()) {
+    }
+
     private val systemPicker = registerForActivityResult(StartActivityForResult()) {
         handleSystemPickerResult(it)
     }
@@ -243,7 +244,7 @@ class MediaPickerActivity : AppCompatActivity(), MediaPickerListener {
                 systemPicker.launch(systemPickerIntent)
             }
             is SwitchMediaPicker -> {
-                startActivityForResult(buildIntent(this, action.mediaPickerSetup), PHOTO_PICKER)
+                switchSource.launch(buildIntent(this, action.mediaPickerSetup))
             }
             OpenCameraForPhotos -> {
                 mediaPickerUtils.createCapturedImageFile(this)?.let {
