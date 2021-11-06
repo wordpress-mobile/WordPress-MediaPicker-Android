@@ -25,23 +25,23 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.wordpress.android.mediapicker.R
-import org.wordpress.android.mediapicker.model.MediaNavigationEvent.*
-import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
-import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.ProgressDialogUiModel.Visible
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import org.wordpress.android.mediapicker.databinding.MediaPickerLibFragmentBinding
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
+import org.wordpress.android.mediapicker.model.MediaNavigationEvent.*
 import org.wordpress.android.mediapicker.model.MediaPickerAction
 import org.wordpress.android.mediapicker.model.MediaPickerAction.*
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem
-import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel
-import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.*
 import org.wordpress.android.mediapicker.model.MediaUri
 import org.wordpress.android.mediapicker.util.*
 import org.wordpress.android.mediapicker.util.AnimUtils.Duration.MEDIUM
 import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils.Companion.PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE
 import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils.Companion.PHOTO_PICKER_STORAGE_PERMISSION_REQUEST_CODE
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.*
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction.*
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.ProgressDialogUiModel.Visible
 import org.wordpress.android.mediapicker.viewmodel.observeEvent
 import javax.inject.Inject
 
@@ -155,26 +155,30 @@ class MediaPickerFragment : Fragment() {
             }
 
             var isShowingActionMode = false
-            viewModel.uiState.observe(viewLifecycleOwner, {
-                it?.let { uiState ->
-                    setupPhotoList(uiState.photoListUiModel)
-                    setupSoftAskView(uiState.softAskViewUiModel)
-                    if (uiState.actionModeUiModel is ActionModeUiModel.Visible && !isShowingActionMode) {
-                        isShowingActionMode = true
-                        (activity as AppCompatActivity).startSupportActionMode(
-                            MediaPickerActionModeCallback(
-                                viewModel
+            viewModel.uiState.observe(
+                viewLifecycleOwner,
+                {
+                    it?.let { uiState ->
+                        setupPhotoList(uiState.photoListUiModel)
+                        setupSoftAskView(uiState.softAskViewUiModel)
+                        if (uiState.actionModeUiModel is ActionModeUiModel.Visible && !isShowingActionMode) {
+                            isShowingActionMode = true
+                            (activity as AppCompatActivity).startSupportActionMode(
+                                MediaPickerActionModeCallback(
+                                    viewModel
+                                )
                             )
-                        )
-                    } else if (uiState.actionModeUiModel is ActionModeUiModel.Hidden && isShowingActionMode) {
-                        isShowingActionMode = false
+                        } else if (uiState.actionModeUiModel is ActionModeUiModel.Hidden && isShowingActionMode) {
+                            isShowingActionMode = false
+                        }
+                        setupFab(uiState.fabUiModel)
+                        pullToRefresh.isRefreshing = uiState.isRefreshing
                     }
-                    setupFab(uiState.fabUiModel)
-                    pullToRefresh.isRefreshing = uiState.isRefreshing
                 }
-            })
+            )
 
-            viewModel.onNavigate.observeEvent(viewLifecycleOwner,
+            viewModel.onNavigate.observeEvent(
+                viewLifecycleOwner,
                 { navigationEvent ->
                     when (navigationEvent) {
                         is PreviewUrl -> {
@@ -216,11 +220,15 @@ class MediaPickerFragment : Fragment() {
                         is PreviewMedia -> {
                         }
                     }
-                })
+                }
+            )
 
-            viewModel.onSnackbarMessage.observeEvent(viewLifecycleOwner, { messageHolder ->
-                showSnackbar(messageHolder)
-            })
+            viewModel.onSnackbarMessage.observeEvent(
+                viewLifecycleOwner,
+                { messageHolder ->
+                    showSnackbar(messageHolder)
+                }
+            )
 
             setupProgressDialog()
 
@@ -275,27 +283,29 @@ class MediaPickerFragment : Fragment() {
             "Menu does not contain mandatory tenor library item"
         }
 
-
         initializeSearchView(searchMenuItem)
-        viewModel.uiState.observe(viewLifecycleOwner, { uiState ->
-            val searchView = searchMenuItem.actionView as SearchView
+        viewModel.uiState.observe(
+            viewLifecycleOwner,
+            { uiState ->
+                val searchView = searchMenuItem.actionView as SearchView
 
-            if (uiState.searchUiModel is SearchUiModel.Expanded && !searchMenuItem.isActionViewExpanded) {
-                searchMenuItem.expandActionView()
-                searchView.maxWidth = Integer.MAX_VALUE
-                searchView.setQuery(uiState.searchUiModel.filter, true)
-                searchView.setOnCloseListener { !uiState.searchUiModel.closeable }
-            } else if (uiState.searchUiModel is SearchUiModel.Collapsed && searchMenuItem.isActionViewExpanded) {
-                searchMenuItem.collapseActionView()
+                if (uiState.searchUiModel is SearchUiModel.Expanded && !searchMenuItem.isActionViewExpanded) {
+                    searchMenuItem.expandActionView()
+                    searchView.maxWidth = Integer.MAX_VALUE
+                    searchView.setQuery(uiState.searchUiModel.filter, true)
+                    searchView.setOnCloseListener { !uiState.searchUiModel.closeable }
+                } else if (uiState.searchUiModel is SearchUiModel.Collapsed && searchMenuItem.isActionViewExpanded) {
+                    searchMenuItem.collapseActionView()
+                }
+
+                searchMenuItem.isVisible = uiState.searchUiModel !is SearchUiModel.Hidden
+
+                val shownActions = uiState.browseMenuUiModel.shownActions
+                browseMenuItem.isVisible = shownActions.contains(SYSTEM_PICKER)
+                deviceMenuItem.isVisible = shownActions.contains(DEVICE)
+                tenorLibraryMenuItem.isVisible = shownActions.contains(GIF_LIBRARY)
             }
-
-            searchMenuItem.isVisible = uiState.searchUiModel !is SearchUiModel.Hidden
-
-            val shownActions = uiState.browseMenuUiModel.shownActions
-            browseMenuItem.isVisible = shownActions.contains(SYSTEM_PICKER)
-            deviceMenuItem.isVisible = shownActions.contains(DEVICE)
-            tenorLibraryMenuItem.isVisible = shownActions.contains(GIF_LIBRARY)
-        })
+        )
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -451,32 +461,35 @@ class MediaPickerFragment : Fragment() {
 
     private fun setupProgressDialog() {
         var progressDialog: AlertDialog? = null
-        viewModel.uiState.observe(viewLifecycleOwner, Observer {
-            it?.progressDialogUiModel?.apply {
-                when (this) {
-                    is Visible -> {
-                        if (progressDialog == null || progressDialog?.isShowing == false) {
-                            val builder: Builder = MaterialAlertDialogBuilder(requireContext())
-                            builder.setTitle(this.title)
-                            builder.setView(R.layout.media_picker_lib_progress_dialog)
-                            builder.setNegativeButton(
-                                R.string.cancel
-                            ) { _, _ -> this.cancelAction() }
-                            builder.setOnCancelListener { this.cancelAction() }
-                            builder.setCancelable(true)
-                            progressDialog = builder.show()
+        viewModel.uiState.observe(
+            viewLifecycleOwner,
+            Observer {
+                it?.progressDialogUiModel?.apply {
+                    when (this) {
+                        is Visible -> {
+                            if (progressDialog == null || progressDialog?.isShowing == false) {
+                                val builder: Builder = MaterialAlertDialogBuilder(requireContext())
+                                builder.setTitle(this.title)
+                                builder.setView(R.layout.media_picker_lib_progress_dialog)
+                                builder.setNegativeButton(
+                                    R.string.cancel
+                                ) { _, _ -> this.cancelAction() }
+                                builder.setOnCancelListener { this.cancelAction() }
+                                builder.setCancelable(true)
+                                progressDialog = builder.show()
+                            }
                         }
-                    }
-                    ProgressDialogUiModel.Hidden -> {
-                        progressDialog?.let { dialog ->
-                            if (dialog.isShowing) {
-                                dialog.dismiss()
+                        ProgressDialogUiModel.Hidden -> {
+                            progressDialog?.let { dialog ->
+                                if (dialog.isShowing) {
+                                    dialog.dismiss()
+                                }
                             }
                         }
                     }
                 }
             }
-        })
+        )
     }
 
     private fun MediaPickerLibFragmentBinding.showSnackbar(holder: SnackbarMessageHolder) {
@@ -552,8 +565,8 @@ class MediaPickerFragment : Fragment() {
             return
         }
         viewModel.checkCameraPermission(
-            isCameraPermissionAlwaysDenied() || mediaPickerSetup.isStoragePermissionRequired
-                    && isStoragePermissionAlwaysDenied()
+            isCameraPermissionAlwaysDenied() || mediaPickerSetup.isStoragePermissionRequired &&
+                isStoragePermissionAlwaysDenied()
         )
     }
 
@@ -576,7 +589,6 @@ class MediaPickerFragment : Fragment() {
             PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE
         )
     }
-
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -601,4 +613,3 @@ class MediaPickerFragment : Fragment() {
         }
     }
 }
-

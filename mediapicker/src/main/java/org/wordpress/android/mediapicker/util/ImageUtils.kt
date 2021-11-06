@@ -7,7 +7,6 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import kotlinx.coroutines.CoroutineScope
 import org.wordpress.android.mediapicker.R
 
@@ -46,7 +45,7 @@ fun ImageView.load(
         .load(imgUrl)
         .error(drawableResId)
         .placeholder(drawableResId)
-        .fitCenter()    // TODO: we might need to make this customisable based on the needs
+        .fitCenter() // TODO: we might need to make this customisable based on the needs
         .into(this)
         .clearOnDetach()
 }

@@ -29,10 +29,8 @@ import com.bumptech.glide.request.target.ViewTarget
 import com.bumptech.glide.request.transition.Transition
 import com.bumptech.glide.signature.ObjectKey
 import dagger.hilt.android.qualifiers.ApplicationContext
-import org.wordpress.android.mediapicker.util.Log
 import java.io.File
 import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Singleton for asynchronous image fetching/loading with support for placeholders, transformations and more.
@@ -90,12 +88,12 @@ class ImageManager @Inject constructor(
         val context = imageView.context
         if (!context.isAvailable()) return
         Glide.with(context)
-                .load(imgUrl)
-                .addFallback(imageType)
-                .addPlaceholder(imageType)
-                .applyScaleType(scaleType)
-                .into(imageView)
-                .clearOnDetach()
+            .load(imgUrl)
+            .addFallback(imageType)
+            .addPlaceholder(imageType)
+            .applyScaleType(scaleType)
+            .into(imageView)
+            .clearOnDetach()
     }
 
     /**
@@ -116,13 +114,13 @@ class ImageManager @Inject constructor(
     ) {
         if (!context.isAvailable()) return
         Glide.with(context)
-                .asBitmap()
-                .load(imgUrl)
-                .addFallback(imageType)
-                .addPlaceholder(imageType)
-                .applyScaleType(scaleType)
-                .applySize(width, height)
-                .into(awt)
+            .asBitmap()
+            .load(imgUrl)
+            .addFallback(imageType)
+            .addPlaceholder(imageType)
+            .applyScaleType(scaleType)
+            .applySize(width, height)
+            .into(awt)
     }
 
     /**
@@ -140,14 +138,14 @@ class ImageManager @Inject constructor(
         val context = imageView.context
         if (!context.isAvailable()) return
         Glide.with(context)
-                .load(imgUrl)
-                .addFallback(imageType)
-                .addPlaceholder(imageType)
-                .circleCrop()
-                .attachRequestListener(requestListener)
-                .addSignature(version)
-                .into(imageView)
-                .clearOnDetach()
+            .load(imgUrl)
+            .addFallback(imageType)
+            .addPlaceholder(imageType)
+            .circleCrop()
+            .attachRequestListener(requestListener)
+            .addSignature(version)
+            .into(imageView)
+            .clearOnDetach()
     }
 
     /**
@@ -169,19 +167,19 @@ class ImageManager @Inject constructor(
         try {
             imageData = Base64.decode(base64ImageData, Base64.DEFAULT)
         } catch (ex: IllegalArgumentException) {
-           log.e(String.format("Cant parse base64 image data:" + ex.message))
+            log.e(String.format("Cant parse base64 image data:" + ex.message))
             return
         }
 
         Glide.with(context)
-                .load(imageData)
-                .addFallback(imageType)
-                .addPlaceholder(imageType)
-                .circleCrop()
-                .attachRequestListener(requestListener)
-                .addSignature(version)
-                .into(imageView)
-                .clearOnDetach()
+            .load(imageData)
+            .addFallback(imageType)
+            .addPlaceholder(imageType)
+            .circleCrop()
+            .attachRequestListener(requestListener)
+            .addSignature(version)
+            .into(imageView)
+            .clearOnDetach()
     }
 
     /**
@@ -200,13 +198,13 @@ class ImageManager @Inject constructor(
         if (!context.isAvailable()) return
 
         Glide.with(context)
-                .load(imgUrl)
-                .transform(CenterCrop(), RoundedCorners(cornerRadius))
-                .addFallback(imageType)
-                .addPlaceholder(imageType)
-                .attachRequestListener(requestListener)
-                .into(imageView)
-                .clearOnDetach()
+            .load(imgUrl)
+            .transform(CenterCrop(), RoundedCorners(cornerRadius))
+            .addFallback(imageType)
+            .addPlaceholder(imageType)
+            .attachRequestListener(requestListener)
+            .into(imageView)
+            .clearOnDetach()
     }
 
     /**
@@ -228,14 +226,14 @@ class ImageManager @Inject constructor(
         val context = imageView.context
         if (!context.isAvailable()) return
         Glide.with(context)
-                .load(Uri.parse(imgUrl))
-                .addFallback(imageType)
-                .addPlaceholder(imageType)
-                .addThumbnail(context, thumbnailUrl, requestListener)
-                .applyScaleType(scaleType)
-                .attachRequestListener(requestListener)
-                .into(imageView)
-                .clearOnDetach()
+            .load(Uri.parse(imgUrl))
+            .addFallback(imageType)
+            .addPlaceholder(imageType)
+            .addThumbnail(context, thumbnailUrl, requestListener)
+            .applyScaleType(scaleType)
+            .attachRequestListener(requestListener)
+            .into(imageView)
+            .clearOnDetach()
     }
 
     /**
@@ -258,14 +256,14 @@ class ImageManager @Inject constructor(
         val context = imageView.context
         if (!context.isAvailable()) return
         Glide.with(context)
-                .load(imgUri)
-                .addFallback(imageType)
-                .addPlaceholder(imageType)
-                .addThumbnail(context, thumbnailUrl, requestListener)
-                .applyScaleType(scaleType)
-                .attachRequestListener(requestListener)
-                .into(imageView)
-                .clearOnDetach()
+            .load(imgUri)
+            .addFallback(imageType)
+            .addPlaceholder(imageType)
+            .addThumbnail(context, thumbnailUrl, requestListener)
+            .applyScaleType(scaleType)
+            .attachRequestListener(requestListener)
+            .into(imageView)
+            .clearOnDetach()
     }
 
     /**
@@ -281,16 +279,16 @@ class ImageManager @Inject constructor(
     ) {
         if (!context.isAvailable()) return
         Glide.with(context)
-                .asFile()
-                .load(imgUri)
-                .attachRequestListener(requestListener)
-                .into(
-                        // Used just to invoke asFile() and ignored thereafter.
-                        object : CustomTarget<File>() {
-                            override fun onLoadCleared(placeholder: Drawable?) {}
-                            override fun onResourceReady(resource: File, transition: Transition<in File>?) {}
-                        }
-                )
+            .asFile()
+            .load(imgUri)
+            .attachRequestListener(requestListener)
+            .into(
+                // Used just to invoke asFile() and ignored thereafter.
+                object : CustomTarget<File>() {
+                    override fun onLoadCleared(placeholder: Drawable?) {}
+                    override fun onResourceReady(resource: File, transition: Transition<in File>?) {}
+                }
+            )
     }
 
     /**
@@ -301,10 +299,10 @@ class ImageManager @Inject constructor(
         val context = imageView.context
         if (!context.isAvailable()) return
         Glide.with(context)
-                .load(bitmap)
-                .applyScaleType(scaleType)
-                .into(imageView)
-                .clearOnDetach()
+            .load(bitmap)
+            .applyScaleType(scaleType)
+            .into(imageView)
+            .clearOnDetach()
     }
 
     /**
@@ -315,10 +313,10 @@ class ImageManager @Inject constructor(
         val context = imageView.context
         if (!context.isAvailable()) return
         Glide.with(context)
-                .load(drawable)
-                .applyScaleType(scaleType)
-                .into(imageView)
-                .clearOnDetach()
+            .load(drawable)
+            .applyScaleType(scaleType)
+            .into(imageView)
+            .clearOnDetach()
     }
 
     /**
@@ -333,10 +331,10 @@ class ImageManager @Inject constructor(
         val context = imageView.context
         if (!context.isAvailable()) return
         Glide.with(context)
-                .load(ContextCompat.getDrawable(context, resourceId))
-                .applyScaleType(scaleType)
-                .into(imageView)
-                .clearOnDetach()
+            .load(ContextCompat.getDrawable(context, resourceId))
+            .applyScaleType(scaleType)
+            .into(imageView)
+            .clearOnDetach()
     }
 
     /**
@@ -349,11 +347,11 @@ class ImageManager @Inject constructor(
     fun loadIntoCustomTarget(viewTarget: ViewTarget<TextView, Drawable>, imageType: ImageType, imgUrl: String) {
         if (!context.isAvailable()) return
         Glide.with(context)
-                .load(imgUrl)
-                .addFallback(imageType)
-                .addPlaceholder(imageType)
-                .into(viewTarget)
-                .clearOnDetach()
+            .load(imgUrl)
+            .addFallback(imageType)
+            .addPlaceholder(imageType)
+            .into(viewTarget)
+            .clearOnDetach()
     }
 
     /**
@@ -370,10 +368,10 @@ class ImageManager @Inject constructor(
     ) {
         if (!context.isAvailable()) return
         Glide.with(context)
-                .asBitmap()
-                .load(imgUrl)
-                .applyScaleType(scaleType)
-                .into(target)
+            .asBitmap()
+            .load(imgUrl)
+            .applyScaleType(scaleType)
+            .into(target)
     }
 
     /**
@@ -408,7 +406,7 @@ class ImageManager @Inject constructor(
             ScaleType.FIT_START,
             ScaleType.FIT_XY,
             ScaleType.MATRIX -> {
-               log.e(String.format("ScaleType %s is not supported.", scaleType.toString()))
+                log.e(String.format("ScaleType %s is not supported.", scaleType.toString()))
                 this
             }
         }
@@ -460,10 +458,10 @@ class ImageManager @Inject constructor(
             this
         } else {
             val thumbnailRequest = Glide
-                    .with(context)
-                    .load(thumbnailUrl)
-                    .downsample(DownsampleStrategy.AT_MOST)
-                    .attachRequestListener(listener)
+                .with(context)
+                .load(thumbnailUrl)
+                .downsample(DownsampleStrategy.AT_MOST)
+                .attachRequestListener(listener)
             return this.thumbnail(thumbnailRequest)
         }
     }
@@ -496,7 +494,7 @@ class ImageManager @Inject constructor(
                         requestListener.onResourceReady(resource, model)
                     } else {
                         // according to the Glide's JavaDoc, this shouldn't happen
-                       log.e("Resource in ImageManager.onResourceReady is null.")
+                        log.e("Resource in ImageManager.onResourceReady is null.")
                         requestListener.onLoadFailed(null, model)
                     }
                     return false

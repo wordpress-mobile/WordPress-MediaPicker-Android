@@ -4,17 +4,17 @@ import android.Manifest
 import android.Manifest.permission
 import android.app.Activity
 import android.content.Context
-import android.content.pm.PackageManager
-import androidx.core.content.ContextCompat
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import android.text.Html
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Build.VERSION_CODES
 import android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+import android.text.Html
 import androidx.appcompat.app.AlertDialog.Builder
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.wordpress.android.mediapicker.Key
 import org.wordpress.android.mediapicker.Permissions
@@ -74,11 +74,11 @@ class MediaPickerPermissionUtils @Inject constructor(
         for (i in grantResults.indices) {
             if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
                 allGranted = false
-                if (checkForAlwaysDenied
-                    && !ActivityCompat.shouldShowRequestPermissionRationale(
-                        activity,
-                        permissions[i]
-                    )
+                if (checkForAlwaysDenied &&
+                    !ActivityCompat.shouldShowRequestPermissionRationale(
+                            activity,
+                            permissions[i]
+                        )
                 ) {
                     showPermissionAlwaysDeniedDialog(activity, permissions[i])
                     break
@@ -87,7 +87,6 @@ class MediaPickerPermissionUtils @Inject constructor(
         }
         return allGranted
     }
-
 
     fun hasPermissionsToTakePhotos(isStorageAccessRequired: Boolean): Boolean {
         return hasCameraPermission() && (!isStorageAccessRequired || hasWriteStoragePermission())
@@ -126,7 +125,8 @@ class MediaPickerPermissionUtils @Inject constructor(
 
         // otherwise, check whether permission has already been granted - if so we know it has been asked
         if (ContextCompat.checkSelfPermission(context, permission) ==
-            PackageManager.PERMISSION_GRANTED) {
+            PackageManager.PERMISSION_GRANTED
+        ) {
             perms.markAsAsked(key)
             return true
         }

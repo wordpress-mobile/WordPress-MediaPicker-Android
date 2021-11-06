@@ -116,10 +116,10 @@ class MediaThumbnailViewUtils {
             txtSelectionCount.setBackgroundResource(drawable.media_picker_circle_pressed)
         }
         displayTextSelectionCount(
-                animateSelection,
-                showOrderCounter,
-                isSelected,
-                txtSelectionCount
+            animateSelection,
+            showOrderCounter,
+            isSelected,
+            txtSelectionCount
         )
     }
 

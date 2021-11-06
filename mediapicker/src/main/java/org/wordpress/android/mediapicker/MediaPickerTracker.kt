@@ -3,12 +3,12 @@ package org.wordpress.android.mediapicker
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent
-import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.*
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.*
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier.LocalUri
+import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent
+import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.*
 import org.wordpress.android.mediapicker.util.Tracker
 import org.wordpress.android.mediapicker.util.Tracker.Event.*
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PermissionsRequested

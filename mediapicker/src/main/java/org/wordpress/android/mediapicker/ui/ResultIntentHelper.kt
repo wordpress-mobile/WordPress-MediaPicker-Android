@@ -1,6 +1,5 @@
 package org.wordpress.android.mediapicker.ui
 
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import org.wordpress.android.mediapicker.MediaPickerConstants
