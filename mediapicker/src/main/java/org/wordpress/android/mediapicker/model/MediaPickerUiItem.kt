@@ -1,10 +1,10 @@
 package org.wordpress.android.mediapicker.model
 
+import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem.Type.FILE
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem.Type.NEXT_PAGE_LOADER
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem.Type.PHOTO
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem.Type.VIDEO
-import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 
 sealed class MediaPickerUiItem(
     val type: Type,
@@ -42,7 +42,7 @@ sealed class MediaPickerUiItem(
     ) : MediaPickerUiItem(FILE)
 
     data class NextPageLoader(val isLoading: Boolean, val loadAction: () -> Unit) :
-            MediaPickerUiItem(NEXT_PAGE_LOADER, fullWidthItem = true)
+        MediaPickerUiItem(NEXT_PAGE_LOADER, fullWidthItem = true)
 
     data class ToggleAction(
         val identifier: Identifier,

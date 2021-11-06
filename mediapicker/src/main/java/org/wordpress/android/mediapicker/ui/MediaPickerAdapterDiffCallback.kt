@@ -1,14 +1,14 @@
 package org.wordpress.android.mediapicker.ui
 
 import androidx.recyclerview.widget.DiffUtil
-import org.wordpress.android.mediapicker.ui.MediaPickerAdapterDiffCallback.Payload.COUNT_CHANGE
-import org.wordpress.android.mediapicker.ui.MediaPickerAdapterDiffCallback.Payload.SELECTION_CHANGE
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem.FileItem
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem.NextPageLoader
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem.PhotoItem
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem.VideoItem
 import org.wordpress.android.mediapicker.model.toSelectableItem
+import org.wordpress.android.mediapicker.ui.MediaPickerAdapterDiffCallback.Payload.COUNT_CHANGE
+import org.wordpress.android.mediapicker.ui.MediaPickerAdapterDiffCallback.Payload.SELECTION_CHANGE
 
 class MediaPickerAdapterDiffCallback(
     private val oldItems: List<MediaPickerUiItem>,
@@ -46,7 +46,8 @@ class MediaPickerAdapterDiffCallback(
                 return SELECTION_CHANGE
             }
             if (oldItem.showOrderCounter == updatedItem.showOrderCounter &&
-                    oldItem.selectedOrder != updatedItem.selectedOrder) {
+                oldItem.selectedOrder != updatedItem.selectedOrder
+            ) {
                 return COUNT_CHANGE
             }
         }

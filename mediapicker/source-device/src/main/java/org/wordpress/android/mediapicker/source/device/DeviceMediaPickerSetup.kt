@@ -3,11 +3,15 @@ package org.wordpress.android.mediapicker.source.device
 import android.os.Build
 import android.os.Build.VERSION_CODES
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
-import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.*
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.CAMERA
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.SYSTEM_PICKER
 import org.wordpress.android.mediapicker.model.MediaType
 import org.wordpress.android.mediapicker.model.MediaType.IMAGE
 import org.wordpress.android.mediapicker.model.MediaType.VIDEO
-import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup.MediaTypes.*
+import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup.MediaTypes.IMAGES
+import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup.MediaTypes.IMAGES_AND_VIDEOS
+import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup.MediaTypes.VIDEOS
 import org.wordpress.android.mediapicker.source.device.R.string
 
 class DeviceMediaPickerSetup {

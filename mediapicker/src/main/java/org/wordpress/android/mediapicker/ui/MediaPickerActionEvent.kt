@@ -3,7 +3,9 @@ package org.wordpress.android.mediapicker.ui
 import android.os.Bundle
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import org.wordpress.android.mediapicker.model.MediaType
-import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.MediaPickerActionType.*
+import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.MediaPickerActionType.ANDROID_CHOOSE_FROM_DEVICE
+import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.MediaPickerActionType.CAPTURE_PHOTO
+import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.MediaPickerActionType.SWITCH_SOURCE
 
 sealed class MediaPickerActionEvent(val type: MediaPickerActionType) {
     companion object {
@@ -15,16 +17,20 @@ sealed class MediaPickerActionEvent(val type: MediaPickerActionType) {
         fun fromBundle(bundle: Bundle): MediaPickerActionEvent? {
             val iconTypeName = bundle.getString(KEY_LAST_TAPPED_ICON) ?: return null
 
-            return when (iconTypeName.let {
-                MediaPickerActionType.fromNameString(
-                    iconTypeName
-                )
-            }) {
-                ANDROID_CHOOSE_FROM_DEVICE -> {
-                    val allowedTypes = (bundle.getStringArrayList(
-                        KEY_LAST_TAPPED_ICON_ALLOWED_TYPES
+            return when (
+                iconTypeName.let {
+                    MediaPickerActionType.fromNameString(
+                        iconTypeName
                     )
-                        ?: listOf<String>()).map {
+                }
+            ) {
+                ANDROID_CHOOSE_FROM_DEVICE -> {
+                    val allowedTypes = (
+                        bundle.getStringArrayList(
+                            KEY_LAST_TAPPED_ICON_ALLOWED_TYPES
+                        )
+                            ?: listOf<String>()
+                        ).map {
                         MediaType.valueOf(it)
                     }.toSet()
                     ChooseFromAndroidDevice(allowedTypes)
@@ -57,7 +63,7 @@ sealed class MediaPickerActionEvent(val type: MediaPickerActionType) {
             is ChooseFromAndroidDevice -> {
                 bundle.putStringArrayList(
                     KEY_LAST_TAPPED_ICON_ALLOWED_TYPES,
-                        ArrayList(allowedTypes.map { it.name })
+                    ArrayList(allowedTypes.map { it.name })
                 )
             }
             is SwitchSource -> {

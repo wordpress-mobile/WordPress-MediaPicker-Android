@@ -1,18 +1,26 @@
 package org.wordpress.android.mediapicker.ui
 
-import android.Manifest.permission.*
+import android.Manifest.permission.CAMERA
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.app.Activity
 import android.os.Bundle
 import android.os.Parcelable
-import android.text.Html
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
+import android.view.View
+import android.view.ViewGroup
 import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AlertDialog.Builder
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -25,23 +33,49 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.wordpress.android.mediapicker.R
-import org.wordpress.android.mediapicker.model.MediaNavigationEvent.*
-import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
-import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.ProgressDialogUiModel.Visible
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.GIF_LIBRARY
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.SYSTEM_PICKER
 import org.wordpress.android.mediapicker.databinding.MediaPickerLibFragmentBinding
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
+import org.wordpress.android.mediapicker.model.MediaNavigationEvent.ChooseMediaPickerAction
+import org.wordpress.android.mediapicker.model.MediaNavigationEvent.Exit
+import org.wordpress.android.mediapicker.model.MediaNavigationEvent.PreviewMedia
+import org.wordpress.android.mediapicker.model.MediaNavigationEvent.PreviewUrl
+import org.wordpress.android.mediapicker.model.MediaNavigationEvent.RequestCameraPermission
+import org.wordpress.android.mediapicker.model.MediaNavigationEvent.RequestStoragePermission
+import org.wordpress.android.mediapicker.model.MediaNavigationEvent.ReturnCapturedImage
+import org.wordpress.android.mediapicker.model.MediaNavigationEvent.ReturnSelectedMedia
+import org.wordpress.android.mediapicker.model.MediaNavigationEvent.ShowAppSettings
 import org.wordpress.android.mediapicker.model.MediaPickerAction
-import org.wordpress.android.mediapicker.model.MediaPickerAction.*
+import org.wordpress.android.mediapicker.model.MediaPickerAction.OpenCameraForPhotos
+import org.wordpress.android.mediapicker.model.MediaPickerAction.OpenSystemPicker
+import org.wordpress.android.mediapicker.model.MediaPickerAction.SwitchMediaPicker
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem
-import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel
-import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.*
 import org.wordpress.android.mediapicker.model.MediaUri
-import org.wordpress.android.mediapicker.util.*
+import org.wordpress.android.mediapicker.util.AnimUtils
 import org.wordpress.android.mediapicker.util.AnimUtils.Duration.MEDIUM
-import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils.Companion.PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE
-import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils.Companion.PHOTO_PICKER_STORAGE_PERMISSION_REQUEST_CODE
-import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.BrowseMenuUiModel.BrowseAction.*
+import org.wordpress.android.mediapicker.util.Log
+import org.wordpress.android.mediapicker.util.MediaPickerLinkMovementMethod
+import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils
+import org.wordpress.android.mediapicker.util.MediaPickerUtils
+import org.wordpress.android.mediapicker.util.MediaUtils
+import org.wordpress.android.mediapicker.util.UiHelpers
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.ActionModeUiModel
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.FabUiModel
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PhotoListUiModel
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PhotoListUiModel.Data
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PhotoListUiModel.Empty
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PhotoListUiModel.Hidden
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PhotoListUiModel.Loading
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.ProgressDialogUiModel
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.ProgressDialogUiModel.Visible
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.SearchUiModel
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.SnackbarMessageHolder
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.SoftAskViewUiModel
 import org.wordpress.android.mediapicker.viewmodel.observeEvent
 import javax.inject.Inject
 
@@ -74,6 +108,29 @@ class MediaPickerFragment : Fragment() {
         handleImageCaptureResult(it)
     }
 
+    private val storagePermissionRequest = registerForActivityResult(
+        RequestMultiplePermissions()
+    ) { permissions ->
+        lifecycleScope.launch {
+            permissionUtils.setPermissionListAsked(requireActivity(), permissions, false)
+            checkStoragePermission()
+        }
+    }
+
+    private val cameraPermissionRequest = registerForActivityResult(
+        RequestMultiplePermissions()
+    ) { permissions ->
+        lifecycleScope.launch {
+            val allGranted = permissions.values.all { it }
+            permissionUtils.setPermissionListAsked(requireActivity(), permissions, true)
+            if (allGranted) {
+                viewModel.onCameraPermissionsGranted()
+            } else {
+                checkCameraPermissions()
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -83,7 +140,7 @@ class MediaPickerFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         return inflater.inflate(
             R.layout.media_picker_lib_fragment,
             container,
@@ -155,26 +212,30 @@ class MediaPickerFragment : Fragment() {
             }
 
             var isShowingActionMode = false
-            viewModel.uiState.observe(viewLifecycleOwner, {
-                it?.let { uiState ->
-                    setupPhotoList(uiState.photoListUiModel)
-                    setupSoftAskView(uiState.softAskViewUiModel)
-                    if (uiState.actionModeUiModel is ActionModeUiModel.Visible && !isShowingActionMode) {
-                        isShowingActionMode = true
-                        (activity as AppCompatActivity).startSupportActionMode(
-                            MediaPickerActionModeCallback(
-                                viewModel
+            viewModel.uiState.observe(
+                viewLifecycleOwner,
+                {
+                    it?.let { uiState ->
+                        setupPhotoList(uiState.photoListUiModel)
+                        setupSoftAskView(uiState.softAskViewUiModel)
+                        if (uiState.actionModeUiModel is ActionModeUiModel.Visible && !isShowingActionMode) {
+                            isShowingActionMode = true
+                            (activity as AppCompatActivity).startSupportActionMode(
+                                MediaPickerActionModeCallback(
+                                    viewModel
+                                )
                             )
-                        )
-                    } else if (uiState.actionModeUiModel is ActionModeUiModel.Hidden && isShowingActionMode) {
-                        isShowingActionMode = false
+                        } else if (uiState.actionModeUiModel is ActionModeUiModel.Hidden && isShowingActionMode) {
+                            isShowingActionMode = false
+                        }
+                        setupFab(uiState.fabUiModel)
+                        pullToRefresh.isRefreshing = uiState.isRefreshing
                     }
-                    setupFab(uiState.fabUiModel)
-                    pullToRefresh.isRefreshing = uiState.isRefreshing
                 }
-            })
+            )
 
-            viewModel.onNavigate.observeEvent(viewLifecycleOwner,
+            viewModel.onNavigate.observeEvent(
+                viewLifecycleOwner,
                 { navigationEvent ->
                     when (navigationEvent) {
                         is PreviewUrl -> {
@@ -216,11 +277,15 @@ class MediaPickerFragment : Fragment() {
                         is PreviewMedia -> {
                         }
                     }
-                })
+                }
+            )
 
-            viewModel.onSnackbarMessage.observeEvent(viewLifecycleOwner, { messageHolder ->
-                showSnackbar(messageHolder)
-            })
+            viewModel.onSnackbarMessage.observeEvent(
+                viewLifecycleOwner,
+                { messageHolder ->
+                    showSnackbar(messageHolder)
+                }
+            )
 
             setupProgressDialog()
 
@@ -275,27 +340,29 @@ class MediaPickerFragment : Fragment() {
             "Menu does not contain mandatory tenor library item"
         }
 
-
         initializeSearchView(searchMenuItem)
-        viewModel.uiState.observe(viewLifecycleOwner, { uiState ->
-            val searchView = searchMenuItem.actionView as SearchView
+        viewModel.uiState.observe(
+            viewLifecycleOwner,
+            { uiState ->
+                val searchView = searchMenuItem.actionView as SearchView
 
-            if (uiState.searchUiModel is SearchUiModel.Expanded && !searchMenuItem.isActionViewExpanded) {
-                searchMenuItem.expandActionView()
-                searchView.maxWidth = Integer.MAX_VALUE
-                searchView.setQuery(uiState.searchUiModel.filter, true)
-                searchView.setOnCloseListener { !uiState.searchUiModel.closeable }
-            } else if (uiState.searchUiModel is SearchUiModel.Collapsed && searchMenuItem.isActionViewExpanded) {
-                searchMenuItem.collapseActionView()
+                if (uiState.searchUiModel is SearchUiModel.Expanded && !searchMenuItem.isActionViewExpanded) {
+                    searchMenuItem.expandActionView()
+                    searchView.maxWidth = Integer.MAX_VALUE
+                    searchView.setQuery(uiState.searchUiModel.filter, true)
+                    searchView.setOnCloseListener { !uiState.searchUiModel.closeable }
+                } else if (uiState.searchUiModel is SearchUiModel.Collapsed && searchMenuItem.isActionViewExpanded) {
+                    searchMenuItem.collapseActionView()
+                }
+
+                searchMenuItem.isVisible = uiState.searchUiModel !is SearchUiModel.Hidden
+
+                val shownActions = uiState.browseMenuUiModel.shownActions
+                browseMenuItem.isVisible = shownActions.contains(SYSTEM_PICKER)
+                deviceMenuItem.isVisible = shownActions.contains(DEVICE)
+                tenorLibraryMenuItem.isVisible = shownActions.contains(GIF_LIBRARY)
             }
-
-            searchMenuItem.isVisible = uiState.searchUiModel !is SearchUiModel.Hidden
-
-            val shownActions = uiState.browseMenuUiModel.shownActions
-            browseMenuItem.isVisible = shownActions.contains(SYSTEM_PICKER)
-            deviceMenuItem.isVisible = shownActions.contains(DEVICE)
-            tenorLibraryMenuItem.isVisible = shownActions.contains(GIF_LIBRARY)
-        })
+        )
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -348,7 +415,10 @@ class MediaPickerFragment : Fragment() {
         softAskViewUiModel: SoftAskViewUiModel,
     ) {
         if (softAskViewUiModel is SoftAskViewUiModel.Visible) {
-            softAskView.title.text = Html.fromHtml(softAskViewUiModel.label)
+            softAskView.title.text = HtmlCompat.fromHtml(
+                softAskViewUiModel.label,
+                HtmlCompat.FROM_HTML_MODE_LEGACY
+            )
             softAskView.button.setText(softAskViewUiModel.allowId.stringRes)
             softAskView.button.setOnClickListener {
                 softAskViewUiModel.onClick()
@@ -369,10 +439,10 @@ class MediaPickerFragment : Fragment() {
             if (uiModel is PhotoListUiModel.Empty) View.VISIBLE else View.GONE
         recycler.visibility = if (uiModel is PhotoListUiModel.Data) View.VISIBLE else View.INVISIBLE
         when (uiModel) {
-            is PhotoListUiModel.Data -> {
+            is Data -> {
                 setupAdapter(uiModel.items)
             }
-            is PhotoListUiModel.Empty -> {
+            is Empty -> {
                 setupAdapter(listOf())
                 actionableEmptyView.updateLayoutForSearch(uiModel.isSearching, 0)
                 actionableEmptyView.title.text = UiHelpers.getTextOfUiString(
@@ -381,11 +451,12 @@ class MediaPickerFragment : Fragment() {
                 )
 
                 actionableEmptyView.subtitle.applyOrHide(uiModel.htmlSubtitle) { htmlSubtitle ->
-                    actionableEmptyView.subtitle.text = Html.fromHtml(
+                    actionableEmptyView.subtitle.text = HtmlCompat.fromHtml(
                         UiHelpers.getTextOfUiString(
                             requireContext(),
                             htmlSubtitle
-                        )
+                        ),
+                        HtmlCompat.FROM_HTML_MODE_LEGACY
                     )
                     actionableEmptyView.subtitle.movementMethod =
                         MediaPickerLinkMovementMethod.getInstance(log)
@@ -407,6 +478,8 @@ class MediaPickerFragment : Fragment() {
                     uiModel.retryAction?.invoke()
                 }
             }
+            Hidden -> {}
+            Loading -> {}
         }
     }
 
@@ -451,32 +524,35 @@ class MediaPickerFragment : Fragment() {
 
     private fun setupProgressDialog() {
         var progressDialog: AlertDialog? = null
-        viewModel.uiState.observe(viewLifecycleOwner, Observer {
-            it?.progressDialogUiModel?.apply {
-                when (this) {
-                    is Visible -> {
-                        if (progressDialog == null || progressDialog?.isShowing == false) {
-                            val builder: Builder = MaterialAlertDialogBuilder(requireContext())
-                            builder.setTitle(this.title)
-                            builder.setView(R.layout.media_picker_lib_progress_dialog)
-                            builder.setNegativeButton(
-                                R.string.cancel
-                            ) { _, _ -> this.cancelAction() }
-                            builder.setOnCancelListener { this.cancelAction() }
-                            builder.setCancelable(true)
-                            progressDialog = builder.show()
+        viewModel.uiState.observe(
+            viewLifecycleOwner,
+            Observer {
+                it?.progressDialogUiModel?.apply {
+                    when (this) {
+                        is Visible -> {
+                            if (progressDialog == null || progressDialog?.isShowing == false) {
+                                val builder: Builder = MaterialAlertDialogBuilder(requireContext())
+                                builder.setTitle(this.title)
+                                builder.setView(R.layout.media_picker_lib_progress_dialog)
+                                builder.setNegativeButton(
+                                    R.string.cancel
+                                ) { _, _ -> this.cancelAction() }
+                                builder.setOnCancelListener { this.cancelAction() }
+                                builder.setCancelable(true)
+                                progressDialog = builder.show()
+                            }
                         }
-                    }
-                    ProgressDialogUiModel.Hidden -> {
-                        progressDialog?.let { dialog ->
-                            if (dialog.isShowing) {
-                                dialog.dismiss()
+                        ProgressDialogUiModel.Hidden -> {
+                            progressDialog?.let { dialog ->
+                                if (dialog.isShowing) {
+                                    dialog.dismiss()
+                                }
                             }
                         }
                     }
                 }
             }
-        })
+        )
     }
 
     private fun MediaPickerLibFragmentBinding.showSnackbar(holder: SnackbarMessageHolder) {
@@ -552,17 +628,13 @@ class MediaPickerFragment : Fragment() {
             return
         }
         viewModel.checkCameraPermission(
-            isCameraPermissionAlwaysDenied() || mediaPickerSetup.isStoragePermissionRequired
-                    && isStoragePermissionAlwaysDenied()
+            isCameraPermissionAlwaysDenied() || mediaPickerSetup.isStoragePermissionRequired &&
+                isStoragePermissionAlwaysDenied()
         )
     }
 
     private fun requestStoragePermission() {
-        val permissions = arrayOf(READ_EXTERNAL_STORAGE)
-        requestPermissions(
-            permissions,
-            PHOTO_PICKER_STORAGE_PERMISSION_REQUEST_CODE
-        )
+        storagePermissionRequest.launch(arrayOf(READ_EXTERNAL_STORAGE))
     }
 
     private fun requestCameraPermissions() {
@@ -571,34 +643,6 @@ class MediaPickerFragment : Fragment() {
         } else {
             arrayOf(CAMERA)
         }
-        requestPermissions(
-            permissions,
-            PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE
-        )
-    }
-
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        lifecycleScope.launch {
-            val checkForAlwaysDenied = requestCode == PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE
-            val allGranted = permissionUtils.setPermissionListAsked(
-                requireActivity(), requestCode, permissions, grantResults, checkForAlwaysDenied
-            )
-            when (requestCode) {
-                PHOTO_PICKER_STORAGE_PERMISSION_REQUEST_CODE -> checkStoragePermission()
-                PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE -> {
-                    if (allGranted) {
-                        viewModel.onCameraPermissionsGranted()
-                    } else {
-                        checkCameraPermissions()
-                    }
-                }
-            }
-        }
+        cameraPermissionRequest.launch(permissions)
     }
 }
-

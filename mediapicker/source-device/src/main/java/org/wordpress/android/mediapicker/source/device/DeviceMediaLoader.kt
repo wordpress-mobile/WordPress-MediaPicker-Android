@@ -7,8 +7,12 @@ import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.os.Environment
-import android.provider.MediaStore.*
+import android.provider.MediaStore.Audio
 import android.provider.MediaStore.Files.FileColumns
+import android.provider.MediaStore.Images
+import android.provider.MediaStore.MediaColumns
+import android.provider.MediaStore.VOLUME_EXTERNAL
+import android.provider.MediaStore.Video
 import android.webkit.MimeTypeMap
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.wordpress.android.mediapicker.model.MediaType
@@ -72,9 +76,9 @@ class DeviceMediaLoader @Inject constructor(
                 val title = cursor.getString(titleIndex)
                 val uri = Uri.withAppendedPath(baseUri, "" + id)
                 val item = DeviceMediaItem(
-                        uri.asMediaUri(),
-                        title,
-                        dateModified
+                    uri.asMediaUri(),
+                    title,
+                    dateModified
                 )
                 result.add(item)
             }
@@ -96,7 +100,7 @@ class DeviceMediaLoader @Inject constructor(
         val storagePublicDirectory = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
         val nextPage = (storagePublicDirectory?.listFiles() ?: arrayOf()).filter {
             (limitDate == null || it.lastModifiedInSecs() <= limitDate) &&
-                    (filter == null || it.name.lowercase().contains(filter))
+                (filter == null || it.name.lowercase().contains(filter))
         }.sortedByDescending { it.lastModified() }.take(pageSize + 1)
 
         val nextItem = if (nextPage.size > pageSize) {
@@ -107,9 +111,9 @@ class DeviceMediaLoader @Inject constructor(
         val result = nextPage.take(pageSize).map { file ->
             val uri = Uri.parse(file.toURI().toString())
             DeviceMediaItem(
-                    uri.asMediaUri(),
-                    file.name,
-                    file.lastModifiedInSecs()
+                uri.asMediaUri(),
+                file.name,
+                file.lastModifiedInSecs()
             )
         }
         return DeviceMediaList(result, nextItem)

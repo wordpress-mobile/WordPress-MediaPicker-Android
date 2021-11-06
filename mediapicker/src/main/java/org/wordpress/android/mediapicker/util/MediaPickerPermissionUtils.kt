@@ -4,17 +4,17 @@ import android.Manifest
 import android.Manifest.permission
 import android.app.Activity
 import android.content.Context
-import android.content.pm.PackageManager
-import androidx.core.content.ContextCompat
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import android.text.Html
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Build.VERSION_CODES
 import android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
 import androidx.appcompat.app.AlertDialog.Builder
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.text.HtmlCompat
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.wordpress.android.mediapicker.Key
 import org.wordpress.android.mediapicker.Permissions
@@ -50,44 +50,31 @@ class MediaPickerPermissionUtils @Inject constructor(
      * shows a dialog enabling the user to edit permissions if any are always denied
      *
      * @param activity host activity
-     * @param requestCode request code passed to ContextCompat.checkSelfPermission
-     * @param permissions list of permissions
      * @param grantResults list of results for above permissions
      * @param checkForAlwaysDenied show dialog if any permissions always denied
      * @return true if all permissions granted
      */
     suspend fun setPermissionListAsked(
         activity: Activity,
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray,
+        grantResults: Map<String, Boolean>,
         checkForAlwaysDenied: Boolean
-    ): Boolean {
-        for (i in permissions.indices) {
-            getPermissionAskedKey(permissions[i])?.let { key ->
+    ) {
+        grantResults.forEach { permission ->
+            getPermissionAskedKey(permission.key)?.let { key ->
                 val isFirstTime = perms.wasPermissionAsked(key)
-                trackPermissionResult(requestCode, permissions[i], grantResults[i], isFirstTime)
+                trackPermissionResult(permission.key, permission.value, isFirstTime)
                 perms.markAsAsked(key)
             }
         }
-        var allGranted = true
-        for (i in grantResults.indices) {
-            if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
-                allGranted = false
-                if (checkForAlwaysDenied
-                    && !ActivityCompat.shouldShowRequestPermissionRationale(
-                        activity,
-                        permissions[i]
-                    )
-                ) {
-                    showPermissionAlwaysDeniedDialog(activity, permissions[i])
-                    break
-                }
+
+        grantResults.filter { !it.value }.forEach { deniedPermission ->
+            if (checkForAlwaysDenied &&
+                !ActivityCompat.shouldShowRequestPermissionRationale(activity, deniedPermission.key)
+            ) {
+                showPermissionAlwaysDeniedDialog(activity, deniedPermission.key)
             }
         }
-        return allGranted
     }
-
 
     fun hasPermissionsToTakePhotos(isStorageAccessRequired: Boolean): Boolean {
         return hasCameraPermission() && (!isStorageAccessRequired || hasWriteStoragePermission())
@@ -126,7 +113,8 @@ class MediaPickerPermissionUtils @Inject constructor(
 
         // otherwise, check whether permission has already been granted - if so we know it has been asked
         if (ContextCompat.checkSelfPermission(context, permission) ==
-            PackageManager.PERMISSION_GRANTED) {
+            PackageManager.PERMISSION_GRANTED
+        ) {
             perms.markAsAsked(key)
             return true
         }
@@ -153,18 +141,16 @@ class MediaPickerPermissionUtils @Inject constructor(
     }
 
     private fun trackPermissionResult(
-        requestCode: Int,
         permission: String,
-        result: Int,
+        isPermissionGranted: Boolean,
         isFirstTime: Boolean
     ) {
         val props: MutableMap<String, String> = HashMap()
         props["permission"] = permission
-        props["request_code"] = requestCode.toString()
         props["is_first_time"] = java.lang.Boolean.toString(isFirstTime)
-        if (result == PackageManager.PERMISSION_GRANTED) {
+        if (isPermissionGranted) {
             tracker.track(Event.MEDIA_PERMISSION_GRANTED, props)
-        } else if (result == PackageManager.PERMISSION_DENIED) {
+        } else {
             tracker.track(Event.MEDIA_PERMISSION_DENIED, props)
         }
     }
@@ -216,7 +202,7 @@ class MediaPickerPermissionUtils @Inject constructor(
         )
         val builder: Builder = MaterialAlertDialogBuilder(context)
             .setTitle(context.getString(string.permissions_denied_title))
-            .setMessage(Html.fromHtml(message))
+            .setMessage(HtmlCompat.fromHtml(message, HtmlCompat.FROM_HTML_MODE_LEGACY))
             .setPositiveButton(
                 string.button_edit_permissions
             ) { _, _ -> showAppSettings(context) }

@@ -4,16 +4,16 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import org.wordpress.android.mediapicker.api.MediaSource
+import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult
+import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult.Empty
+import org.wordpress.android.mediapicker.api.MimeTypeProvider
+import org.wordpress.android.mediapicker.model.MediaItem
+import org.wordpress.android.mediapicker.model.MediaItem.Identifier.LocalUri
 import org.wordpress.android.mediapicker.model.MediaType
 import org.wordpress.android.mediapicker.model.MediaType.AUDIO
 import org.wordpress.android.mediapicker.model.MediaType.DOCUMENT
 import org.wordpress.android.mediapicker.model.MediaType.IMAGE
 import org.wordpress.android.mediapicker.model.MediaType.VIDEO
-import org.wordpress.android.mediapicker.api.MimeTypeProvider
-import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult
-import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult.Empty
-import org.wordpress.android.mediapicker.model.MediaItem
-import org.wordpress.android.mediapicker.model.MediaItem.Identifier.LocalUri
 import org.wordpress.android.mediapicker.util.UiString.UiStringText
 import javax.inject.Inject
 
@@ -41,8 +41,8 @@ class DeviceMediaSource(
                 when (mediaType) {
                     IMAGE, VIDEO, AUDIO -> async {
                         mediaType to loadMedia(
-                                mediaType,
-                                lowerCaseFilter
+                            mediaType,
+                            lowerCaseFilter
                         )
                     }
                     DOCUMENT -> async { mediaType to loadDownloads(lowerCaseFilter) }
@@ -90,8 +90,8 @@ class DeviceMediaSource(
         val deviceMediaList = deviceMediaLoader.loadMedia(mediaType, filter, pageSize, lastDateModified)
         val result = deviceMediaList.items.mapNotNull {
             val mimeType = deviceMediaLoader.getMimeType(it.mediaUri)
-            val isMimeTypeSupported = mimeType != null
-                    && mimeTypeProvider.isMimeTypeSupported(mimeType)
+            val isMimeTypeSupported = mimeType != null &&
+                mimeTypeProvider.isMimeTypeSupported(mimeType)
 
             if (isMimeTypeSupported) {
                 MediaItem(
@@ -119,20 +119,20 @@ class DeviceMediaSource(
 
         val filteredPage = documentsList.items.mapNotNull { document ->
             val mimeType = deviceMediaLoader.getMimeType(document.mediaUri)
-            val isMimeTypeSupported = mimeType != null
-                    && mimeTypeProvider.isMimeTypeSupported(mimeType)
+            val isMimeTypeSupported = mimeType != null &&
+                mimeTypeProvider.isMimeTypeSupported(mimeType)
 
-            val isSupportedApplicationType = mimeType != null
-                    && mimeTypeProvider.isApplicationTypeSupported(mimeType)
+            val isSupportedApplicationType = mimeType != null &&
+                mimeTypeProvider.isApplicationTypeSupported(mimeType)
 
             if (isSupportedApplicationType && isMimeTypeSupported) {
                 MediaItem(
-                        LocalUri(document.mediaUri),
-                        document.mediaUri.toString(),
-                        document.title,
-                        DOCUMENT,
-                        mimeType,
-                        document.dateModified
+                    LocalUri(document.mediaUri),
+                    document.mediaUri.toString(),
+                    document.title,
+                    DOCUMENT,
+                    mimeType,
+                    document.dateModified
                 )
             } else {
                 null
@@ -162,11 +162,11 @@ class DeviceMediaSource(
     ) {
         fun build(mediaTypes: Set<MediaType>): MediaSource {
             return DeviceMediaSource(
-                    deviceMediaLoader,
-                    bgDispatcher,
-                    mediaTypes,
-                    PAGE_SIZE,
-                    mimeTypeProvider
+                deviceMediaLoader,
+                bgDispatcher,
+                mediaTypes,
+                PAGE_SIZE,
+                mimeTypeProvider
             )
         }
 
