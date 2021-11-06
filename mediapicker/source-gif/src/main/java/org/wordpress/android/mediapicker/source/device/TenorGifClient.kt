@@ -25,12 +25,13 @@ class TenorGifClient @Inject constructor(
         onFailure: (Throwable?) -> Unit
     ) {
         tenorApiClient.search(
-                ApiClient.getServiceIds(context),
-                query,
-                loadSize.fittedToMaximumAllowed,
-                position.toString(),
-                MediaFilter.BASIC,
-                AspectRatioRange.ALL).apply {
+            ApiClient.getServiceIds(context),
+            query,
+            loadSize.fittedToMaximumAllowed,
+            position.toString(),
+            MediaFilter.BASIC,
+            AspectRatioRange.ALL
+        ).apply {
             enqueue(object : Callback<GifsResponse> {
                 override fun onResponse(call: Call<GifsResponse>, response: Response<GifsResponse>) {
                     val errorMessage = context.getString(R.string.gif_picker_empty_search_list)

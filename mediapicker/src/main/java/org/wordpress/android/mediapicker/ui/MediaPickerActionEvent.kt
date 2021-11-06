@@ -3,7 +3,9 @@ package org.wordpress.android.mediapicker.ui
 import android.os.Bundle
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import org.wordpress.android.mediapicker.model.MediaType
-import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.MediaPickerActionType.*
+import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.MediaPickerActionType.ANDROID_CHOOSE_FROM_DEVICE
+import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.MediaPickerActionType.CAPTURE_PHOTO
+import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.MediaPickerActionType.SWITCH_SOURCE
 
 sealed class MediaPickerActionEvent(val type: MediaPickerActionType) {
     companion object {

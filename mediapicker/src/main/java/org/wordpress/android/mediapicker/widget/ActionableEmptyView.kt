@@ -5,7 +5,10 @@ import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
-import android.widget.*
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import org.wordpress.android.mediapicker.R
 import org.wordpress.android.util.DisplayUtils

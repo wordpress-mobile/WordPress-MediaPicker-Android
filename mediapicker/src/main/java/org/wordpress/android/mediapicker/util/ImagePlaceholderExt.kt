@@ -1,7 +1,12 @@
 package org.wordpress.android.mediapicker.util
 
 import org.wordpress.android.mediapicker.R
-import org.wordpress.android.mediapicker.util.ImageType.*
+import org.wordpress.android.mediapicker.util.ImageType.ICON
+import org.wordpress.android.mediapicker.util.ImageType.IMAGE
+import org.wordpress.android.mediapicker.util.ImageType.NO_PLACEHOLDER
+import org.wordpress.android.mediapicker.util.ImageType.PHOTO
+import org.wordpress.android.mediapicker.util.ImageType.UNKNOWN
+import org.wordpress.android.mediapicker.util.ImageType.VIDEO
 
 fun ImageType.toErrorResource(): Int? {
     return when (this) {

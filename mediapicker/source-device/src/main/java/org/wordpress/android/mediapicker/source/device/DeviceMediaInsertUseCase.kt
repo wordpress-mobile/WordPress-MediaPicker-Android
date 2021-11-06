@@ -27,10 +27,18 @@ class DeviceMediaInsertUseCase constructor(
         if (failed) {
             emit(InsertModel.Error("Failed to fetch local media"))
         } else {
-            emit(InsertModel.Success(fetchedUris.map { LocalUri(
-                MediaUri(
-                    it
-                ), queueResults) }))
+            emit(
+                InsertModel.Success(
+                    fetchedUris.map {
+                        LocalUri(
+                            MediaUri(
+                                it
+                            ),
+                            queueResults
+                        )
+                    }
+                )
+            )
         }
     }
 
@@ -39,8 +47,8 @@ class DeviceMediaInsertUseCase constructor(
     ) {
         fun build(queueResults: Boolean): DeviceMediaInsertUseCase {
             return DeviceMediaInsertUseCase(
-                    mediaFetcher,
-                    queueResults
+                mediaFetcher,
+                queueResults
             )
         }
     }

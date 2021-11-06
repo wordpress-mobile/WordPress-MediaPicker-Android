@@ -12,7 +12,11 @@ import org.wordpress.android.mediapicker.model.MediaPickerUiItem.Type
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem.VideoItem
 import org.wordpress.android.mediapicker.ui.MediaPickerAdapterDiffCallback.Payload.COUNT_CHANGE
 import org.wordpress.android.mediapicker.ui.MediaPickerAdapterDiffCallback.Payload.SELECTION_CHANGE
-import org.wordpress.android.mediapicker.ui.viewholder.*
+import org.wordpress.android.mediapicker.ui.viewholder.FileThumbnailViewHolder
+import org.wordpress.android.mediapicker.ui.viewholder.LoaderViewHolder
+import org.wordpress.android.mediapicker.ui.viewholder.PhotoThumbnailViewHolder
+import org.wordpress.android.mediapicker.ui.viewholder.ThumbnailViewHolder
+import org.wordpress.android.mediapicker.ui.viewholder.VideoThumbnailViewHolder
 import org.wordpress.android.mediapicker.util.MediaThumbnailViewUtils
 
 class MediaPickerAdapter internal constructor(

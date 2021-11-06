@@ -1,7 +1,6 @@
 package org.wordpress.android.mediapicker.model
 
 import android.content.Intent
-import android.os.Build.VERSION_CODES
 import org.wordpress.android.mediapicker.api.R
 
 enum class MediaPickerContext(
@@ -11,17 +10,22 @@ enum class MediaPickerContext(
 ) {
     PHOTO(
         Intent.ACTION_GET_CONTENT,
-        R.string.pick_photo, "image/*"),
+        R.string.pick_photo, "image/*"
+    ),
     VIDEO(
         Intent.ACTION_GET_CONTENT,
-        R.string.pick_video, "video/*"),
+        R.string.pick_video, "video/*"
+    ),
     PHOTO_OR_VIDEO(
         Intent.ACTION_GET_CONTENT,
-        R.string.pick_media, "*/*"),
+        R.string.pick_media, "*/*"
+    ),
     AUDIO(
         Intent.ACTION_GET_CONTENT,
-        R.string.pick_audio, "*/*"),
+        R.string.pick_audio, "*/*"
+    ),
     MEDIA_FILE(
         Intent.ACTION_OPEN_DOCUMENT,
-        R.string.pick_file, "*/*");
+        R.string.pick_file, "*/*"
+    );
 }
