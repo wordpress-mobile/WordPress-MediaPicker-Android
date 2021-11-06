@@ -1,5 +1,12 @@
 allprojects {
     repositories {
+        maven {
+            url "https://a8c-libs.s3.amazonaws.com/android"
+            content {
+                includeGroup "org.wordpress"
+                includeGroup "org.wordpress.mediapicker"
+            }
+        }
         google()
         jcenter()
         mavenCentral()
@@ -25,6 +32,8 @@ ext {
     navigationFragmentVersion = '2.3.5'
     wordpressUtilsVersion = "2.0.0"
     tenorVersion = "0.5.1"
+
+    mediapickerProjectDependency = project.hasProperty("mediapickerVersion") ? "org.wordpress:mediapicker:${project.getProperty("mediapickerVersion")}" : project(":mediapicker")
 }
 
 subprojects {
