@@ -6,7 +6,6 @@ import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.app.Activity
 import android.os.Bundle
 import android.os.Parcelable
-import android.text.Html
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -15,11 +14,13 @@ import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AlertDialog.Builder
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -59,8 +60,6 @@ import org.wordpress.android.mediapicker.util.AnimUtils.Duration.MEDIUM
 import org.wordpress.android.mediapicker.util.Log
 import org.wordpress.android.mediapicker.util.MediaPickerLinkMovementMethod
 import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils
-import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils.Companion.PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE
-import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils.Companion.PHOTO_PICKER_STORAGE_PERMISSION_REQUEST_CODE
 import org.wordpress.android.mediapicker.util.MediaPickerUtils
 import org.wordpress.android.mediapicker.util.MediaUtils
 import org.wordpress.android.mediapicker.util.UiHelpers
@@ -68,6 +67,10 @@ import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.ActionModeUiModel
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.FabUiModel
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PhotoListUiModel
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PhotoListUiModel.Data
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PhotoListUiModel.Empty
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PhotoListUiModel.Hidden
+import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PhotoListUiModel.Loading
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.ProgressDialogUiModel
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.ProgressDialogUiModel.Visible
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.SearchUiModel
@@ -103,6 +106,29 @@ class MediaPickerFragment : Fragment() {
 
     private val camera = registerForActivityResult(StartActivityForResult()) {
         handleImageCaptureResult(it)
+    }
+
+    private val storagePermissionRequest = registerForActivityResult(
+        RequestMultiplePermissions()
+    ) { permissions ->
+        lifecycleScope.launch {
+            permissionUtils.setPermissionListAsked(requireActivity(), permissions, false)
+            checkStoragePermission()
+        }
+    }
+
+    private val cameraPermissionRequest = registerForActivityResult(
+        RequestMultiplePermissions()
+    ) { permissions ->
+        lifecycleScope.launch {
+            val allGranted = permissions.values.all { it }
+            permissionUtils.setPermissionListAsked(requireActivity(), permissions, true)
+            if (allGranted) {
+                viewModel.onCameraPermissionsGranted()
+            } else {
+                checkCameraPermissions()
+            }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -389,7 +415,10 @@ class MediaPickerFragment : Fragment() {
         softAskViewUiModel: SoftAskViewUiModel,
     ) {
         if (softAskViewUiModel is SoftAskViewUiModel.Visible) {
-            softAskView.title.text = Html.fromHtml(softAskViewUiModel.label)
+            softAskView.title.text = HtmlCompat.fromHtml(
+                softAskViewUiModel.label,
+                HtmlCompat.FROM_HTML_MODE_LEGACY
+            )
             softAskView.button.setText(softAskViewUiModel.allowId.stringRes)
             softAskView.button.setOnClickListener {
                 softAskViewUiModel.onClick()
@@ -410,10 +439,10 @@ class MediaPickerFragment : Fragment() {
             if (uiModel is PhotoListUiModel.Empty) View.VISIBLE else View.GONE
         recycler.visibility = if (uiModel is PhotoListUiModel.Data) View.VISIBLE else View.INVISIBLE
         when (uiModel) {
-            is PhotoListUiModel.Data -> {
+            is Data -> {
                 setupAdapter(uiModel.items)
             }
-            is PhotoListUiModel.Empty -> {
+            is Empty -> {
                 setupAdapter(listOf())
                 actionableEmptyView.updateLayoutForSearch(uiModel.isSearching, 0)
                 actionableEmptyView.title.text = UiHelpers.getTextOfUiString(
@@ -422,11 +451,12 @@ class MediaPickerFragment : Fragment() {
                 )
 
                 actionableEmptyView.subtitle.applyOrHide(uiModel.htmlSubtitle) { htmlSubtitle ->
-                    actionableEmptyView.subtitle.text = Html.fromHtml(
+                    actionableEmptyView.subtitle.text = HtmlCompat.fromHtml(
                         UiHelpers.getTextOfUiString(
                             requireContext(),
                             htmlSubtitle
-                        )
+                        ),
+                        HtmlCompat.FROM_HTML_MODE_LEGACY
                     )
                     actionableEmptyView.subtitle.movementMethod =
                         MediaPickerLinkMovementMethod.getInstance(log)
@@ -448,6 +478,8 @@ class MediaPickerFragment : Fragment() {
                     uiModel.retryAction?.invoke()
                 }
             }
+            Hidden -> {}
+            Loading -> {}
         }
     }
 
@@ -602,11 +634,7 @@ class MediaPickerFragment : Fragment() {
     }
 
     private fun requestStoragePermission() {
-        val permissions = arrayOf(READ_EXTERNAL_STORAGE)
-        requestPermissions(
-            permissions,
-            PHOTO_PICKER_STORAGE_PERMISSION_REQUEST_CODE
-        )
+        storagePermissionRequest.launch(arrayOf(READ_EXTERNAL_STORAGE))
     }
 
     private fun requestCameraPermissions() {
@@ -615,32 +643,6 @@ class MediaPickerFragment : Fragment() {
         } else {
             arrayOf(CAMERA)
         }
-        requestPermissions(
-            permissions,
-            PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE
-        )
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        lifecycleScope.launch {
-            val checkForAlwaysDenied = requestCode == PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE
-            val allGranted = permissionUtils.setPermissionListAsked(
-                requireActivity(), requestCode, permissions, grantResults, checkForAlwaysDenied
-            )
-            when (requestCode) {
-                PHOTO_PICKER_STORAGE_PERMISSION_REQUEST_CODE -> checkStoragePermission()
-                PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE -> {
-                    if (allGranted) {
-                        viewModel.onCameraPermissionsGranted()
-                    } else {
-                        checkCameraPermissions()
-                    }
-                }
-            }
-        }
+        cameraPermissionRequest.launch(permissions)
     }
 }

@@ -7,7 +7,6 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
 import com.bumptech.glide.Glide
-import kotlinx.coroutines.CoroutineScope
 import org.wordpress.android.mediapicker.R
 
 fun ImageView.setImageResourceWithTint(
@@ -50,11 +49,11 @@ fun ImageView.load(
         .clearOnDetach()
 }
 
-fun ImageView.loadThumbnailFromVideoUrl(
-    coroutineScope: CoroutineScope,
-    videoUrl: String
-) {
-    // TODO: Anitaa: we would need to find a way to decouple VideoLoader since it uses FluxC internally
+// TODO: Anitaa: we would need to find a way to decouple VideoLoader since it uses FluxC internally
+//fun ImageView.loadThumbnailFromVideoUrl(
+//    coroutineScope: CoroutineScope,
+//    videoUrl: String
+//) {
 //    val context = this.context
 //    val imageType = VIDEO
 //    if (!context.isAvailable()) return
@@ -80,4 +79,4 @@ fun ImageView.loadThumbnailFromVideoUrl(
 //                .into(imageView)
 //                .clearOnDetach()
 //        }) ?: throw java.lang.IllegalArgumentException("Video loader has to be set")
-}
+//}
