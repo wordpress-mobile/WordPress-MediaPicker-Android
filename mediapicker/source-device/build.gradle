@@ -4,9 +4,8 @@ plugins {
     id 'org.jetbrains.kotlin.plugin.parcelize'
     id 'org.jetbrains.kotlin.kapt'
     id 'dagger.hilt.android.plugin'
+    id "com.automattic.android.publish-to-s3"
 }
-
-apply from: "$rootDir/publish.gradle"
 
 android {
     compileSdkVersion 31
@@ -27,3 +26,19 @@ dependencies {
     implementation "com.google.dagger:hilt-android-compiler:$daggerVersion"
     kapt "com.google.dagger:hilt-compiler:$daggerVersion"
 }
+
+project.afterEvaluate {
+    publishing {
+        publications {
+            AztecPublication(MavenPublication) {
+                from components.release
+
+                groupId "org.wordpress.mediapicker"
+                artifactId "source-device"
+                artifact tasks.named("androidSourcesJar")
+                // version is set by 'publish-to-s3' plugin
+            }
+        }
+    }
+}
+

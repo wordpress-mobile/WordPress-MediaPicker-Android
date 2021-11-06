@@ -8,8 +8,16 @@ pluginManagement {
         id 'org.jetbrains.kotlin.plugin.parcelize' version gradle.ext.kotlinVersion
         id 'org.jetbrains.kotlin.kapt' version gradle.ext.kotlinVersion
         id 'dagger.hilt.android.plugin'
+        id "com.automattic.android.publish-to-s3" version "0.7.0"
     }
     repositories {
+        maven {
+            url 'https://a8c-libs.s3.amazonaws.com/android'
+            content {
+                includeGroup "com.automattic.android"
+                includeGroup "com.automattic.android.publish-to-s3"
+            }
+        }
         google()
         gradlePluginPortal()
         jcenter()
@@ -44,3 +52,5 @@ if (System.getenv().containsKey("CI")) {
         }
     }
 }
+
+

@@ -5,9 +5,8 @@ plugins {
     id 'org.jetbrains.kotlin.kapt'
     id 'dagger.hilt.android.plugin'
     id 'maven-publish'
+    id "com.automattic.android.publish-to-s3"
 }
-
-apply from: "$rootDir/publish.gradle"
 
 android {
     compileSdkVersion 31
@@ -60,5 +59,20 @@ android {
         implementation "com.github.chrisbanes:PhotoView:$photoViewVersion"
 
         implementation "org.wordpress:utils:$wordpressUtilsVersion"
+    }
+}
+
+project.afterEvaluate {
+    publishing {
+        publications {
+            AztecPublication(MavenPublication) {
+                from components.release
+
+                groupId "org.wordpress"
+                artifactId "mediapicker"
+                artifact tasks.named("androidSourcesJar")
+                // version is set by 'publish-to-s3' plugin
+            }
+        }
     }
 }
