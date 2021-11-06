@@ -30,7 +30,7 @@ dependencies {
 project.afterEvaluate {
     publishing {
         publications {
-            AztecPublication(MavenPublication) {
+            MediaPickerSourceDevicePublication(MavenPublication) {
                 from components.release
 
                 groupId "org.wordpress.mediapicker"
