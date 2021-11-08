@@ -30,8 +30,7 @@ rootProject.name = "Media Picker"
 include ':mediapicker',
         ':mediapicker:domain',
         ':mediapicker:source-device',
-        ':mediapicker:source-gif',
-        ':sampleapp'
+        ':mediapicker:source-gif'
 
 // Build cache is only enabled for CI, at least for now
 if (System.getenv().containsKey("CI")) {
