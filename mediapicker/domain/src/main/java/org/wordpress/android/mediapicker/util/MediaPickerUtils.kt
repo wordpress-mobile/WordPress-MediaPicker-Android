@@ -1,6 +1,5 @@
 package org.wordpress.android.mediapicker.util
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -15,10 +14,16 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import org.wordpress.android.mediapicker.model.MediaPickerAction.OpenSystemPicker
 import org.wordpress.android.mediapicker.model.MediaPickerContext
 import org.wordpress.android.util.MediaUtils
-import java.io.*
-import java.lang.RuntimeException
+import java.io.BufferedOutputStream
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -27,7 +32,6 @@ class MediaPickerUtils @Inject constructor(
     @ApplicationContext private val context: Context,
     private val log: Log
 ) {
-    @Suppress("Deprecation")
     val externalStorageDir: File?
         @RequiresApi(VERSION_CODES.FROYO)
         get() {
