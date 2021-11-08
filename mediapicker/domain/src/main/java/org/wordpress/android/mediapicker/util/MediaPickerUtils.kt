@@ -41,7 +41,7 @@ class MediaPickerUtils @Inject constructor(
             }
         }
 
-    private val isCameraAvailable: Boolean
+    val isCameraAvailable: Boolean
         get() = context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
 
     fun createSystemPickerIntent(
