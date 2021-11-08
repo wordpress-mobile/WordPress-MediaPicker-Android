@@ -31,12 +31,12 @@ class MediaPickerUtils @Inject constructor(
     @ApplicationContext private val context: Context,
     private val log: Log
 ) {
-    @Suppress("Deprecation")
     val externalStorageDir: File?
         get() {
             return if (VERSION.SDK_INT >= VERSION_CODES.Q) {
                 context.getExternalFilesDir(Environment.DIRECTORY_DCIM)
             } else {
+                @Suppress("Deprecation")
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
             }
         }
