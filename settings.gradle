@@ -1,6 +1,6 @@
 pluginManagement {
     gradle.ext.kotlinVersion = '1.5.31'
-    gradle.ext.daggerVersion = '2.39.1'
+    gradle.ext.daggerVersion = '2.40'
 
     plugins {
         id 'org.jetbrains.kotlin.android' version gradle.ext.kotlinVersion
