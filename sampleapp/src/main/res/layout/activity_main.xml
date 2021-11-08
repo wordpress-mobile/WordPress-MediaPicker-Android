@@ -7,7 +7,8 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    tools:ignore="HardcodedText">
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/devicePickerButton"
