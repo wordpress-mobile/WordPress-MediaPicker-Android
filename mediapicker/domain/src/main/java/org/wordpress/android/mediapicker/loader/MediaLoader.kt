@@ -1,10 +1,16 @@
 package org.wordpress.android.mediapicker.loader
 
+import android.os.Parcelable
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.mediapicker.api.MediaSource
+import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult
+import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult.Empty
+import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult.Failure
+import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult.Success
 import org.wordpress.android.mediapicker.loader.MediaLoader.DomainModel.EmptyState
 import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction.ClearFilter
 import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction.Filter
@@ -12,10 +18,6 @@ import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction.NextPage
 import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction.Refresh
 import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction.Retry
 import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction.Start
-import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult
-import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult.Empty
-import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult.Failure
-import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult.Success
 import org.wordpress.android.mediapicker.model.MediaItem
 import org.wordpress.android.mediapicker.util.UiString
 
@@ -146,6 +148,7 @@ data class MediaLoader(private val mediaSource: MediaSource) {
         object Retry : LoadAction()
     }
 
+    @Parcelize
     data class DomainModel(
         val domainItems: List<MediaItem> = listOf(),
         val hasMore: Boolean = false,
@@ -153,7 +156,8 @@ data class MediaLoader(private val mediaSource: MediaSource) {
         val filter: String? = null,
         val isLoading: Boolean = false,
         val emptyState: EmptyState? = null
-    ) {
+    ) : Parcelable {
+        @Parcelize
         data class EmptyState(
             val title: UiString,
             val htmlSubtitle: UiString? = null,
@@ -161,6 +165,6 @@ data class MediaLoader(private val mediaSource: MediaSource) {
             val bottomImage: Int? = null,
             val bottomImageDescription: UiString? = null,
             val isError: Boolean = false
-        )
+        ) : Parcelable
     }
 }

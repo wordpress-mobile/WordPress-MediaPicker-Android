@@ -9,11 +9,11 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore.Audio
 import android.provider.MediaStore.Files.FileColumns
-import android.provider.MediaStore.Images.Media
+import android.provider.MediaStore.Images
 import android.provider.MediaStore.MediaColumns
+import android.provider.MediaStore.VOLUME_EXTERNAL
 import android.provider.MediaStore.Video
 import android.webkit.MimeTypeMap
-import androidx.annotation.RequiresApi
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.wordpress.android.mediapicker.model.MediaType
 import org.wordpress.android.mediapicker.model.MediaType.AUDIO
@@ -34,11 +34,20 @@ class DeviceMediaLoader @Inject constructor(
         pageSize: Int,
         limitDate: Long? = null
     ): DeviceMediaList {
-        val baseUri = when (mediaType) {
-            IMAGE -> Media.EXTERNAL_CONTENT_URI
-            VIDEO -> Video.Media.EXTERNAL_CONTENT_URI
-            AUDIO -> Audio.Media.EXTERNAL_CONTENT_URI
-            else -> throw IllegalArgumentException("Cannot load media for selected type $mediaType")
+        val baseUri = if (VERSION.SDK_INT >= VERSION_CODES.Q /*29*/) {
+            when (mediaType) {
+                IMAGE -> Images.Media.getContentUri(VOLUME_EXTERNAL)
+                VIDEO -> Video.Media.getContentUri(VOLUME_EXTERNAL)
+                AUDIO -> Audio.Media.getContentUri(VOLUME_EXTERNAL)
+                else -> throw IllegalArgumentException("Cannot load media for selected type $mediaType")
+            }
+        } else {
+            when (mediaType) {
+                IMAGE -> Images.Media.EXTERNAL_CONTENT_URI
+                VIDEO -> Video.Media.EXTERNAL_CONTENT_URI
+                AUDIO -> Audio.Media.EXTERNAL_CONTENT_URI
+                else -> throw IllegalArgumentException("Cannot load media for selected type $mediaType")
+            }
         }
         val result = mutableListOf<DeviceMediaItem>()
         val projection = arrayOf(ID_COL, ID_DATE_MODIFIED, ID_TITLE)
@@ -67,9 +76,9 @@ class DeviceMediaLoader @Inject constructor(
                 val title = cursor.getString(titleIndex)
                 val uri = Uri.withAppendedPath(baseUri, "" + id)
                 val item = DeviceMediaItem(
-                        uri.asMediaUri(),
-                        title,
-                        dateModified
+                    uri.asMediaUri(),
+                    title,
+                    dateModified
                 )
                 result.add(item)
             }
@@ -87,12 +96,11 @@ class DeviceMediaLoader @Inject constructor(
         return DeviceMediaList(result.take(pageSize), nextItem)
     }
 
-    @RequiresApi(VERSION_CODES.FROYO)
     fun loadDocuments(filter: String?, pageSize: Int, limitDate: Long? = null): DeviceMediaList {
         val storagePublicDirectory = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
         val nextPage = (storagePublicDirectory?.listFiles() ?: arrayOf()).filter {
             (limitDate == null || it.lastModifiedInSecs() <= limitDate) &&
-                    (filter == null || it.name.lowercase().contains(filter))
+                (filter == null || it.name.lowercase().contains(filter))
         }.sortedByDescending { it.lastModified() }.take(pageSize + 1)
 
         val nextItem = if (nextPage.size > pageSize) {
@@ -103,9 +111,9 @@ class DeviceMediaLoader @Inject constructor(
         val result = nextPage.take(pageSize).map { file ->
             val uri = Uri.parse(file.toURI().toString())
             DeviceMediaItem(
-                    uri.asMediaUri(),
-                    file.name,
-                    file.lastModifiedInSecs()
+                uri.asMediaUri(),
+                file.name,
+                file.lastModifiedInSecs()
             )
         }
         return DeviceMediaList(result, nextItem)
@@ -159,7 +167,7 @@ class DeviceMediaLoader @Inject constructor(
     data class DeviceMediaItem(val mediaUri: MediaUri, val title: String, val dateModified: Long)
 
     companion object {
-        private const val ID_COL = Media._ID
+        private const val ID_COL = Images.Media._ID
         private const val ID_DATE_MODIFIED = MediaColumns.DATE_MODIFIED
         private const val ID_TITLE = MediaColumns.TITLE
     }

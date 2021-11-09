@@ -1,5 +1,6 @@
 pluginManagement {
     gradle.ext.kotlinVersion = '1.5.31'
+    gradle.ext.daggerVersion = '2.40'
 
     plugins {
         id 'org.jetbrains.kotlin.android' version gradle.ext.kotlinVersion
@@ -19,7 +20,7 @@ pluginManagement {
                 useModule("com.android.tools.build:gradle:4.2.2")
             }
             else if (requested.id.id.contains("hilt")) {
-                useModule("com.google.dagger:hilt-android-gradle-plugin:2.38.1")
+                useModule("com.google.dagger:hilt-android-gradle-plugin:$gradle.ext.daggerVersion")
             }
         }
     }

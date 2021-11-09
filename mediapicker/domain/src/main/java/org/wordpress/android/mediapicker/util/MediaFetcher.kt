@@ -28,8 +28,9 @@ class MediaFetcher @Inject constructor(
         } catch (e: IllegalStateException) {
             // Ref: https://github.com/wordpress-mobile/WordPress-Android/issues/5823
             log.e(
-                "Can't download the image at: " + mediaUri.toString()
-                        + " See issue #5823", e
+                "Can't download the image at: " + mediaUri.toString() +
+                    " See issue #5823",
+                e
             )
             null
         }

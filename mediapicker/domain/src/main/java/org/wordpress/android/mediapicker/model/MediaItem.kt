@@ -2,8 +2,12 @@ package org.wordpress.android.mediapicker.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.mediapicker.model.MediaItem.IdentifierType.*
+import org.wordpress.android.mediapicker.model.MediaItem.IdentifierType.GIF_MEDIA_ID
+import org.wordpress.android.mediapicker.model.MediaItem.IdentifierType.LOCAL_ID
+import org.wordpress.android.mediapicker.model.MediaItem.IdentifierType.LOCAL_URI
+import org.wordpress.android.mediapicker.model.MediaItem.IdentifierType.REMOTE_ID
 
+@Parcelize
 data class MediaItem(
     val identifier: Identifier,
     val url: String,
@@ -11,7 +15,7 @@ data class MediaItem(
     val type: MediaType,
     val mimeType: String? = null,
     val dataModified: Long
-) {
+) : Parcelable {
     enum class IdentifierType {
         LOCAL_URI,
         REMOTE_ID,

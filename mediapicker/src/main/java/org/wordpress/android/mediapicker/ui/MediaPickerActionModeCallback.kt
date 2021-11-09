@@ -12,11 +12,12 @@ import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.Observer
 import org.wordpress.android.mediapicker.R
 import org.wordpress.android.mediapicker.R.id
+import org.wordpress.android.mediapicker.util.UiString
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.ActionModeUiModel
-import org.wordpress.android.mediapicker.util.UiString
 
-class MediaPickerActionModeCallback(private val viewModel: MediaPickerViewModel) : Callback,
+class MediaPickerActionModeCallback(private val viewModel: MediaPickerViewModel) :
+    Callback,
     LifecycleOwner {
     private lateinit var lifecycleRegistry: LifecycleRegistry
     override fun onCreateActionMode(
@@ -27,23 +28,26 @@ class MediaPickerActionModeCallback(private val viewModel: MediaPickerViewModel)
         lifecycleRegistry.handleLifecycleEvent(ON_START)
         val inflater = actionMode.menuInflater
         inflater.inflate(R.menu.media_picker_lib_action_mode, menu)
-        viewModel.uiState.observe(this, Observer { uiState ->
-            when (val uiModel = uiState.actionModeUiModel) {
-                is ActionModeUiModel.Hidden -> {
-                    actionMode.finish()
-                }
-                is ActionModeUiModel.Visible -> {
-                    when (uiModel.actionModeTitle) {
-                        is UiString.UiStringText -> {
-                            actionMode.title = uiModel.actionModeTitle.text
-                        }
-                        is UiString.UiStringRes -> {
-                            actionMode.setTitle(uiModel.actionModeTitle.stringRes)
+        viewModel.uiState.observe(
+            this,
+            Observer { uiState ->
+                when (val uiModel = uiState.actionModeUiModel) {
+                    is ActionModeUiModel.Hidden -> {
+                        actionMode.finish()
+                    }
+                    is ActionModeUiModel.Visible -> {
+                        when (uiModel.actionModeTitle) {
+                            is UiString.UiStringText -> {
+                                actionMode.title = uiModel.actionModeTitle.text
+                            }
+                            is UiString.UiStringRes -> {
+                                actionMode.setTitle(uiModel.actionModeTitle.stringRes)
+                            }
                         }
                     }
                 }
             }
-        })
+        )
         return true
     }
 

@@ -3,14 +3,32 @@ package org.wordpress.android.mediapicker
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerIcon
-import org.wordpress.android.mediapicker.ui.MediaPickerFragment.MediaPickerIcon.*
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
-import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.*
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.CAMERA
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.GIF_LIBRARY
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.SYSTEM_PICKER
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier.LocalUri
+import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent
+import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.CapturePhoto
+import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.ChooseFromAndroidDevice
+import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.SwitchSource
 import org.wordpress.android.mediapicker.util.Tracker
-import org.wordpress.android.mediapicker.util.Tracker.Event.*
+import org.wordpress.android.mediapicker.util.Tracker.Event.MEDIA_PICKER_CAPTURE_PHOTO
+import org.wordpress.android.mediapicker.util.Tracker.Event.MEDIA_PICKER_ITEM_SELECTED
+import org.wordpress.android.mediapicker.util.Tracker.Event.MEDIA_PICKER_ITEM_UNSELECTED
+import org.wordpress.android.mediapicker.util.Tracker.Event.MEDIA_PICKER_OPENED
+import org.wordpress.android.mediapicker.util.Tracker.Event.MEDIA_PICKER_OPEN_DEVICE_LIBRARY
+import org.wordpress.android.mediapicker.util.Tracker.Event.MEDIA_PICKER_OPEN_GIF_LIBRARY
+import org.wordpress.android.mediapicker.util.Tracker.Event.MEDIA_PICKER_OPEN_SYSTEM_PICKER
+import org.wordpress.android.mediapicker.util.Tracker.Event.MEDIA_PICKER_PREVIEW_OPENED
+import org.wordpress.android.mediapicker.util.Tracker.Event.MEDIA_PICKER_RECENT_MEDIA_SELECTED
+import org.wordpress.android.mediapicker.util.Tracker.Event.MEDIA_PICKER_SEARCH_COLLAPSED
+import org.wordpress.android.mediapicker.util.Tracker.Event.MEDIA_PICKER_SEARCH_EXPANDED
+import org.wordpress.android.mediapicker.util.Tracker.Event.MEDIA_PICKER_SEARCH_TRIGGERED
+import org.wordpress.android.mediapicker.util.Tracker.Event.MEDIA_PICKER_SELECTION_CLEARED
+import org.wordpress.android.mediapicker.util.Tracker.Event.MEDIA_PICKER_SHOW_PERMISSIONS_SCREEN
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PermissionsRequested
 import org.wordpress.android.util.MediaUtils
 import javax.inject.Inject
@@ -55,14 +73,14 @@ class MediaPickerTracker @Inject constructor(
         return properties
     }
 
-    fun trackIconClick(icon: MediaPickerIcon, mediaPickerSetup: MediaPickerSetup) {
-        when (icon) {
+    fun trackIconClick(action: MediaPickerActionEvent, mediaPickerSetup: MediaPickerSetup) {
+        when (action) {
             is ChooseFromAndroidDevice -> tracker.track(
                 MEDIA_PICKER_OPEN_SYSTEM_PICKER,
                 mediaPickerSetup.toProperties()
             )
             is SwitchSource -> {
-                val event = when (icon.dataSource) {
+                val event = when (action.dataSource) {
                     DEVICE -> MEDIA_PICKER_OPEN_DEVICE_LIBRARY
                     GIF_LIBRARY -> MEDIA_PICKER_OPEN_GIF_LIBRARY
                     CAMERA -> MEDIA_PICKER_CAPTURE_PHOTO

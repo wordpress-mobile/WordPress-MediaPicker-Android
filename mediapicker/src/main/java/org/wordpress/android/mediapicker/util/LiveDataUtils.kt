@@ -9,7 +9,6 @@ import kotlinx.coroutines.launch
 
 /**
  * Merges two LiveData sources using a given function. The function returns an object of a new type.
- * @param bgDispatcher context to run the merger function in
  * @param sourceA first source
  * @param sourceB second source
  * @return new data source
