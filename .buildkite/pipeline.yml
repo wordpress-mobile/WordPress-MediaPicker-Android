@@ -11,6 +11,7 @@ common-params:
 
 steps:
   - label: "ktlint"
+    key: "ktlint"
     plugins:
       - *publish-android-artifacts-docker-container
     command: |
@@ -18,6 +19,7 @@ steps:
     artifact_paths:
       - "**/build/ktlint.xml"
   - label: "lint"
+    key: "lint"
     plugins:
       - *publish-android-artifacts-docker-container
     command: |
@@ -25,19 +27,19 @@ steps:
     artifact_paths:
       - "**/build/reports/lint-results*.*"
   - label: "Unit test"
+    key: "unit-test"
     plugins:
       - *publish-android-artifacts-docker-container
     command: |
       ./gradlew testRelease
-  - label: "Assemble Release"
-    plugins:
-      - *publish-android-artifacts-docker-container
-    command: |
-      ./gradlew assembleRelease
 
   # Publish tasks
   - label: "Publish :mediapicker:domain"
     key: "publish-mediapicker-domain"
+    depends_on:
+      - "ktlint"
+      - "lint"
+      - "unit-test"
     plugins:
       - *publish-android-artifacts-docker-container
     command: |

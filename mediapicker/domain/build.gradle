@@ -32,7 +32,7 @@ dependencies {
 project.afterEvaluate {
     publishing {
         publications {
-            DomainPublication(MavenPublication) {
+            MediaPickerDomainPublication(MavenPublication) {
                 from components.release
 
                 groupId "org.wordpress.mediapicker"
