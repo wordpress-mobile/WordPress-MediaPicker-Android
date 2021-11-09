@@ -16,7 +16,7 @@ data class MediaPickerSetup(
     @StringRes val title: Int
 ) {
     enum class DataSource {
-        DEVICE, GIF_LIBRARY, CAMERA, SYSTEM_PICKER
+        DEVICE, GIF_LIBRARY, CAMERA, SYSTEM_PICKER, WP_MEDIA_LIBRARY
     }
 
     fun toBundle(bundle: Bundle) {

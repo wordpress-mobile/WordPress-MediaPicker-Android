@@ -1,0 +1,40 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.plugin.parcelize'
+    id 'org.jetbrains.kotlin.kapt'
+    id 'dagger.hilt.android.plugin'
+}
+
+apply from: "$rootDir/publish.gradle"
+
+android {
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion rootProject.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+    }
+}
+
+dependencies {
+    implementation project(':mediapicker:domain')
+
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+
+    implementation "com.google.dagger:hilt-android:$daggerVersion"
+    implementation "com.google.dagger:hilt-android-compiler:$daggerVersion"
+    kapt "com.google.dagger:hilt-compiler:$daggerVersion"
+
+    implementation "org.wordpress:utils:$wordpressUtilsVersion"
+
+    implementation("org.wordpress:fluxc:$fluxCVersion") {
+        exclude group: "com.android.support"
+        exclude group: "org.wordpress", module: "utils"
+    }
+    implementation("org.wordpress.fluxc.plugins:woocommerce:$fluxCVersion") {
+        exclude group: "com.android.support"
+        exclude group: "org.wordpress", module: "utils"
+    }
+}
