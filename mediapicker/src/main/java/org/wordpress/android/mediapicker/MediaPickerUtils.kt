@@ -158,12 +158,12 @@ class MediaPickerUtils @Inject constructor(
         @Suppress("Deprecation")
         val filePathColumn = arrayOf(Media.DATA)
         try {
-            context.contentResolver.query(uri, filePathColumn, null, null, null)?.let { cursor ->
-                if (cursor.moveToFirst()) {
-                    val columnIndex: Int = cursor.getColumnIndex(filePathColumn[0])
-                    return cursor.getString(columnIndex)
+            context.contentResolver.query(uri, filePathColumn, null, null, null)?.apply {
+                if (moveToFirst()) {
+                    val columnIndex: Int = getColumnIndex(filePathColumn[0])
+                    return getString(columnIndex)
                 }
-                cursor.close()
+                close()
             }
         } catch (e: RuntimeException) {
             log.e(e)
