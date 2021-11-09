@@ -105,6 +105,14 @@ class MediaPickerUtils @Inject constructor(
         return null
     }
 
+    fun getFilePath(uri: Uri): String? {
+        return when (uri.scheme) {
+            "content" -> getMediaStoreFilePath(uri)
+            "file" -> uri.path
+            else -> uri.toString()
+        }
+    }
+
     fun getMediaStoreFilePath(uri: Uri): String? {
         var path: String? = null
         if (VERSION.SDK_INT >= VERSION_CODES.Q) {
@@ -140,7 +148,9 @@ class MediaPickerUtils @Inject constructor(
      */
     fun scanMediaFile(localMediaPath: String) {
         MediaScannerConnection.scanFile(
-            context, arrayOf(localMediaPath), null
+            context,
+            arrayOf(localMediaPath),
+            null
         ) { path: String, _: Uri? -> log.d("Media scanner finished scanning $path") }
     }
 
