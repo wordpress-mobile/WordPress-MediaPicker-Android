@@ -7,4 +7,4 @@ set -euo pipefail
     :mediapicker:domain:publish
 
 # Add meta-data for the published version so we can use it in subsequent steps
-cat ./MediaPicker/domain/build/published-version.txt | buildkite-agent meta-data set "PUBLISHED_MEDIAPICKER_DOMAIN_VERSION"
+cat ./mediapicker/domain/build/published-version.txt | buildkite-agent meta-data set "PUBLISHED_MEDIAPICKER_DOMAIN_VERSION"
