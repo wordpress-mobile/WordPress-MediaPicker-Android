@@ -19,13 +19,14 @@ import org.wordpress.android.mediapicker.util.MediaUtils
 import java.io.File
 import javax.inject.Inject
 
-class MediaManager @Inject constructor(
+internal class MediaManager @Inject constructor(
     private val log: Log,
     @ApplicationContext private val applicationContext: Context
 ) {
     companion object {
         private const val FILE_SCHEME = "file"
     }
+
     suspend fun addImageToMediaStore(path: String): Uri? {
         return if (Build.VERSION.SDK_INT >= VERSION_CODES.Q) {
             saveImageInQ(path)

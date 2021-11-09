@@ -16,7 +16,7 @@ import org.wordpress.android.mediapicker.util.UiString
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.ActionModeUiModel
 
-class MediaPickerActionModeCallback(private val viewModel: MediaPickerViewModel) :
+internal class MediaPickerActionModeCallback(private val viewModel: MediaPickerViewModel) :
     Callback,
     LifecycleOwner {
     private lateinit var lifecycleRegistry: LifecycleRegistry

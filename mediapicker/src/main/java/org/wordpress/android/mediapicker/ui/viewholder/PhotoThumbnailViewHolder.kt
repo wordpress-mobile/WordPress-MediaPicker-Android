@@ -12,7 +12,7 @@ import org.wordpress.android.mediapicker.util.load
 /*
  * ViewHolder containing a device thumbnail
  */
-class PhotoThumbnailViewHolder(
+internal class PhotoThumbnailViewHolder(
     parent: ViewGroup,
     private val mediaThumbnailViewUtils: MediaThumbnailViewUtils
 ) : ThumbnailViewHolder(parent, R.layout.media_picker_lib_thumbnail_item) {

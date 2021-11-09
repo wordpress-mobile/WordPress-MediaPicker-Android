@@ -33,7 +33,7 @@ import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.Permissi
 import org.wordpress.android.util.MediaUtils
 import javax.inject.Inject
 
-class MediaPickerTracker @Inject constructor(
+internal class MediaPickerTracker @Inject constructor(
     private val bgDispatcher: CoroutineDispatcher,
     private val tracker: Tracker
 ) {

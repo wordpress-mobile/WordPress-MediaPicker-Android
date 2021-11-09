@@ -80,7 +80,7 @@ import org.wordpress.android.mediapicker.viewmodel.observeEvent
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MediaPickerFragment : Fragment() {
+internal class MediaPickerFragment : Fragment() {
     companion object {
         private const val KEY_SELECTED_IDS = "selected_ids"
         private const val KEY_LIST_STATE = "list_state"

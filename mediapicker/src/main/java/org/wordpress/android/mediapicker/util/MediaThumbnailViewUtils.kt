@@ -9,7 +9,7 @@ import org.wordpress.android.mediapicker.model.MediaPickerUiItem.ToggleAction
 import org.wordpress.android.util.ViewUtils
 import java.util.Locale
 
-class MediaThumbnailViewUtils {
+internal class MediaThumbnailViewUtils {
     fun setupListeners(
         imgThumbnail: ImageView,
         isSelected: Boolean,

@@ -14,7 +14,7 @@ import org.wordpress.android.mediapicker.util.loadThumbnailFromVideoUrl
 /*
  * ViewHolder containing a device thumbnail
  */
-class VideoThumbnailViewHolder(
+internal class VideoThumbnailViewHolder(
     parent: ViewGroup,
     private val mediaThumbnailViewUtils: MediaThumbnailViewUtils,
     private val coroutineScope: CoroutineScope

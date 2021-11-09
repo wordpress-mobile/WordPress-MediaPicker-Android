@@ -9,7 +9,7 @@ import org.wordpress.android.mediapicker.model.MediaUri
 import org.wordpress.android.mediapicker.util.asAndroidUri
 import org.wordpress.android.mediapicker.util.asMediaUri
 
-object ResultIntentHelper {
+internal object ResultIntentHelper {
     private fun Intent.putUris(
         mediaUris: List<MediaUri>
     ) {

@@ -25,7 +25,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class MediaPickerPermissionUtils @Inject constructor(
+internal class MediaPickerPermissionUtils @Inject constructor(
     private val perms: Permissions,
     private val log: Log,
     private val tracker: Tracker,

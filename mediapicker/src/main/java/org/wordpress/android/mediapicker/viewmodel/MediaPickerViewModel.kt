@@ -87,7 +87,7 @@ import java.security.InvalidParameterException
 import javax.inject.Inject
 
 @HiltViewModel
-class MediaPickerViewModel @Inject constructor(
+internal class MediaPickerViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val mediaSourceFactory: MediaLoaderFactory,
     private val mediaInsertHandlerFactory: MediaInsertHandlerFactory,

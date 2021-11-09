@@ -19,7 +19,7 @@ import org.wordpress.android.mediapicker.ui.viewholder.ThumbnailViewHolder
 import org.wordpress.android.mediapicker.ui.viewholder.VideoThumbnailViewHolder
 import org.wordpress.android.mediapicker.util.MediaThumbnailViewUtils
 
-class MediaPickerAdapter internal constructor(
+internal class MediaPickerAdapter internal constructor(
     private val coroutineScope: CoroutineScope
 ) : Adapter<ThumbnailViewHolder>() {
     private val thumbnailViewUtils = MediaThumbnailViewUtils()

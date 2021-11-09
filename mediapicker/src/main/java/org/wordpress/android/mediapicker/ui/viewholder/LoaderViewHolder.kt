@@ -8,7 +8,7 @@ import org.wordpress.android.mediapicker.R.id
 import org.wordpress.android.mediapicker.R.layout
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem
 
-class LoaderViewHolder(parent: ViewGroup) :
+internal class LoaderViewHolder(parent: ViewGroup) :
     ThumbnailViewHolder(parent, layout.media_picker_lib_loader_item) {
     private val progress: View = itemView.findViewById(id.progress)
     private val retry: Button = itemView.findViewById(id.button)

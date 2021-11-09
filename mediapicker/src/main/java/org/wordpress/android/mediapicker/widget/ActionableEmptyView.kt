@@ -21,7 +21,7 @@ import org.wordpress.android.util.DisplayUtils
  * - Button providing action to take (optional)
  * - Bottom Image which can be used for attribution logos (optional)
  */
-class ActionableEmptyView : LinearLayout {
+internal class ActionableEmptyView : LinearLayout {
     lateinit var button: AppCompatButton
     lateinit var image: ImageView
     lateinit var layout: View
