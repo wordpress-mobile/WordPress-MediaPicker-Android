@@ -108,7 +108,7 @@ class MediaPickerUtils @Inject constructor(
         var path: String? = null
         if (VERSION.SDK_INT >= VERSION_CODES.Q) {
             try {
-                val cachedFile = createTempFile(context)
+                val cachedFile = createTempFile()
                 val parcelFileDescriptor = context.contentResolver.openFile(uri, "r", null)
                 parcelFileDescriptor?.fileDescriptor?.let { fd ->
                     val input = FileInputStream(fd)
@@ -127,12 +127,24 @@ class MediaPickerUtils @Inject constructor(
                 log.e(e)
             }
         } else {
-            path = MediaUtils.getRealPathFromURI(context, uri)
+            path = getLegacyMediaStorePath(uri)
         }
         return path
     }
 
-    private fun createTempFile(context: Context): File? {
+    private fun getLegacyMediaStorePath(uri: Uri): String? {
+        @Suppress("Deprecation")
+        val filePathColumn = arrayOf(Media.DATA)
+        context.contentResolver.query(uri, filePathColumn, null, null, null)?.let { cursor ->
+            if (cursor.moveToFirst()) {
+                val columnIndex: Int = cursor.getColumnIndex(filePathColumn[0])
+                return cursor.getString(columnIndex)
+            }
+        }
+        return null
+    }
+
+    private fun createTempFile(): File? {
         var file: File? = null
         try {
             val tempFileName = "temp-${System.currentTimeMillis()}.jpg"
