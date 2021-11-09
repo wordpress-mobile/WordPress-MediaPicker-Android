@@ -19,7 +19,7 @@ import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction.Refresh
 import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction.Retry
 import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction.Start
 import org.wordpress.android.mediapicker.model.MediaItem
-import org.wordpress.android.mediapicker.util.UiString
+import org.wordpress.android.mediapicker.model.UiString
 
 data class MediaLoader(private val mediaSource: MediaSource) {
     suspend fun loadMedia(actions: Channel<LoadAction>): Flow<DomainModel> {

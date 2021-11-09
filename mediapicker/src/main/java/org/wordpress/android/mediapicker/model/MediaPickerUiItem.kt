@@ -6,7 +6,7 @@ import org.wordpress.android.mediapicker.model.MediaPickerUiItem.Type.NEXT_PAGE_
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem.Type.PHOTO
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem.Type.VIDEO
 
-sealed class MediaPickerUiItem(
+internal sealed class MediaPickerUiItem(
     val type: Type,
     val fullWidthItem: Boolean = false
 ) {

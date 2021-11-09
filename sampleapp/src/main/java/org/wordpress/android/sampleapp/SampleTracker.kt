@@ -1,7 +1,7 @@
 package org.wordpress.android.sampleapp
 
-import org.wordpress.android.mediapicker.util.Tracker
-import org.wordpress.android.mediapicker.util.Tracker.Event
+import org.wordpress.android.mediapicker.api.Tracker
+import org.wordpress.android.mediapicker.api.Tracker.Event
 import javax.inject.Inject
 
 class SampleTracker @Inject constructor() : Tracker {

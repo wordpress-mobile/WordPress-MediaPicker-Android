@@ -1,18 +1,20 @@
-package org.wordpress.android.mediapicker.util
+package org.wordpress.android.mediapicker
 
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Environment
 import android.provider.MediaStore
+import android.provider.MediaStore.Images.Media
 import androidx.core.content.FileProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
+import org.wordpress.android.mediapicker.api.Log
 import org.wordpress.android.mediapicker.model.MediaPickerAction.OpenSystemPicker
 import org.wordpress.android.mediapicker.model.MediaPickerContext
-import org.wordpress.android.util.MediaUtils
 import java.io.BufferedOutputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -50,7 +52,7 @@ class MediaPickerUtils @Inject constructor(
         val chooserContext: MediaPickerContext = openSystemPicker.pickerContext
         val intent = Intent(chooserContext.intentAction)
         intent.type = chooserContext.mediaTypeFilter
-        intent.putExtra(Intent.EXTRA_MIME_TYPES, openSystemPicker.mimeTypes.toTypedArray<String>())
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, openSystemPicker.mimeTypes.toTypedArray())
         if (openSystemPicker.allowMultipleSelection) {
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
         }
@@ -107,7 +109,7 @@ class MediaPickerUtils @Inject constructor(
         var path: String? = null
         if (VERSION.SDK_INT >= VERSION_CODES.Q) {
             try {
-                val cachedFile = createTempFile(context)
+                val cachedFile = createTempFile()
                 val parcelFileDescriptor = context.contentResolver.openFile(uri, "r", null)
                 parcelFileDescriptor?.fileDescriptor?.let { fd ->
                     val input = FileInputStream(fd)
@@ -126,12 +128,35 @@ class MediaPickerUtils @Inject constructor(
                 log.e(e)
             }
         } else {
-            path = MediaUtils.getRealPathFromURI(context, uri)
+            path = getLegacyMediaStorePath(uri)
         }
         return path
     }
 
-    private fun createTempFile(context: Context): File? {
+    /*
+     * Passes a newly-created media file to the media scanner service so it's available to
+     * the media content provider - use this after capturing or downloading media to ensure
+     * that it appears in the stock Gallery app
+     */
+    fun scanMediaFile(localMediaPath: String) {
+        MediaScannerConnection.scanFile(
+            context, arrayOf(localMediaPath), null
+        ) { path: String, _: Uri? -> log.d("Media scanner finished scanning $path") }
+    }
+
+    private fun getLegacyMediaStorePath(uri: Uri): String? {
+        @Suppress("Deprecation")
+        val filePathColumn = arrayOf(Media.DATA)
+        context.contentResolver.query(uri, filePathColumn, null, null, null)?.let { cursor ->
+            if (cursor.moveToFirst()) {
+                val columnIndex: Int = cursor.getColumnIndex(filePathColumn[0])
+                return cursor.getString(columnIndex)
+            }
+        }
+        return null
+    }
+
+    private fun createTempFile(): File? {
         var file: File? = null
         try {
             val tempFileName = "temp-${System.currentTimeMillis()}.jpg"

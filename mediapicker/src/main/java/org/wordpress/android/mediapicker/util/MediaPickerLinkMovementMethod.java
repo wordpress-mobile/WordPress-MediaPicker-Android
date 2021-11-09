@@ -10,6 +10,7 @@ import android.text.style.URLSpan;
 import android.view.MotionEvent;
 import android.widget.TextView;
 import org.wordpress.android.mediapicker.R;
+import org.wordpress.android.mediapicker.api.Log;
 import org.wordpress.android.util.StringUtils;
 import org.wordpress.android.util.ToastUtils;
 

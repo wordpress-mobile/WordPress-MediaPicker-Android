@@ -9,11 +9,11 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import org.wordpress.android.mediapicker.api.MediaInsertHandlerFactory
+import org.wordpress.android.mediapicker.api.Log
 import org.wordpress.android.mediapicker.api.MimeTypeProvider
+import org.wordpress.android.mediapicker.api.Tracker
 import org.wordpress.android.mediapicker.loader.MediaLoaderFactory
-import org.wordpress.android.mediapicker.util.Log
-import org.wordpress.android.mediapicker.util.Tracker
+import org.wordpress.android.mediapicker.source.device.TenorApiKey
 import javax.inject.Singleton
 
 @Module
@@ -31,6 +31,11 @@ abstract class AppModule {
         fun providesCoroutineScope(dispatcher: CoroutineDispatcher): CoroutineScope {
             return CoroutineScope(SupervisorJob() + dispatcher)
         }
+
+        @TenorApiKey
+        @Singleton
+        @Provides
+        fun providesTenorKey(): String = BuildConfig.TENOR_API_KEY
     }
 
     @Binds
@@ -40,11 +45,6 @@ abstract class AppModule {
     abstract fun bindMediaLoaderFactory(
         sampleMediaLoaderFactory: SampleMediaLoaderFactory
     ): MediaLoaderFactory
-
-    @Binds
-    abstract fun bindMediaInsertHandlerFactory(
-        sampleMediaLoaderFactory: SampleMediaInsertHandlerFactory
-    ): MediaInsertHandlerFactory
 
     @Binds
     abstract fun bindLogger(mimeTypeProvider: Logger): Log

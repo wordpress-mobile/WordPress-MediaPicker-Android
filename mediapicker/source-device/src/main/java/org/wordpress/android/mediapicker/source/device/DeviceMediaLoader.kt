@@ -20,8 +20,7 @@ import org.wordpress.android.mediapicker.model.MediaType.AUDIO
 import org.wordpress.android.mediapicker.model.MediaType.IMAGE
 import org.wordpress.android.mediapicker.model.MediaType.VIDEO
 import org.wordpress.android.mediapicker.model.MediaUri
-import org.wordpress.android.mediapicker.util.asAndroidUri
-import org.wordpress.android.mediapicker.util.asMediaUri
+import org.wordpress.android.mediapicker.model.asMediaUri
 import java.io.File
 import javax.inject.Inject
 

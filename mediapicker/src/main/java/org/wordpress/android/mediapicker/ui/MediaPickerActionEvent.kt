@@ -7,7 +7,7 @@ import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.MediaPickerAc
 import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.MediaPickerActionType.CAPTURE_PHOTO
 import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.MediaPickerActionType.SWITCH_SOURCE
 
-sealed class MediaPickerActionEvent(val type: MediaPickerActionType) {
+internal sealed class MediaPickerActionEvent(val type: MediaPickerActionType) {
     companion object {
         private const val KEY_LAST_TAPPED_ICON = "last_tapped_icon"
         private const val KEY_LAST_TAPPED_ICON_ALLOWED_TYPES = "last_tapped_icon_allowed_types"

@@ -19,13 +19,15 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import org.wordpress.android.mediapicker.Key
 import org.wordpress.android.mediapicker.Permissions
 import org.wordpress.android.mediapicker.R.string
-import org.wordpress.android.mediapicker.util.Tracker.Event
+import org.wordpress.android.mediapicker.api.Log
+import org.wordpress.android.mediapicker.api.Tracker
+import org.wordpress.android.mediapicker.api.Tracker.Event
 import java.util.HashMap
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class MediaPickerPermissionUtils @Inject constructor(
+internal class MediaPickerPermissionUtils @Inject constructor(
     private val perms: Permissions,
     private val log: Log,
     private val tracker: Tracker,

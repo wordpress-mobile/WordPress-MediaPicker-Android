@@ -18,9 +18,6 @@ import org.wordpress.android.mediapicker.MediaManager
 import org.wordpress.android.mediapicker.MediaPickerTracker
 import org.wordpress.android.mediapicker.R.drawable
 import org.wordpress.android.mediapicker.R.string
-import org.wordpress.android.mediapicker.api.MediaInsertHandler
-import org.wordpress.android.mediapicker.api.MediaInsertHandler.InsertModel
-import org.wordpress.android.mediapicker.api.MediaInsertHandlerFactory
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
@@ -65,13 +62,13 @@ import org.wordpress.android.mediapicker.model.MediaType.DOCUMENT
 import org.wordpress.android.mediapicker.model.MediaType.IMAGE
 import org.wordpress.android.mediapicker.model.MediaType.VIDEO
 import org.wordpress.android.mediapicker.model.MediaUri
+import org.wordpress.android.mediapicker.model.UiString
+import org.wordpress.android.mediapicker.model.UiString.UiStringRes
 import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.CapturePhoto
 import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.ChooseFromAndroidDevice
 import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.SwitchSource
 import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils
-import org.wordpress.android.mediapicker.util.MediaPickerUtils
-import org.wordpress.android.mediapicker.util.UiString
-import org.wordpress.android.mediapicker.util.UiString.UiStringRes
+import org.wordpress.android.mediapicker.MediaPickerUtils
 import org.wordpress.android.mediapicker.util.distinct
 import org.wordpress.android.mediapicker.util.merge
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PermissionsRequested.CAMERA
@@ -79,18 +76,15 @@ import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.Permissi
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PhotoListUiModel.Data
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PhotoListUiModel.Empty
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PhotoListUiModel.Loading
-import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.ProgressDialogUiModel.Hidden
-import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.ProgressDialogUiModel.Visible
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.SearchUiModel.Collapsed
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.SearchUiModel.Expanded
 import java.security.InvalidParameterException
 import javax.inject.Inject
 
 @HiltViewModel
-class MediaPickerViewModel @Inject constructor(
+internal class MediaPickerViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val mediaSourceFactory: MediaLoaderFactory,
-    private val mediaInsertHandlerFactory: MediaInsertHandlerFactory,
     private val mediaPickerTracker: MediaPickerTracker,
     private val permissionsHandler: MediaPickerPermissionUtils,
     private val resourceProvider: ResourceProvider,
@@ -102,18 +96,14 @@ class MediaPickerViewModel @Inject constructor(
         private const val CAPTURED_PHOTO_PATH = "CAPTURED_PHOTO_PATH"
     }
     private lateinit var mediaLoader: MediaLoader
-    private lateinit var mediaInsertHandler: MediaInsertHandler
     private val loadActions = Channel<LoadAction>()
     private var searchJob: Job? = null
     private val _domainModel = savedStateHandle.getLiveData<DomainModel>("domain")
     private val _selectedIds = savedStateHandle.getLiveData<List<Identifier>>("selectedIds")
     private val _softAskRequest = savedStateHandle.getLiveData<SoftAskRequest>("softAsk")
     private val _searchExpanded = savedStateHandle.getLiveData<Boolean>("searchExpanded")
-    private val _showProgressDialog = savedStateHandle.getLiveData<ProgressDialogUiModel>("progress")
-    private val _onSnackbarMessage = savedStateHandle.getLiveData<Event<SnackbarMessageHolder>>("snackbar")
     private val _onNavigate = MutableLiveData<Event<MediaNavigationEvent>>()
 
-    val onSnackbarMessage: LiveData<Event<SnackbarMessageHolder>> = _onSnackbarMessage
     val onNavigate = _onNavigate as LiveData<Event<MediaNavigationEvent>>
 
     val uiState: LiveData<MediaPickerUiState> = merge(
@@ -121,8 +111,7 @@ class MediaPickerViewModel @Inject constructor(
         _selectedIds.distinct(),
         _softAskRequest,
         _searchExpanded,
-        _showProgressDialog.distinct()
-    ) { domainModel, selectedIds, softAskRequest, searchExpanded, progressDialogUiModel ->
+    ) { domainModel, selectedIds, softAskRequest, searchExpanded ->
         MediaPickerUiState(
             photoListUiModel = buildUiModel(
                 domainModel,
@@ -145,8 +134,7 @@ class MediaPickerViewModel @Inject constructor(
             ),
             isRefreshing = !domainModel?.domainItems.isNullOrEmpty() &&
                 domainModel?.isLoading == true,
-            browseMenuUiModel = buildBrowseMenuUiModel(softAskRequest, searchExpanded),
-            progressDialogUiModel = progressDialogUiModel ?: Hidden
+            browseMenuUiModel = buildBrowseMenuUiModel(softAskRequest, searchExpanded)
         )
     }
 
@@ -358,7 +346,6 @@ class MediaPickerViewModel @Inject constructor(
         this.mediaPickerSetup = mediaPickerSetup
         this.lastTappedAction = lastTappedAction
         this.mediaLoader = mediaSourceFactory.build(mediaPickerSetup)
-        this.mediaInsertHandler = mediaInsertHandlerFactory.build(mediaPickerSetup)
 
         if (_domainModel.value == null) {
             if (mediaPickerSetup.primaryDataSource == DataSource.CAMERA) {
@@ -426,56 +413,9 @@ class MediaPickerViewModel @Inject constructor(
     fun performInsertAction() = insertIdentifiers(selectedIdentifiers)
 
     private fun insertIdentifiers(ids: List<Identifier>) {
-        var job: Job? = null
-        job = viewModelScope.launch {
-            var progressDialogJob: Job? = null
-            mediaInsertHandler.insertMedia(ids).collect {
-                when (it) {
-                    is InsertModel.Progress -> {
-                        progressDialogJob = launch {
-                            delay(100)
-                            _showProgressDialog.value = Visible(it.title) {
-                                job?.cancel()
-                                _showProgressDialog.value = Hidden
-                            }
-                        }
-                    }
-                    is InsertModel.Error -> {
-                        val message = if (it.error.isNotEmpty()) {
-                            UiString.UiStringText(
-                                String.format(
-                                    resourceProvider.getString(
-                                        string.media_insert_failed_with_reason
-                                    ),
-                                    listOf(it.error)
-                                )
-                            )
-                        } else {
-                            UiStringRes(string.media_insert_failed)
-                        }
-                        _onSnackbarMessage.value = Event(
-                            SnackbarMessageHolder(
-                                message
-                            )
-                        )
-                        progressDialogJob?.cancel()
-                        job = null
-                        _showProgressDialog.value = Hidden
-                    }
-                    is InsertModel.Success -> {
-                        launch {
-                            mediaPickerTracker.trackItemsPicked(it.identifiers, mediaPickerSetup)
-                        }
-                        progressDialogJob?.cancel()
-                        job = null
-                        _showProgressDialog.value = Hidden
-                        if (_searchExpanded.value == true) {
-                            _searchExpanded.value = false
-                        }
-                        _onNavigate.value = Event(ReturnSelectedMedia(it.identifiers))
-                    }
-                }
-            }
+        viewModelScope.launch {
+            mediaPickerTracker.trackItemsPicked(ids, mediaPickerSetup)
+            _onNavigate.value = Event(ReturnSelectedMedia(ids))
         }
     }
 
@@ -776,8 +716,7 @@ class MediaPickerViewModel @Inject constructor(
         val actionModeUiModel: ActionModeUiModel,
         val searchUiModel: SearchUiModel,
         val isRefreshing: Boolean,
-        val browseMenuUiModel: BrowseMenuUiModel,
-        val progressDialogUiModel: ProgressDialogUiModel
+        val browseMenuUiModel: BrowseMenuUiModel
     )
 
     sealed class PhotoListUiModel {

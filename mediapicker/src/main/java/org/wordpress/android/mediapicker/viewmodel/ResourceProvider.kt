@@ -9,7 +9,7 @@ import androidx.core.content.ContextCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
-class ResourceProvider @Inject constructor(
+internal class ResourceProvider @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
     fun getString(@StringRes resourceId: Int): String {
