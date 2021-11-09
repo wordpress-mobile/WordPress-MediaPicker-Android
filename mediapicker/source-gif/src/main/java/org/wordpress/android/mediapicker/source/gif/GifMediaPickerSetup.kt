@@ -3,7 +3,6 @@ package org.wordpress.android.mediapicker.source.gif
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.GIF_LIBRARY
 import org.wordpress.android.mediapicker.model.MediaType.IMAGE
-import org.wordpress.android.mediapicker.source.gif.R
 
 class GifMediaPickerSetup {
     companion object {
