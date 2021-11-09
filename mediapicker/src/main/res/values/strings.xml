@@ -12,8 +12,6 @@
     <string name="photo_picker_use_video">Use this video</string>
     <string name="photo_picker_use_audio">Use this audio</string>
     <string name="photo_picker_use_media">Use this media</string>
-    <string name="media_insert_failed_with_reason">Media insert failed: %s</string>
-    <string name="media_insert_failed">Media insert failed.</string>
     <string name="media_picker_soft_ask_permissions_denied">Denied access to your photos. To fix this, edit your permissions and turn on %1$s.</string>
     <string name="photo_picker_soft_ask_label">We need permission to access your images</string>
     <string name="camera_soft_ask_label">We need permission to access your camera</string>
