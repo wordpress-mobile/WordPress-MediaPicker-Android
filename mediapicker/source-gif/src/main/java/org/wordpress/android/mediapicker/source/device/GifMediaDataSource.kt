@@ -13,7 +13,7 @@ import org.wordpress.android.mediapicker.api.R.drawable
 import org.wordpress.android.mediapicker.model.MediaItem
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier.GifMediaId
 import org.wordpress.android.mediapicker.model.MediaType.IMAGE
-import org.wordpress.android.mediapicker.source.device.util.UriUtilsWrapper
+import org.wordpress.android.mediapicker.model.MediaUri
 import org.wordpress.android.mediapicker.source.gif.R
 import org.wordpress.android.mediapicker.source.gif.R.string
 import org.wordpress.android.mediapicker.util.UiString.UiStringRes
@@ -27,8 +27,7 @@ import org.wordpress.android.mediapicker.api.R as ApiR
 class GifMediaDataSource
 @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val tenorClient: TenorGifClient,
-    private val uriUtilsWrapper: UriUtilsWrapper
+    private val tenorClient: TenorGifClient
 ) : MediaSource {
     private var nextPosition: Int = 0
     private val items = mutableListOf<MediaItem>()
@@ -57,7 +56,7 @@ class GifMediaDataSource
                     nextPosition,
                     PAGE_SIZE,
                     onSuccess = { response ->
-                        val gifList = response.results.map { it.toMediaItem() }
+                        val gifList = response.results.mapNotNull { it.toMediaItem() }
 
                         items.addAll(gifList)
                         val newPosition = response.next.toIntOrNull() ?: 0
@@ -100,15 +99,19 @@ class GifMediaDataSource
         )
     }
 
-    private fun Result.toMediaItem() = MediaItem(
-        identifier = GifMediaId(
-            uriUtilsWrapper.parse(urlFromCollectionFormat(MediaCollectionFormat.GIF)),
-            title
-        ),
-        url = uriUtilsWrapper.parse(urlFromCollectionFormat(MediaCollectionFormat.GIF_NANO)).toString(),
-        type = IMAGE,
-        dataModified = 0
-    )
+    private fun Result.toMediaItem(): MediaItem? {
+        return urlFromCollectionFormat(MediaCollectionFormat.GIF)?.let {
+            MediaItem(
+                identifier = GifMediaId(
+                    MediaUri(it),
+                    title
+                ),
+                url = urlFromCollectionFormat(MediaCollectionFormat.GIF_NANO)!!,
+                type = IMAGE,
+                dataModified = 0
+            )
+        }
+    }
 
     private fun Result.urlFromCollectionFormat(format: String) =
         medias.firstOrNull()?.get(format)?.url
