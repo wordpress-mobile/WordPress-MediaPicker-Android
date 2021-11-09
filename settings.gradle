@@ -1,12 +1,15 @@
 pluginManagement {
     gradle.ext.kotlinVersion = '1.5.31'
     gradle.ext.daggerVersion = '2.40'
+    gradle.ext.agpVersion = '4.2.2'
 
     plugins {
         id 'org.jetbrains.kotlin.android' version gradle.ext.kotlinVersion
         id 'org.jetbrains.kotlin.jvm' version gradle.ext.kotlinVersion
         id 'org.jetbrains.kotlin.plugin.parcelize' version gradle.ext.kotlinVersion
         id 'org.jetbrains.kotlin.kapt' version gradle.ext.kotlinVersion
+        id "com.android.application" version gradle.ext.agpVersion
+        id "com.android.library" version gradle.ext.agpVersion
         id 'dagger.hilt.android.plugin'
         id "com.automattic.android.publish-to-s3" version "0.7.0"
     }
@@ -24,10 +27,7 @@ pluginManagement {
     }
     resolutionStrategy {
         eachPlugin {
-            if (requested.id.id.contains("com.android")) {
-                useModule("com.android.tools.build:gradle:4.2.2")
-            }
-            else if (requested.id.id.contains("hilt")) {
+            if (requested.id.id.contains("hilt")) {
                 useModule("com.google.dagger:hilt-android-gradle-plugin:$gradle.ext.daggerVersion")
             }
         }

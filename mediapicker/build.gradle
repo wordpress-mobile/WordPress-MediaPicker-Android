@@ -8,8 +8,6 @@ plugins {
     id "com.automattic.android.publish-to-s3"
 }
 
-apply from: "$rootDir/publish.gradle"
-
 android {
     compileSdkVersion 31
     buildToolsVersion "30.0.3"
