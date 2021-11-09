@@ -1,15 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest  xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.wordpress.android.mediapicker.api">
-    <queries>
-        <!-- Required for Android 11 to allow camera access -->
-        <intent>
-            <action android:name="android.media.action.IMAGE_CAPTURE" />
-        </intent>
-        <!-- Required for Android 11 and allows for querying for installed apps -->
-        <intent>
-            <action android:name="android.intent.action.MAIN"/>
-        </intent>
-    </queries>
-
-</manifest>
+<manifest package="org.wordpress.android.mediapicker.api" />
