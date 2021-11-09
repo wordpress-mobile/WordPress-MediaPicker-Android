@@ -8,6 +8,7 @@ pluginManagement {
         id 'org.jetbrains.kotlin.plugin.parcelize' version gradle.ext.kotlinVersion
         id 'org.jetbrains.kotlin.kapt' version gradle.ext.kotlinVersion
         id 'dagger.hilt.android.plugin'
+        id "com.automattic.android.publish-to-s3" version "0.7.0"
     }
     repositories {
         google()

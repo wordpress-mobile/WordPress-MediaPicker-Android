@@ -5,6 +5,7 @@ plugins {
     id 'org.jetbrains.kotlin.kapt'
     id 'dagger.hilt.android.plugin'
     id 'maven-publish'
+    id "com.automattic.android.publish-to-s3"
 }
 
 apply from: "$rootDir/publish.gradle"
