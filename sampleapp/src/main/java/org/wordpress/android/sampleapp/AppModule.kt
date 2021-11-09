@@ -13,7 +13,7 @@ import org.wordpress.android.mediapicker.api.Log
 import org.wordpress.android.mediapicker.api.MimeTypeProvider
 import org.wordpress.android.mediapicker.api.Tracker
 import org.wordpress.android.mediapicker.loader.MediaLoaderFactory
-import org.wordpress.android.mediapicker.source.device.TenorApiKey
+import org.wordpress.android.mediapicker.source.gif.TenorApiKey
 import javax.inject.Singleton
 
 @Module

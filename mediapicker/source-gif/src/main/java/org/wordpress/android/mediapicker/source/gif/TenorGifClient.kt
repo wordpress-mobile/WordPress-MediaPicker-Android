@@ -1,4 +1,4 @@
-package org.wordpress.android.mediapicker.source.device
+package org.wordpress.android.mediapicker.source.gif
 
 import android.content.Context
 import com.tenor.android.core.constant.AspectRatioRange
@@ -7,7 +7,6 @@ import com.tenor.android.core.network.ApiClient
 import com.tenor.android.core.network.IApiClient
 import com.tenor.android.core.response.impl.GifsResponse
 import dagger.hilt.android.qualifiers.ApplicationContext
-import org.wordpress.android.mediapicker.source.gif.R
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

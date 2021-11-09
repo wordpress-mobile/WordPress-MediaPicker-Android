@@ -1,4 +1,4 @@
-package org.wordpress.android.mediapicker.source.device
+package org.wordpress.android.mediapicker.source.gif
 
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.GIF_LIBRARY

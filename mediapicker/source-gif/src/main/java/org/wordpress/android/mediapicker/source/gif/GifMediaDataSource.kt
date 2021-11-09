@@ -1,9 +1,7 @@
-package org.wordpress.android.mediapicker.source.device
+package org.wordpress.android.mediapicker.source.gif
 
-import android.content.Context
 import com.tenor.android.core.constant.MediaCollectionFormat
 import com.tenor.android.core.model.impl.Result
-import dagger.hilt.android.qualifiers.ApplicationContext
 import org.wordpress.android.mediapicker.api.MediaSource
 import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult
 import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult.Empty
@@ -16,18 +14,15 @@ import org.wordpress.android.mediapicker.model.MediaType.IMAGE
 import org.wordpress.android.mediapicker.model.MediaUri
 import org.wordpress.android.mediapicker.model.UiString.UiStringRes
 import org.wordpress.android.mediapicker.model.UiString.UiStringText
-import org.wordpress.android.mediapicker.source.gif.R
-import org.wordpress.android.mediapicker.source.gif.R.string
-import org.wordpress.android.util.NetworkUtils
+import org.wordpress.android.mediapicker.source.gif.util.NetworkUtilsWrapper
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
-import org.wordpress.android.mediapicker.api.R as ApiR
 
 class GifMediaDataSource
 @Inject constructor(
-    @ApplicationContext private val context: Context,
-    private val tenorClient: TenorGifClient
+    private val tenorClient: TenorGifClient,
+    private val networkUtilsWrapper: NetworkUtilsWrapper
 ) : MediaSource {
     private var nextPosition: Int = 0
     private val items = mutableListOf<MediaItem>()
@@ -40,10 +35,10 @@ class GifMediaDataSource
             nextPosition = 0
         }
 
-        if (!NetworkUtils.isNetworkAvailable(context)) {
+        if (!networkUtilsWrapper.isNetworkAvailable()) {
             return Failure(
-                UiStringRes(string.no_network_title),
-                htmlSubtitle = UiStringRes(string.no_network_message),
+                UiStringRes(R.string.no_network_title),
+                htmlSubtitle = UiStringRes(R.string.no_network_message),
                 image = drawable.media_picker_lib_load_error_image,
                 data = items
             )
@@ -65,18 +60,18 @@ class GifMediaDataSource
                         val result = if (items.isNotEmpty()) {
                             Success(items.toList(), hasMore)
                         } else {
-                            Empty(UiStringRes(string.gif_picker_empty_search_list))
+                            Empty(UiStringRes(R.string.gif_picker_empty_search_list))
                         }
                         cont.resume(result)
                     },
                     onFailure = {
                         val errorMessage = it?.message
-                            ?: context.getString(R.string.gif_list_search_returned_unknown_error)
+                            ?: "There was a problem handling the request"
                         cont.resume(
                             Failure(
                                 UiStringRes(R.string.media_loading_failed),
                                 htmlSubtitle = UiStringText(errorMessage),
-                                image = ApiR.drawable.media_picker_lib_load_error_image,
+                                image = R.drawable.media_picker_lib_load_error_image,
                                 data = items
                             )
                         )
@@ -93,7 +88,7 @@ class GifMediaDataSource
         return Empty(
             title,
             null,
-            ApiR.drawable.media_picker_lib_empty_gallery_image,
+            R.drawable.media_picker_lib_empty_gallery_image,
             R.drawable.img_tenor_100dp,
             UiStringRes(R.string.gif_powered_by_tenor)
         )
