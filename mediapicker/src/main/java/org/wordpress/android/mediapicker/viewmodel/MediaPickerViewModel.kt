@@ -65,13 +65,13 @@ import org.wordpress.android.mediapicker.model.MediaType.DOCUMENT
 import org.wordpress.android.mediapicker.model.MediaType.IMAGE
 import org.wordpress.android.mediapicker.model.MediaType.VIDEO
 import org.wordpress.android.mediapicker.model.MediaUri
+import org.wordpress.android.mediapicker.model.UiString
+import org.wordpress.android.mediapicker.model.UiString.UiStringRes
 import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.CapturePhoto
 import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.ChooseFromAndroidDevice
 import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.SwitchSource
 import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils
 import org.wordpress.android.mediapicker.util.MediaPickerUtils
-import org.wordpress.android.mediapicker.util.UiString
-import org.wordpress.android.mediapicker.util.UiString.UiStringRes
 import org.wordpress.android.mediapicker.util.distinct
 import org.wordpress.android.mediapicker.util.merge
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PermissionsRequested.CAMERA
@@ -434,7 +434,7 @@ internal class MediaPickerViewModel @Inject constructor(
                     is InsertModel.Progress -> {
                         progressDialogJob = launch {
                             delay(100)
-                            _showProgressDialog.value = Visible(it.title) {
+                            _showProgressDialog.value = Visible(0) {
                                 job?.cancel()
                                 _showProgressDialog.value = Hidden
                             }

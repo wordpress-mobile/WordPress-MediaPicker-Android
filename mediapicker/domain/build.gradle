@@ -26,6 +26,4 @@ dependencies {
     implementation "com.google.dagger:hilt-android:$daggerVersion"
     implementation "com.google.dagger:hilt-android-compiler:$daggerVersion"
     kapt "com.google.dagger:hilt-compiler:$daggerVersion"
-
-    implementation "org.wordpress:utils:$wordpressUtilsVersion"
 }

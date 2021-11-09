@@ -7,8 +7,5 @@ import org.wordpress.android.mediapicker.api.MediaInsertHandler.InsertModel.Succ
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 
 interface MediaInsertUseCase {
-    val actionTitle: Int
-        get() = R.string.media_uploading_default
-
     suspend fun insert(identifiers: List<Identifier>): Flow<InsertModel> = flowOf(Success(identifiers))
 }
