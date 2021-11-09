@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.mediapicker.MediaManager
 import org.wordpress.android.mediapicker.MediaPickerTracker
+import org.wordpress.android.mediapicker.MediaPickerUtils
 import org.wordpress.android.mediapicker.R.drawable
 import org.wordpress.android.mediapicker.R.string
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
@@ -68,7 +69,6 @@ import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.CapturePhoto
 import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.ChooseFromAndroidDevice
 import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.SwitchSource
 import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils
-import org.wordpress.android.mediapicker.MediaPickerUtils
 import org.wordpress.android.mediapicker.util.distinct
 import org.wordpress.android.mediapicker.util.merge
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PermissionsRequested.CAMERA
