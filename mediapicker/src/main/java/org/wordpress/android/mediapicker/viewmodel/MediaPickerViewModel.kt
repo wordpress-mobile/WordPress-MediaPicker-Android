@@ -68,7 +68,7 @@ import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.CapturePhoto
 import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.ChooseFromAndroidDevice
 import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.SwitchSource
 import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils
-import org.wordpress.android.mediapicker.util.MediaPickerUtils
+import org.wordpress.android.mediapicker.MediaPickerUtils
 import org.wordpress.android.mediapicker.util.distinct
 import org.wordpress.android.mediapicker.util.merge
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PermissionsRequested.CAMERA

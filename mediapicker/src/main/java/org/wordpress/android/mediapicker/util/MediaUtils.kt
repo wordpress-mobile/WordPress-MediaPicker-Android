@@ -1,11 +1,8 @@
 package org.wordpress.android.mediapicker.util
 
-import android.content.Context
 import android.content.Intent
-import android.media.MediaScannerConnection
 import android.net.Uri
 import org.wordpress.android.mediapicker.R.drawable
-import org.wordpress.android.mediapicker.api.Log
 import org.wordpress.android.util.MediaUtils
 import java.util.ArrayList
 
@@ -34,17 +31,6 @@ object MediaUtils {
                 drawable.ic_image_multiple_white_24dp
             }
         }
-    }
-
-    /*
-     * Passes a newly-created media file to the media scanner service so it's available to
-     * the media content provider - use this after capturing or downloading media to ensure
-     * that it appears in the stock Gallery app
-     */
-    fun scanMediaFile(log: Log, context: Context, localMediaPath: String) {
-        MediaScannerConnection.scanFile(
-            context, arrayOf(localMediaPath), null
-        ) { path: String, _: Uri? -> log.d("Media scanner finished scanning $path") }
     }
 
     fun retrieveMediaUris(data: Intent): List<Uri?> {

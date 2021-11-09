@@ -15,12 +15,12 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.mediapicker.api.Log
-import org.wordpress.android.mediapicker.util.MediaUtils
 import java.io.File
 import javax.inject.Inject
 
 internal class MediaManager @Inject constructor(
     private val log: Log,
+    private val mediaPickerUtils: MediaPickerUtils,
     @ApplicationContext private val applicationContext: Context
 ) {
     companion object {
@@ -36,7 +36,7 @@ internal class MediaManager @Inject constructor(
     }
 
     private fun saveImageLegacy(path: String): Uri? {
-        MediaUtils.scanMediaFile(log, applicationContext, path)
+        mediaPickerUtils.scanMediaFile(path)
         return Uri.Builder().let { builder ->
             builder.path(path)
             builder.scheme(FILE_SCHEME)

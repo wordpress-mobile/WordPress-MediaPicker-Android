@@ -1,8 +1,9 @@
-package org.wordpress.android.mediapicker.util
+package org.wordpress.android.mediapicker
 
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
@@ -130,6 +131,17 @@ class MediaPickerUtils @Inject constructor(
             path = getLegacyMediaStorePath(uri)
         }
         return path
+    }
+
+    /*
+     * Passes a newly-created media file to the media scanner service so it's available to
+     * the media content provider - use this after capturing or downloading media to ensure
+     * that it appears in the stock Gallery app
+     */
+    fun scanMediaFile(localMediaPath: String) {
+        MediaScannerConnection.scanFile(
+            context, arrayOf(localMediaPath), null
+        ) { path: String, _: Uri? -> log.d("Media scanner finished scanning $path") }
     }
 
     private fun getLegacyMediaStorePath(uri: Uri): String? {

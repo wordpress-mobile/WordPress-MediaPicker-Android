@@ -55,7 +55,7 @@ import org.wordpress.android.mediapicker.util.AnimUtils
 import org.wordpress.android.mediapicker.util.AnimUtils.Duration.MEDIUM
 import org.wordpress.android.mediapicker.util.MediaPickerLinkMovementMethod
 import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils
-import org.wordpress.android.mediapicker.util.MediaPickerUtils
+import org.wordpress.android.mediapicker.MediaPickerUtils
 import org.wordpress.android.mediapicker.util.MediaUtils
 import org.wordpress.android.mediapicker.util.UiHelpers
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel
