@@ -11,16 +11,30 @@ apply from: "$rootDir/publish.gradle"
 android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+    }
 }
 
 dependencies {
     implementation project(':mediapicker:domain')
 
-    implementation "com.github.Tenor-Inc:tenor-android-core:$tenorVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
 
     implementation "com.google.dagger:hilt-android:$daggerVersion"
     implementation "com.google.dagger:hilt-android-compiler:$daggerVersion"
     kapt "com.google.dagger:hilt-compiler:$daggerVersion"
 
     implementation "org.wordpress:utils:$wordpressUtilsVersion"
+
+    implementation("org.wordpress:fluxc:$fluxCVersion") {
+        exclude group: "com.android.support"
+        exclude group: "org.wordpress", module: "utils"
+    }
+    implementation("org.wordpress.fluxc.plugins:woocommerce:$fluxCVersion") {
+        exclude group: "com.android.support"
+        exclude group: "org.wordpress", module: "utils"
+    }
 }

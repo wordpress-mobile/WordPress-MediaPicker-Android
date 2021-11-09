@@ -1,4 +1,4 @@
-package org.wordpress.android.mediapicker.source.device
+package org.wordpress.android.mediapicker.source.gif
 
 import android.content.Context
 import com.tenor.android.core.network.ApiClient

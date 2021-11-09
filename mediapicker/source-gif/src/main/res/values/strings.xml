@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="no_network_title">No network available</string>
     <string name="gif_powered_by_tenor">Powered by Tenor</string>
     <string name="gif_picker_initial_empty_text">Search to find GIFs to add to your Media Library!</string>
     <string name="gif_picker_empty_search_list" >No media matching your search</string>

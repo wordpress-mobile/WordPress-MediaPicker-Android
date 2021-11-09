@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="media_uploading_default">Uploading media</string>
     <string name="pick_photo">Select photo</string>
     <string name="pick_video">Select video</string>
     <string name="pick_audio">Select audio</string>
     <string name="pick_media">Add image or video</string>
     <string name="pick_file">Add file</string>
+    <string name="no_network_title">No network available</string>
+    <string name="no_network_message">There is no network available</string>
+    <string name="media_empty_search_list">No media matching your search</string>
+    <string name="media_uploading_default">Uploading media</string>
 </resources>

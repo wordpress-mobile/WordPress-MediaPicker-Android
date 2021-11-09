@@ -6,12 +6,11 @@ import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.CAMERA
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.SYSTEM_PICKER
-import org.wordpress.android.mediapicker.model.MediaType
 import org.wordpress.android.mediapicker.model.MediaType.IMAGE
-import org.wordpress.android.mediapicker.model.MediaType.VIDEO
-import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup.MediaTypes.IMAGES
-import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup.MediaTypes.IMAGES_AND_VIDEOS
-import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup.MediaTypes.VIDEOS
+import org.wordpress.android.mediapicker.model.MediaTypes
+import org.wordpress.android.mediapicker.model.MediaTypes.IMAGES
+import org.wordpress.android.mediapicker.model.MediaTypes.IMAGES_AND_VIDEOS
+import org.wordpress.android.mediapicker.model.MediaTypes.VIDEOS
 import org.wordpress.android.mediapicker.source.device.R.string
 
 class DeviceMediaPickerSetup {
@@ -65,9 +64,5 @@ class DeviceMediaPickerSetup {
                 title = string.photo_picker_camera_title
             )
         }
-    }
-
-    enum class MediaTypes(val allowedTypes: Set<MediaType>) {
-        IMAGES(setOf(IMAGE)), VIDEOS(setOf(VIDEO)), IMAGES_AND_VIDEOS(setOf(IMAGE, VIDEO))
     }
 }

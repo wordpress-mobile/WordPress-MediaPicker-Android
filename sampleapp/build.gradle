@@ -48,6 +48,7 @@ dependencies {
     implementation project(':mediapicker')
     implementation project(':mediapicker:source-device')
     implementation project(':mediapicker:source-gif')
+    implementation project(':mediapicker:source-wordpress')
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
 

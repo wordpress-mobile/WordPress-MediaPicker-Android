@@ -5,7 +5,6 @@
     <string name="photo_picker_image_selected">,Selected</string>
     <string name="photo_picker_image_thumbnail_selected">Image selected</string>
     <string name="photo_picker_image_thumbnail_unselected">Image unselected</string>
-    <string name="media_empty_search_list">No media matching your search</string>
     <string name="media_empty_list">You don\'t have any media</string>
     <string name="cab_selected">%d selected</string>
     <string name="photo_picker_use_photo">Use this photo</string>

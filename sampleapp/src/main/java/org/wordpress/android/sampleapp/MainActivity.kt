@@ -10,9 +10,9 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.mediapicker.MediaPickerConstants
 import org.wordpress.android.mediapicker.MediaPickerUtils
+import org.wordpress.android.mediapicker.model.MediaTypes.IMAGES
 import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup
-import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup.MediaTypes.IMAGES
-import org.wordpress.android.mediapicker.source.device.GifMediaPickerSetup
+import org.wordpress.android.mediapicker.source.gif.GifMediaPickerSetup
 import org.wordpress.android.mediapicker.ui.MediaPickerActivity
 import org.wordpress.android.sampleapp.R.id
 import org.wordpress.android.sampleapp.databinding.ActivityMainBinding
@@ -87,12 +87,11 @@ class MainActivity : AppCompatActivity() {
     private fun handleMediaPickerResult(result: ActivityResult) {
         if (result.resultCode == RESULT_OK) {
             result.data?.extras?.let { extra ->
-                val message = (extra.get(MediaPickerConstants.EXTRA_MEDIA_URIS) as? Array<*>)?.map {
-                    mediaPickerUtils.getFilePath(Uri.parse(it as String))
-                }
-                ?.joinToString("\n") ?: ""
-                Snackbar.make(findViewById<Button>(id.content), message, Snackbar.LENGTH_LONG)
-                    .show()
+                val files = (extra.get(MediaPickerConstants.EXTRA_MEDIA_URIS) as? Array<*>)
+                    ?.map { mediaPickerUtils.getFilePath(Uri.parse(it as String)) }
+                    ?.joinToString("\n") ?: ""
+
+                Snackbar.make(findViewById<Button>(id.content), files, Snackbar.LENGTH_LONG).show()
             }
         }
     }

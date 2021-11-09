@@ -1,4 +1,4 @@
-package org.wordpress.android.mediapicker.source.device
+package org.wordpress.android.mediapicker.source.gif
 
 import javax.inject.Qualifier
 import kotlin.annotation.AnnotationRetention.RUNTIME
