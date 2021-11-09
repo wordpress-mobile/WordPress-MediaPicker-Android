@@ -25,6 +25,7 @@ ext {
     navigationFragmentVersion = '2.3.5'
     wordpressUtilsVersion = "2.0.0"
     tenorVersion = "0.5.1"
+    mediaPickerDomainDependency = project.hasProperty("mediaPickerDomainVersion") ? "org.wordpress.mediapicker:domain:${project.getProperty("mediaPickerDomainVersion")}" : project(":mediapicker:domain")
 }
 
 subprojects {
