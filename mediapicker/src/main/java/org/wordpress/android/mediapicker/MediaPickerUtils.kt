@@ -147,11 +147,16 @@ class MediaPickerUtils @Inject constructor(
     private fun getLegacyMediaStorePath(uri: Uri): String? {
         @Suppress("Deprecation")
         val filePathColumn = arrayOf(Media.DATA)
-        context.contentResolver.query(uri, filePathColumn, null, null, null)?.let { cursor ->
-            if (cursor.moveToFirst()) {
-                val columnIndex: Int = cursor.getColumnIndex(filePathColumn[0])
-                return cursor.getString(columnIndex)
+        try {
+            context.contentResolver.query(uri, filePathColumn, null, null, null)?.let { cursor ->
+                if (cursor.moveToFirst()) {
+                    val columnIndex: Int = cursor.getColumnIndex(filePathColumn[0])
+                    return cursor.getString(columnIndex)
+                }
+                cursor.close()
             }
+        } catch (e: RuntimeException) {
+            log.e(e)
         }
         return null
     }
