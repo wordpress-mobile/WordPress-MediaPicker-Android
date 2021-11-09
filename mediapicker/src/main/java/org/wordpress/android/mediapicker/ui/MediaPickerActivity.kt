@@ -10,7 +10,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.mediapicker.R.drawable
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.databinding.MediaPickerLibActivityBinding
-import org.wordpress.android.mediapicker.util.Log
+import org.wordpress.android.mediapicker.api.Log
 import javax.inject.Inject
 
 @AndroidEntryPoint

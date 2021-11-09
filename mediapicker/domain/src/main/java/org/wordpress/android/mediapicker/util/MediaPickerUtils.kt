@@ -8,11 +8,12 @@ import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Environment
 import android.provider.MediaStore
+import android.provider.MediaStore.Images.Media
 import androidx.core.content.FileProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
+import org.wordpress.android.mediapicker.api.Log
 import org.wordpress.android.mediapicker.model.MediaPickerAction.OpenSystemPicker
 import org.wordpress.android.mediapicker.model.MediaPickerContext
-import org.wordpress.android.util.MediaUtils
 import java.io.BufferedOutputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -50,7 +51,7 @@ class MediaPickerUtils @Inject constructor(
         val chooserContext: MediaPickerContext = openSystemPicker.pickerContext
         val intent = Intent(chooserContext.intentAction)
         intent.type = chooserContext.mediaTypeFilter
-        intent.putExtra(Intent.EXTRA_MIME_TYPES, openSystemPicker.mimeTypes.toTypedArray<String>())
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, openSystemPicker.mimeTypes.toTypedArray())
         if (openSystemPicker.allowMultipleSelection) {
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
         }

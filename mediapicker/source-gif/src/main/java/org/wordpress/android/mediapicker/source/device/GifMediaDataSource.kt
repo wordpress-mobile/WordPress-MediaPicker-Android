@@ -16,8 +16,8 @@ import org.wordpress.android.mediapicker.model.MediaType.IMAGE
 import org.wordpress.android.mediapicker.model.MediaUri
 import org.wordpress.android.mediapicker.source.gif.R
 import org.wordpress.android.mediapicker.source.gif.R.string
-import org.wordpress.android.mediapicker.util.UiString.UiStringRes
-import org.wordpress.android.mediapicker.util.UiString.UiStringText
+import org.wordpress.android.mediapicker.model.UiString.UiStringRes
+import org.wordpress.android.mediapicker.model.UiString.UiStringText
 import org.wordpress.android.util.NetworkUtils
 import javax.inject.Inject
 import kotlin.coroutines.resume

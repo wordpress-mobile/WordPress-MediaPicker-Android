@@ -14,7 +14,7 @@ import org.wordpress.android.mediapicker.model.MediaType.AUDIO
 import org.wordpress.android.mediapicker.model.MediaType.DOCUMENT
 import org.wordpress.android.mediapicker.model.MediaType.IMAGE
 import org.wordpress.android.mediapicker.model.MediaType.VIDEO
-import org.wordpress.android.mediapicker.util.UiString.UiStringText
+import org.wordpress.android.mediapicker.model.UiString.UiStringText
 import javax.inject.Inject
 
 class DeviceMediaSource(

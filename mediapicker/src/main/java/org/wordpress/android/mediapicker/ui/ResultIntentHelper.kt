@@ -6,8 +6,7 @@ import org.wordpress.android.mediapicker.MediaPickerConstants
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 import org.wordpress.android.mediapicker.model.MediaUri
-import org.wordpress.android.mediapicker.util.asAndroidUri
-import org.wordpress.android.mediapicker.util.asMediaUri
+import org.wordpress.android.mediapicker.model.asMediaUri
 
 internal object ResultIntentHelper {
     private fun Intent.putUris(

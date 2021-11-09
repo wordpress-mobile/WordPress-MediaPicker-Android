@@ -9,12 +9,12 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import org.wordpress.android.mediapicker.api.Log
 import org.wordpress.android.mediapicker.api.MediaInsertHandlerFactory
 import org.wordpress.android.mediapicker.api.MimeTypeProvider
+import org.wordpress.android.mediapicker.api.Tracker
 import org.wordpress.android.mediapicker.loader.MediaLoaderFactory
 import org.wordpress.android.mediapicker.source.device.TenorApiKey
-import org.wordpress.android.mediapicker.util.Log
-import org.wordpress.android.mediapicker.util.Tracker
 import javax.inject.Singleton
 
 @Module

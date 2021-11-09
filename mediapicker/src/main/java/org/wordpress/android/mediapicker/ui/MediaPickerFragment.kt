@@ -33,6 +33,7 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.wordpress.android.mediapicker.R
+import org.wordpress.android.mediapicker.api.Log
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
@@ -57,7 +58,6 @@ import org.wordpress.android.mediapicker.model.MediaPickerUiItem
 import org.wordpress.android.mediapicker.model.MediaUri
 import org.wordpress.android.mediapicker.util.AnimUtils
 import org.wordpress.android.mediapicker.util.AnimUtils.Duration.MEDIUM
-import org.wordpress.android.mediapicker.util.Log
 import org.wordpress.android.mediapicker.util.MediaPickerLinkMovementMethod
 import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils
 import org.wordpress.android.mediapicker.util.MediaPickerUtils

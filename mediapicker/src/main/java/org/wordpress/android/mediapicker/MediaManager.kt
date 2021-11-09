@@ -14,7 +14,7 @@ import androidx.annotation.RequiresApi
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.wordpress.android.mediapicker.util.Log
+import org.wordpress.android.mediapicker.api.Log
 import org.wordpress.android.mediapicker.util.MediaUtils
 import java.io.File
 import javax.inject.Inject
