@@ -12,6 +12,7 @@ import kotlinx.coroutines.SupervisorJob
 import org.wordpress.android.mediapicker.api.MediaInsertHandlerFactory
 import org.wordpress.android.mediapicker.api.MimeTypeProvider
 import org.wordpress.android.mediapicker.loader.MediaLoaderFactory
+import org.wordpress.android.mediapicker.source.device.TenorApiKey
 import org.wordpress.android.mediapicker.util.Log
 import org.wordpress.android.mediapicker.util.Tracker
 import javax.inject.Singleton
@@ -31,6 +32,11 @@ abstract class AppModule {
         fun providesCoroutineScope(dispatcher: CoroutineDispatcher): CoroutineScope {
             return CoroutineScope(SupervisorJob() + dispatcher)
         }
+
+        @TenorApiKey
+        @Singleton
+        @Provides
+        fun providesTenorKey(): String = BuildConfig.TENOR_API_KEY
     }
 
     @Binds
