@@ -61,7 +61,7 @@ internal class MediaPickerActionModeCallback(private val viewModel: MediaPickerV
     ): Boolean {
         return when (item.itemId) {
             id.mnu_confirm_selection -> {
-                viewModel.performInsertAction()
+                viewModel.onSelectionConfirmed()
                 true
             }
             else -> false

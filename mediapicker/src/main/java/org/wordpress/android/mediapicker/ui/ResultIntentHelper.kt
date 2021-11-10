@@ -5,6 +5,10 @@ import android.net.Uri
 import org.wordpress.android.mediapicker.MediaPickerConstants
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
+import org.wordpress.android.mediapicker.model.MediaItem.Identifier.GifMedia
+import org.wordpress.android.mediapicker.model.MediaItem.Identifier.LocalMedia
+import org.wordpress.android.mediapicker.model.MediaItem.Identifier.LocalUri
+import org.wordpress.android.mediapicker.model.MediaItem.Identifier.RemoteMedia
 import org.wordpress.android.mediapicker.model.MediaUri
 import org.wordpress.android.mediapicker.model.asMediaUri
 
@@ -27,11 +31,13 @@ internal object ResultIntentHelper {
         )
     }
 
-    private fun Intent.putMediaIds(
-        mediaIds: List<Long>
+    private fun Intent.putRemoteMedia(
+        remoteMedia: List<RemoteMedia>
     ) {
-        this.putExtra(MediaPickerConstants.RESULT_IDS, mediaIds.toLongArray())
-        this.putExtra(MediaPickerConstants.EXTRA_MEDIA_ID, mediaIds[0])
+        this.putParcelableArrayListExtra(
+            MediaPickerConstants.EXTRA_REMOTE_MEDIA,
+            ArrayList(remoteMedia)
+        )
     }
 
     private fun Intent.putLocalIds(
@@ -62,12 +68,12 @@ internal object ResultIntentHelper {
         identifiers: List<Identifier>,
         dataSource: DataSource
     ): Intent {
-        val chosenLocalUris = identifiers.mapNotNull { (it as? Identifier.LocalUri) }
-        val chosenGifUris = identifiers.mapNotNull { (it as? Identifier.GifMediaId) }
+        val chosenLocalUris = identifiers.mapNotNull { (it as? LocalUri) }
+        val chosenGifUris = identifiers.mapNotNull { (it as? GifMedia) }
         val chosenUris = chosenLocalUris.filter { !it.queued }.map { it.uri }
         val queuedUris = chosenLocalUris.filter { it.queued }.map { it.uri }
-        val chosenIds = identifiers.mapNotNull { (it as? Identifier.RemoteId)?.value }
-        val chosenLocalIds = identifiers.mapNotNull { (it as? Identifier.LocalId)?.value }
+        val chosenRemoteMedia = identifiers.mapNotNull { (it as? RemoteMedia) }
+        val chosenLocalIds = identifiers.mapNotNull { (it as? LocalMedia)?.id }
 
         val intent = Intent()
         if (!chosenUris.isNullOrEmpty()) {
@@ -78,8 +84,8 @@ internal object ResultIntentHelper {
         if (!queuedUris.isNullOrEmpty()) {
             intent.putQueuedUris(queuedUris)
         }
-        if (!chosenIds.isNullOrEmpty()) {
-            intent.putMediaIds(chosenIds)
+        if (!chosenRemoteMedia.isNullOrEmpty()) {
+            intent.putRemoteMedia(chosenRemoteMedia)
         }
         if (!chosenLocalIds.isNullOrEmpty()) {
             intent.putLocalIds(chosenLocalIds)

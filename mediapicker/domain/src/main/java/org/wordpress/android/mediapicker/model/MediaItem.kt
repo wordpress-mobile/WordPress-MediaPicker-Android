@@ -2,10 +2,10 @@ package org.wordpress.android.mediapicker.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.mediapicker.model.MediaItem.IdentifierType.GIF_MEDIA_ID
-import org.wordpress.android.mediapicker.model.MediaItem.IdentifierType.LOCAL_ID
+import org.wordpress.android.mediapicker.model.MediaItem.IdentifierType.GIF_MEDIA
+import org.wordpress.android.mediapicker.model.MediaItem.IdentifierType.LOCAL
 import org.wordpress.android.mediapicker.model.MediaItem.IdentifierType.LOCAL_URI
-import org.wordpress.android.mediapicker.model.MediaItem.IdentifierType.REMOTE_ID
+import org.wordpress.android.mediapicker.model.MediaItem.IdentifierType.REMOTE_MEDIA
 
 @Parcelize
 data class MediaItem(
@@ -18,9 +18,9 @@ data class MediaItem(
 ) : Parcelable {
     enum class IdentifierType {
         LOCAL_URI,
-        REMOTE_ID,
-        LOCAL_ID,
-        GIF_MEDIA_ID
+        REMOTE_MEDIA,
+        LOCAL,
+        GIF_MEDIA
     }
 
     sealed class Identifier(val type: IdentifierType) : Parcelable {
@@ -28,12 +28,17 @@ data class MediaItem(
         data class LocalUri(val uri: MediaUri, val queued: Boolean = false) : Identifier(LOCAL_URI)
 
         @Parcelize
-        data class RemoteId(val value: Long) : Identifier(REMOTE_ID)
+        data class RemoteMedia(
+            val id: Long,
+            val name: String,
+            val url: String,
+            val date: String
+        ) : Identifier(REMOTE_MEDIA)
 
         @Parcelize
-        data class LocalId(val value: Int) : Identifier(LOCAL_ID)
+        data class LocalMedia(val id: Int) : Identifier(LOCAL)
 
         @Parcelize
-        data class GifMediaId(val uri: MediaUri, val title: String?) : Identifier(GIF_MEDIA_ID)
+        data class GifMedia(val uri: MediaUri, val title: String?) : Identifier(GIF_MEDIA)
     }
 }
