@@ -3,7 +3,7 @@ package org.wordpress.android.mediapicker.model
 import android.net.Uri
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 
-sealed class MediaNavigationEvent {
+internal sealed class MediaNavigationEvent {
     data class PreviewUrl(val url: String) : MediaNavigationEvent()
     data class PreviewMedia(val mediaId: Long) : MediaNavigationEvent()
     data class ReturnSelectedMedia(val identifiers: List<Identifier>) : MediaNavigationEvent()

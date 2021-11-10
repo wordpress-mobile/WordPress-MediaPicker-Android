@@ -10,7 +10,7 @@ import org.wordpress.android.mediapicker.model.toSelectableItem
 import org.wordpress.android.mediapicker.ui.MediaPickerAdapterDiffCallback.Payload.COUNT_CHANGE
 import org.wordpress.android.mediapicker.ui.MediaPickerAdapterDiffCallback.Payload.SELECTION_CHANGE
 
-class MediaPickerAdapterDiffCallback(
+internal class MediaPickerAdapterDiffCallback(
     private val oldItems: List<MediaPickerUiItem>,
     private val updatedItems: List<MediaPickerUiItem>
 ) : DiffUtil.Callback() {

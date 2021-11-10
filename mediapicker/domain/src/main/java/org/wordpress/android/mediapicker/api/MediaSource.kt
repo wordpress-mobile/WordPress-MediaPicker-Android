@@ -2,7 +2,7 @@ package org.wordpress.android.mediapicker.api
 
 import org.wordpress.android.mediapicker.loader.MediaLoader
 import org.wordpress.android.mediapicker.model.MediaItem
-import org.wordpress.android.mediapicker.util.UiString
+import org.wordpress.android.mediapicker.model.UiString
 
 interface MediaSource {
     suspend fun load(

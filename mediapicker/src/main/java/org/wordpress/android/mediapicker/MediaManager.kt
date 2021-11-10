@@ -14,15 +14,19 @@ import androidx.annotation.RequiresApi
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.wordpress.android.mediapicker.util.Log
-import org.wordpress.android.mediapicker.util.MediaUtils
+import org.wordpress.android.mediapicker.api.Log
 import java.io.File
 import javax.inject.Inject
 
-class MediaManager @Inject constructor(
+internal class MediaManager @Inject constructor(
     private val log: Log,
+    private val mediaPickerUtils: MediaPickerUtils,
     @ApplicationContext private val applicationContext: Context
 ) {
+    companion object {
+        private const val FILE_SCHEME = "file"
+    }
+
     suspend fun addImageToMediaStore(path: String): Uri? {
         return if (Build.VERSION.SDK_INT >= VERSION_CODES.Q) {
             saveImageInQ(path)
@@ -32,8 +36,12 @@ class MediaManager @Inject constructor(
     }
 
     private fun saveImageLegacy(path: String): Uri? {
-        MediaUtils.scanMediaFile(log, applicationContext, path)
-        return Uri.parse(path)
+        mediaPickerUtils.scanMediaFile(path)
+        return Uri.Builder().let { builder ->
+            builder.path(path)
+            builder.scheme(FILE_SCHEME)
+            builder.build()
+        }
     }
 
     @RequiresApi(VERSION_CODES.Q)

@@ -1,4 +1,4 @@
-package org.wordpress.android.mediapicker.util
+package org.wordpress.android.mediapicker.api
 
 interface Tracker {
     fun track(event: Event, properties: Map<String, Any?>)

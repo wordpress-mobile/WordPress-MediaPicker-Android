@@ -3,17 +3,17 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.plugin.parcelize'
     id 'org.jetbrains.kotlin.kapt'
-    id 'dagger.hilt.android.plugin'
     id 'maven-publish'
     id "com.automattic.android.publish-to-s3"
 }
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion "30.0.3"
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion rootProject.buildToolsVersion
 
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
     }
 }
 
@@ -21,12 +21,6 @@ dependencies {
     implementation "androidx.core:core-ktx:$coreVersion"
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
-
-    implementation "com.google.dagger:hilt-android:$daggerVersion"
-    implementation "com.google.dagger:hilt-android-compiler:$daggerVersion"
-    kapt "com.google.dagger:hilt-compiler:$daggerVersion"
-
-    implementation "org.wordpress:utils:$wordpressUtilsVersion"
 }
 
 project.afterEvaluate {

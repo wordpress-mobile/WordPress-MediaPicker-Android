@@ -1,6 +1,6 @@
 package org.wordpress.android.sampleapp
 
-import org.wordpress.android.mediapicker.util.Log
+import org.wordpress.android.mediapicker.api.Log
 import javax.inject.Inject
 
 class Logger @Inject constructor() : Log {

@@ -16,23 +16,20 @@ import android.view.ViewGroup
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AlertDialog.Builder
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import org.wordpress.android.mediapicker.MediaPickerUtils
 import org.wordpress.android.mediapicker.R
+import org.wordpress.android.mediapicker.api.Log
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
@@ -57,10 +54,8 @@ import org.wordpress.android.mediapicker.model.MediaPickerUiItem
 import org.wordpress.android.mediapicker.model.MediaUri
 import org.wordpress.android.mediapicker.util.AnimUtils
 import org.wordpress.android.mediapicker.util.AnimUtils.Duration.MEDIUM
-import org.wordpress.android.mediapicker.util.Log
 import org.wordpress.android.mediapicker.util.MediaPickerLinkMovementMethod
 import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils
-import org.wordpress.android.mediapicker.util.MediaPickerUtils
 import org.wordpress.android.mediapicker.util.MediaUtils
 import org.wordpress.android.mediapicker.util.UiHelpers
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel
@@ -71,16 +66,13 @@ import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PhotoLis
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PhotoListUiModel.Empty
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PhotoListUiModel.Hidden
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PhotoListUiModel.Loading
-import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.ProgressDialogUiModel
-import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.ProgressDialogUiModel.Visible
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.SearchUiModel
-import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.SnackbarMessageHolder
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.SoftAskViewUiModel
 import org.wordpress.android.mediapicker.viewmodel.observeEvent
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MediaPickerFragment : Fragment() {
+internal class MediaPickerFragment : Fragment() {
     companion object {
         private const val KEY_SELECTED_IDS = "selected_ids"
         private const val KEY_LIST_STATE = "list_state"
@@ -280,15 +272,6 @@ class MediaPickerFragment : Fragment() {
                 }
             )
 
-            viewModel.onSnackbarMessage.observeEvent(
-                viewLifecycleOwner,
-                { messageHolder ->
-                    showSnackbar(messageHolder)
-                }
-            )
-
-            setupProgressDialog()
-
             (requireActivity() as AppCompatActivity).supportActionBar
                 ?.setTitle(mediaPickerSetup.title)
 
@@ -434,10 +417,10 @@ class MediaPickerFragment : Fragment() {
 
     private fun MediaPickerLibFragmentBinding.setupPhotoList(uiModel: PhotoListUiModel) {
         loadingView.visibility =
-            if (uiModel == PhotoListUiModel.Loading) View.VISIBLE else View.GONE
+            if (uiModel == Loading) View.VISIBLE else View.GONE
         actionableEmptyView.visibility =
-            if (uiModel is PhotoListUiModel.Empty) View.VISIBLE else View.GONE
-        recycler.visibility = if (uiModel is PhotoListUiModel.Data) View.VISIBLE else View.INVISIBLE
+            if (uiModel is Empty) View.VISIBLE else View.GONE
+        recycler.visibility = if (uiModel is Data) View.VISIBLE else View.INVISIBLE
         when (uiModel) {
             is Data -> {
                 setupAdapter(uiModel.items)
@@ -520,54 +503,6 @@ class MediaPickerFragment : Fragment() {
         } else {
             fabTakePicture.hide()
         }
-    }
-
-    private fun setupProgressDialog() {
-        var progressDialog: AlertDialog? = null
-        viewModel.uiState.observe(
-            viewLifecycleOwner,
-            Observer {
-                it?.progressDialogUiModel?.apply {
-                    when (this) {
-                        is Visible -> {
-                            if (progressDialog == null || progressDialog?.isShowing == false) {
-                                val builder: Builder = MaterialAlertDialogBuilder(requireContext())
-                                builder.setTitle(this.title)
-                                builder.setView(R.layout.media_picker_lib_progress_dialog)
-                                builder.setNegativeButton(
-                                    R.string.cancel
-                                ) { _, _ -> this.cancelAction() }
-                                builder.setOnCancelListener { this.cancelAction() }
-                                builder.setCancelable(true)
-                                progressDialog = builder.show()
-                            }
-                        }
-                        ProgressDialogUiModel.Hidden -> {
-                            progressDialog?.let { dialog ->
-                                if (dialog.isShowing) {
-                                    dialog.dismiss()
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        )
-    }
-
-    private fun MediaPickerLibFragmentBinding.showSnackbar(holder: SnackbarMessageHolder) {
-        val snackbar = Snackbar.make(
-            requireContext(),
-            coordinator,
-            UiHelpers.getTextOfUiString(requireContext(), holder.message),
-            Snackbar.LENGTH_LONG
-        )
-        if (holder.buttonTitle != null) {
-            snackbar.setAction(
-                UiHelpers.getTextOfUiString(requireContext(), holder.buttonTitle)
-            ) { holder.buttonAction() }
-        }
-        snackbar.show()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

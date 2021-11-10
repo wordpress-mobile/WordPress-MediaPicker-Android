@@ -1,4 +1,4 @@
-package org.wordpress.android.mediapicker.util
+package org.wordpress.android.mediapicker.model
 
 import android.os.Parcelable
 import androidx.annotation.StringRes

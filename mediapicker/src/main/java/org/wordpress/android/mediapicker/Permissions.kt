@@ -16,7 +16,7 @@ import javax.inject.Singleton
 typealias Key = Preferences.Key<Boolean>
 
 @Singleton
-class Permissions @Inject constructor(
+internal class Permissions @Inject constructor(
     @ApplicationContext private val context: Context,
     private val scope: CoroutineScope
 ) {

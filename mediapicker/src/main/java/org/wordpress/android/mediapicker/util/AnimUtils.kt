@@ -23,7 +23,7 @@ private const val DEGREES_360 = 360f
 private const val PIVOT_CENTER = 0.5f
 
 @Suppress("TooManyFunctions")
-object AnimUtils {
+internal object AnimUtils {
     enum class Duration {
         SHORT,
         MEDIUM,

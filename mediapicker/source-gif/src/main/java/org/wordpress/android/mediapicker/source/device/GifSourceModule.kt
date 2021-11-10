@@ -13,11 +13,14 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-class GifSourceModule {
+internal class GifSourceModule {
     @Provides
-    fun provideTenorGifClient(@ApplicationContext context: Context): TenorGifClient {
+    fun provideTenorGifClient(
+        @ApplicationContext context: Context,
+        @TenorApiKey apiKey: String
+    ): TenorGifClient {
         val builder: IBuilder<IApiClient> = ApiService.Builder(context, IApiClient::class.java)
-        builder.apiKey("0402JHA0MUI6")
+        builder.apiKey(apiKey)
         ApiClient.init(context, builder)
         return TenorGifClient(context, ApiClient.getInstance(context))
     }

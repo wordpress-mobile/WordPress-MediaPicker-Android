@@ -23,7 +23,7 @@ import org.wordpress.android.mediapicker.databinding.MediaPickerLibViewerFragmen
  * Fullscreen single image viewer
  */
 @AndroidEntryPoint
-class MediaViewerFragment :
+internal class MediaViewerFragment :
     Fragment(layout.media_picker_lib_viewer_fragment),
     RequestListener<Drawable> {
     companion object {
