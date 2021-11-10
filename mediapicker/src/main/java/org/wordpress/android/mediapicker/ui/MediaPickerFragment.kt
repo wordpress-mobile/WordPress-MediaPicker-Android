@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import org.wordpress.android.mediapicker.MediaPickerUtils
 import org.wordpress.android.mediapicker.R
 import org.wordpress.android.mediapicker.api.Log
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
@@ -55,7 +56,6 @@ import org.wordpress.android.mediapicker.util.AnimUtils
 import org.wordpress.android.mediapicker.util.AnimUtils.Duration.MEDIUM
 import org.wordpress.android.mediapicker.util.MediaPickerLinkMovementMethod
 import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils
-import org.wordpress.android.mediapicker.MediaPickerUtils
 import org.wordpress.android.mediapicker.util.MediaUtils
 import org.wordpress.android.mediapicker.util.UiHelpers
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel

@@ -1,28 +1,31 @@
-docker-container: &docker-container
-  plugins:
-    - docker#v3.8.0:
-        image: "public.ecr.aws/automattic/android-build-image:311ab824e9fd33ebb71de83c3fd1c328ea84443b"
-        environment:
-          - "CI=true"
+common-params:
+  &docker-container
+  docker#v3.8.0:
+    image: "public.ecr.aws/automattic/android-build-image:v1.1.0"
+    propagate-environment: true
 
 steps:
   - label: "ktlint"
-    <<: *docker-container
+    plugins:
+      - *docker-container
     command: |
-      cp gradle.properties-example gradle.properties
       ./gradlew ciktlint
+    artifact_paths:
+      - "**/build/ktlint.xml"
   - label: "lint"
-    <<: *docker-container
+    plugins:
+      - *docker-container
     command: |
-      cp gradle.properties-example gradle.properties
       ./gradlew lintRelease
+    artifact_paths:
+      - "**/build/reports/lint-results*.*"
   - label: "Unit test"
-    <<: *docker-container
+    plugins:
+      - *docker-container
     command: |
-      cp gradle.properties-example gradle.properties
       ./gradlew testRelease
   - label: "Assemble Release"
-    <<: *docker-container
+    plugins:
+      - *docker-container
     command: |
-      cp gradle.properties-example gradle.properties
       ./gradlew assembleRelease

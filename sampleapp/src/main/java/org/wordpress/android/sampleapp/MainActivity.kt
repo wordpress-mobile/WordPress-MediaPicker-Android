@@ -87,12 +87,11 @@ class MainActivity : AppCompatActivity() {
     private fun handleMediaPickerResult(result: ActivityResult) {
         if (result.resultCode == RESULT_OK) {
             result.data?.extras?.let { extra ->
-                val message = (extra.get(MediaPickerConstants.EXTRA_MEDIA_URIS) as? Array<*>)?.map {
-                    mediaPickerUtils.getFilePath(Uri.parse(it as String))
-                }
-                ?.joinToString("\n") ?: ""
-                Snackbar.make(findViewById<Button>(id.content), message, Snackbar.LENGTH_LONG)
-                    .show()
+                val files = (extra.get(MediaPickerConstants.EXTRA_MEDIA_URIS) as? Array<*>)
+                    ?.map { mediaPickerUtils.getFilePath(Uri.parse(it as String)) }
+                    ?.joinToString("\n") ?: ""
+
+                Snackbar.make(findViewById<Button>(id.content), files, Snackbar.LENGTH_LONG).show()
             }
         }
     }

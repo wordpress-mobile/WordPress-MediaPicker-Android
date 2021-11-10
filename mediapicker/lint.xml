@@ -16,4 +16,6 @@
     <issue id="IconDensities" severity="ignore" />
     <issue id="Overdraw" severity="ignore" />
     <issue id="PluralsCandidate" severity="ignore" /> <!-- GlotPress doesn't support plurals -->
+    <issue id="IconMissingDensityFolder" severity="ignore" />
+    <issue id="GradleDependency" severity="ignore" />
 </lint>
