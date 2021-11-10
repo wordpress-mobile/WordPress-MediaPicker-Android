@@ -19,7 +19,7 @@ import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult
 import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult.Empty
 import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult.Failure
 import org.wordpress.android.mediapicker.model.MediaItem
-import org.wordpress.android.mediapicker.model.MediaItem.Identifier.RemoteId
+import org.wordpress.android.mediapicker.model.MediaItem.Identifier.RemoteMedia
 import org.wordpress.android.mediapicker.model.MediaType
 import org.wordpress.android.mediapicker.model.MediaType.AUDIO
 import org.wordpress.android.mediapicker.model.MediaType.DOCUMENT
@@ -124,7 +124,12 @@ class MediaLibrarySource(
     private fun List<MediaModel>.toMediaItems(mediaType: MediaType): List<MediaItem> {
         return this.filter { it.url != null }.map { mediaModel ->
             MediaItem(
-                RemoteId(mediaModel.mediaId),
+                RemoteMedia(
+                    mediaModel.mediaId,
+                    mediaModel.title,
+                    mediaModel.url,
+                    mediaModel.uploadDate
+                ),
                 mediaModel.url,
                 mediaModel.title,
                 mediaType,

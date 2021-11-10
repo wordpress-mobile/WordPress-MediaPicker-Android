@@ -9,7 +9,7 @@ import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult.Fail
 import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult.Success
 import org.wordpress.android.mediapicker.api.R.drawable
 import org.wordpress.android.mediapicker.model.MediaItem
-import org.wordpress.android.mediapicker.model.MediaItem.Identifier.GifMediaId
+import org.wordpress.android.mediapicker.model.MediaItem.Identifier.GifMedia
 import org.wordpress.android.mediapicker.model.MediaType.IMAGE
 import org.wordpress.android.mediapicker.model.MediaUri
 import org.wordpress.android.mediapicker.model.UiString.UiStringRes
@@ -97,7 +97,7 @@ class GifMediaDataSource
     private fun Result.toMediaItem(): MediaItem? {
         return urlFromCollectionFormat(MediaCollectionFormat.GIF)?.let {
             MediaItem(
-                identifier = GifMediaId(
+                identifier = GifMedia(
                     MediaUri(it),
                     title
                 ),

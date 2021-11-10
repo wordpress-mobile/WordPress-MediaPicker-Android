@@ -32,7 +32,7 @@ import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction.NextPage
 import org.wordpress.android.mediapicker.loader.MediaLoaderFactory
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier.LocalUri
-import org.wordpress.android.mediapicker.model.MediaItem.Identifier.RemoteId
+import org.wordpress.android.mediapicker.model.MediaItem.Identifier.RemoteMedia
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.ChooseMediaPickerAction
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.Exit
@@ -186,8 +186,8 @@ internal class MediaPickerViewModel @Inject constructor(
         } else if (data != null && data.isNotEmpty()) {
             val uiItems = data.map {
                 val showOrderCounter = mediaPickerSetup.isMultiSelectEnabled
-                val toggleAction = ToggleAction(it.identifier, showOrderCounter, this::toggleItem)
-                val clickAction = ClickAction(it.identifier, it.type == VIDEO, this::clickItem)
+                val toggleAction = ToggleAction(it.identifier, showOrderCounter, this::onActionToggled)
+                val clickAction = ClickAction(it.identifier, it.type == VIDEO, this::onActionClicked)
                 val (selectedOrder, isSelected) = if (selectedIds != null && selectedIds.contains(it.identifier)) {
                     val selectedOrder = if (showOrderCounter) selectedIds.indexOf(it.identifier) + 1 else null
                     val isSelected = true
@@ -379,7 +379,7 @@ internal class MediaPickerViewModel @Inject constructor(
         }
     }
 
-    private fun toggleItem(identifier: Identifier, canMultiselect: Boolean) {
+    private fun onActionToggled(identifier: Identifier, canMultiselect: Boolean) {
         val updatedUris = _selectedIds.value?.toMutableList() ?: mutableListOf()
         if (updatedUris.contains(identifier)) {
             mediaPickerTracker.trackItemUnselected(mediaPickerSetup)
@@ -394,7 +394,7 @@ internal class MediaPickerViewModel @Inject constructor(
         _selectedIds.postValue(updatedUris)
     }
 
-    private fun clickItem(identifier: Identifier, isVideo: Boolean) {
+    private fun onActionClicked(identifier: Identifier, isVideo: Boolean) {
         viewModelScope.launch {
             mediaPickerTracker.trackPreview(isVideo, identifier, mediaPickerSetup)
         }
@@ -402,15 +402,20 @@ internal class MediaPickerViewModel @Inject constructor(
             is LocalUri -> {
                 _onNavigate.postValue(Event(PreviewUrl(identifier.uri.toString())))
             }
-            is RemoteId -> {
+            is RemoteMedia -> {
                 viewModelScope.launch {
-                    _onNavigate.postValue(Event(PreviewMedia(identifier.value)))
+                    _onNavigate.postValue(Event(PreviewMedia(identifier.id)))
                 }
+            }
+            else -> {
+                // not relevant
             }
         }
     }
 
-    fun performInsertAction() = insertIdentifiers(selectedIdentifiers)
+    fun onSelectionConfirmed() {
+        insertIdentifiers(selectedIdentifiers)
+    }
 
     private fun insertIdentifiers(ids: List<Identifier>) {
         viewModelScope.launch {
