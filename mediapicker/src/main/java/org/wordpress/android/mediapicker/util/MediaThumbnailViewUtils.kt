@@ -4,7 +4,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import org.wordpress.android.mediapicker.R
-import org.wordpress.android.mediapicker.model.MediaPickerUiItem.ClickAction
+import org.wordpress.android.mediapicker.model.MediaPickerUiItem.LongClickAction
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem.ToggleAction
 import org.wordpress.android.util.ViewUtils
 import java.util.Locale
@@ -14,7 +14,7 @@ internal class MediaThumbnailViewUtils {
         imgThumbnail: ImageView,
         isSelected: Boolean,
         toggleAction: ToggleAction,
-        clickAction: ClickAction,
+        longClickAction: LongClickAction,
         animateSelection: Boolean
     ) {
         imgThumbnail.setOnClickListener {
@@ -22,7 +22,7 @@ internal class MediaThumbnailViewUtils {
             imgThumbnail.announceSelectedImageForAccessibility(isSelected)
         }
         imgThumbnail.setOnLongClickListener {
-            clickAction.click()
+            longClickAction.click()
             true
         }
         imgThumbnail.redirectContextClickToLongPressListener()
@@ -34,7 +34,7 @@ internal class MediaThumbnailViewUtils {
         imgThumbnail: ImageView,
         fileName: String,
         isSelected: Boolean,
-        clickAction: ClickAction,
+        longClickAction: LongClickAction,
         toggleAction: ToggleAction,
         animateSelection: Boolean
     ) {
@@ -49,7 +49,7 @@ internal class MediaThumbnailViewUtils {
             imgThumbnail.announceSelectedImageForAccessibility(isSelected)
         }
         container.setOnLongClickListener {
-            clickAction.click()
+            longClickAction.click()
             true
         }
         container.redirectContextClickToLongPressListener()
@@ -123,9 +123,9 @@ internal class MediaThumbnailViewUtils {
         )
     }
 
-    fun setupVideoOverlay(videoOverlay: ImageView, clickAction: ClickAction) {
+    fun setupVideoOverlay(videoOverlay: ImageView, longClickAction: LongClickAction) {
         videoOverlay.visibility = View.VISIBLE
-        videoOverlay.setOnClickListener { clickAction.click() }
+        videoOverlay.setOnClickListener { longClickAction.click() }
     }
 
     companion object {

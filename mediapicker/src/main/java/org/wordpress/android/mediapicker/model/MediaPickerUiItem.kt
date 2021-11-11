@@ -17,7 +17,7 @@ internal sealed class MediaPickerUiItem(
         val selectedOrder: Int? = null,
         val showOrderCounter: Boolean = false,
         val toggleAction: ToggleAction,
-        val clickAction: ClickAction
+        val longClickAction: LongClickAction
     ) : MediaPickerUiItem(PHOTO)
 
     data class VideoItem(
@@ -27,7 +27,7 @@ internal sealed class MediaPickerUiItem(
         val selectedOrder: Int? = null,
         val showOrderCounter: Boolean = false,
         val toggleAction: ToggleAction,
-        val clickAction: ClickAction
+        val longClickAction: LongClickAction
     ) : MediaPickerUiItem(VIDEO)
 
     data class FileItem(
@@ -38,7 +38,7 @@ internal sealed class MediaPickerUiItem(
         val selectedOrder: Int? = null,
         val showOrderCounter: Boolean = false,
         val toggleAction: ToggleAction,
-        val clickAction: ClickAction
+        val longClickAction: LongClickAction
     ) : MediaPickerUiItem(FILE)
 
     data class NextPageLoader(val isLoading: Boolean, val loadAction: () -> Unit) :
@@ -52,7 +52,7 @@ internal sealed class MediaPickerUiItem(
         fun toggle() = toggleSelected(identifier, canMultiselect)
     }
 
-    data class ClickAction(
+    data class LongClickAction(
         val identifier: Identifier,
         val isVideo: Boolean,
         private val clickItem: (identifier: Identifier, isVideo: Boolean) -> Unit

@@ -37,7 +37,7 @@ internal class PhotoThumbnailViewHolder(
         mediaThumbnailViewUtils.setupListeners(
             imgThumbnail, item.isSelected,
             item.toggleAction,
-            item.clickAction,
+            item.longClickAction,
             animateSelection
         )
     }

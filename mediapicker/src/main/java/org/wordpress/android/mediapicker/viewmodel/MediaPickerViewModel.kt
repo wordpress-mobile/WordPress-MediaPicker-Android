@@ -39,7 +39,6 @@ import org.wordpress.android.mediapicker.model.MediaItem.Identifier.RemoteMedia
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.ChooseMediaPickerAction
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.Exit
-import org.wordpress.android.mediapicker.model.MediaNavigationEvent.PreviewMedia
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.PreviewUrl
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.RequestCameraPermission
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.RequestStoragePermission
@@ -54,8 +53,8 @@ import org.wordpress.android.mediapicker.model.MediaPickerContext
 import org.wordpress.android.mediapicker.model.MediaPickerContext.MEDIA_FILE
 import org.wordpress.android.mediapicker.model.MediaPickerContext.PHOTO_OR_VIDEO
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem
-import org.wordpress.android.mediapicker.model.MediaPickerUiItem.ClickAction
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem.FileItem
+import org.wordpress.android.mediapicker.model.MediaPickerUiItem.LongClickAction
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem.NextPageLoader
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem.PhotoItem
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem.ToggleAction
@@ -192,12 +191,21 @@ internal class MediaPickerViewModel @Inject constructor(
         } else if (data != null && data.isNotEmpty()) {
             val uiItems = data.map {
                 val showOrderCounter = mediaPickerSetup.isMultiSelectEnabled
-                val toggleAction = ToggleAction(it.identifier, showOrderCounter, this::onActionToggled)
-                val clickAction = ClickAction(it.identifier, it.type == VIDEO, this::onActionClicked)
-                val (selectedOrder, isSelected) = if (selectedIds != null && selectedIds.contains(it.identifier)) {
-                    val selectedOrder = if (showOrderCounter) selectedIds.indexOf(it.identifier) + 1 else null
-                    val isSelected = true
-                    selectedOrder to isSelected
+                val toggleAction = ToggleAction(it.identifier, showOrderCounter, ::onItemToggled)
+                val longClickAction = LongClickAction(
+                    it.identifier,
+                    it.type == VIDEO,
+                    ::onItemLongClicked
+                )
+                val (selectedOrder, isSelected) = if (selectedIds != null
+                    && selectedIds.contains(it.identifier)) {
+                        val selectedOrder = if (showOrderCounter) {
+                            selectedIds.indexOf(it.identifier) + 1
+                        } else {
+                            null
+                        }
+                        val isSelected = true
+                        selectedOrder to isSelected
                 } else {
                     null to false
                 }
@@ -214,7 +222,7 @@ internal class MediaPickerViewModel @Inject constructor(
                         selectedOrder = selectedOrder,
                         showOrderCounter = showOrderCounter,
                         toggleAction = toggleAction,
-                        clickAction = clickAction
+                        longClickAction = longClickAction
                     )
                     VIDEO -> VideoItem(
                         url = it.url,
@@ -223,7 +231,7 @@ internal class MediaPickerViewModel @Inject constructor(
                         selectedOrder = selectedOrder,
                         showOrderCounter = showOrderCounter,
                         toggleAction = toggleAction,
-                        clickAction = clickAction
+                        longClickAction = longClickAction
                     )
                     AUDIO, DOCUMENT -> FileItem(
                         fileName = it.name ?: "",
@@ -233,7 +241,7 @@ internal class MediaPickerViewModel @Inject constructor(
                         selectedOrder = selectedOrder,
                         showOrderCounter = showOrderCounter,
                         toggleAction = toggleAction,
-                        clickAction = clickAction
+                        longClickAction = longClickAction
                     )
                 }
             }
@@ -385,7 +393,7 @@ internal class MediaPickerViewModel @Inject constructor(
         }
     }
 
-    private fun onActionToggled(identifier: Identifier, canMultiselect: Boolean) {
+    private fun onItemToggled(identifier: Identifier, canMultiselect: Boolean) {
         val updatedUris = _selectedIds.value?.toMutableList() ?: mutableListOf()
         if (updatedUris.contains(identifier)) {
             mediaPickerTracker.trackItemUnselected(mediaPickerSetup)
@@ -400,7 +408,7 @@ internal class MediaPickerViewModel @Inject constructor(
         _selectedIds.postValue(updatedUris)
     }
 
-    private fun onActionClicked(identifier: Identifier, isVideo: Boolean) {
+    private fun onItemLongClicked(identifier: Identifier, isVideo: Boolean) {
         viewModelScope.launch {
             mediaPickerTracker.trackPreview(isVideo, identifier, mediaPickerSetup)
         }
@@ -409,9 +417,7 @@ internal class MediaPickerViewModel @Inject constructor(
                 _onNavigate.postValue(Event(PreviewUrl(identifier.uri.toString())))
             }
             is RemoteMedia -> {
-                viewModelScope.launch {
-                    _onNavigate.postValue(Event(PreviewMedia(identifier.id)))
-                }
+                _onNavigate.postValue(Event(PreviewUrl(identifier.url)))
             }
             else -> {
                 // not relevant
