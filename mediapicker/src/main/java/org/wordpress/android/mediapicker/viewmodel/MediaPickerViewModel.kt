@@ -197,15 +197,16 @@ internal class MediaPickerViewModel @Inject constructor(
                     it.type == VIDEO,
                     ::onItemLongClicked
                 )
-                val (selectedOrder, isSelected) = if (selectedIds != null
-                    && selectedIds.contains(it.identifier)) {
-                        val selectedOrder = if (showOrderCounter) {
-                            selectedIds.indexOf(it.identifier) + 1
-                        } else {
-                            null
-                        }
-                        val isSelected = true
-                        selectedOrder to isSelected
+                val (selectedOrder, isSelected) = if (selectedIds != null &&
+                    selectedIds.contains(it.identifier)
+                ) {
+                    val selectedOrder = if (showOrderCounter) {
+                        selectedIds.indexOf(it.identifier) + 1
+                    } else {
+                        null
+                    }
+                    val isSelected = true
+                    selectedOrder to isSelected
                 } else {
                     null to false
                 }
