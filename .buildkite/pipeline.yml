@@ -58,6 +58,13 @@ steps:
       - *publish-android-artifacts-docker-container
     command: |
       .buildkite/publish-mediapicker-source-gif.sh
+  - label: "Publish :mediapicker:source-wordpress"
+    depends_on:
+      - "publish-mediapicker-domain"
+    plugins:
+      - *publish-android-artifacts-docker-container
+    command: |
+      .buildkite/publish-mediapicker-source-wordpress.sh
   - label: "Publish :mediapicker"
     depends_on:
       - "publish-mediapicker-domain"
