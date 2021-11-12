@@ -610,7 +610,7 @@ internal class MediaPickerViewModel @Inject constructor(
                     "<strong>${
                     when (softAskRequest.type) {
                         STORAGE -> storage
-                        CAMERA -> camera + if (alsoStorageAccess) "& $storage" else ""
+                        CAMERA -> camera + if (alsoStorageAccess) " & $storage" else ""
                     }
                     }</strong>"
                     )
