@@ -5,9 +5,8 @@ plugins {
     id 'org.jetbrains.kotlin.kapt'
     id 'dagger.hilt.android.plugin'
     id 'maven-publish'
+    id "com.automattic.android.publish-to-s3"
 }
-
-apply from: "$rootDir/publish.gradle"
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -38,7 +37,7 @@ android {
     }
 
     dependencies {
-        api project(":mediapicker:domain")
+        api mediaPickerDomainDependency
 
         implementation "com.google.android.material:material:$materialVersion"
 
@@ -62,4 +61,19 @@ android {
 
         implementation "org.wordpress:utils:$wordpressUtilsVersion"
     }
+}
+
+project.afterEvaluate {
+    publishing {
+        publications {
+            MediaPickerPublication(MavenPublication) {
+                from components.release
+
+                groupId "org.wordpress"
+                artifactId "mediapicker"
+                artifact tasks.named("androidSourcesJar") // This task is added by 'publish-to-s3' plugin
+                // version is set by 'publish-to-s3' plugin
+            }
+        }
+   }
 }

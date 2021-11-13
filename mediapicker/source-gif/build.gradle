@@ -4,9 +4,9 @@ plugins {
     id 'org.jetbrains.kotlin.plugin.parcelize'
     id 'org.jetbrains.kotlin.kapt'
     id 'dagger.hilt.android.plugin'
+    id 'maven-publish'
+    id "com.automattic.android.publish-to-s3"
 }
-
-apply from: "$rootDir/publish.gradle"
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -14,7 +14,7 @@ android {
 }
 
 dependencies {
-    implementation project(':mediapicker:domain')
+    implementation mediaPickerDomainDependency
 
     implementation "com.github.Tenor-Inc:tenor-android-core:$tenorVersion"
 
@@ -23,4 +23,19 @@ dependencies {
     kapt "com.google.dagger:hilt-compiler:$daggerVersion"
 
     implementation "org.wordpress:utils:$wordpressUtilsVersion"
+}
+
+project.afterEvaluate {
+    publishing {
+        publications {
+            SourceGifPublication(MavenPublication) {
+                from components.release
+
+                groupId "org.wordpress.mediapicker"
+                artifactId "source-gif"
+                artifact tasks.named("androidSourcesJar") // This task is added by 'publish-to-s3' plugin
+                // version is set by 'publish-to-s3' plugin
+            }
+        }
+   }
 }

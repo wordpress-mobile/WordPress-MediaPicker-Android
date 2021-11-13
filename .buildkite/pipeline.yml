@@ -1,31 +1,67 @@
 common-params:
-  &docker-container
+  &publish-android-artifacts-docker-container
   docker#v3.8.0:
     image: "public.ecr.aws/automattic/android-build-image:v1.1.0"
     propagate-environment: true
+    environment:
+      # DO NOT MANUALLY SET THESE VALUES!
+      # They are passed from the Buildkite agent to the Docker container
+      - "AWS_ACCESS_KEY"
+      - "AWS_SECRET_KEY"
 
 steps:
   - label: "ktlint"
+    key: "ktlint"
     plugins:
-      - *docker-container
+      - *publish-android-artifacts-docker-container
     command: |
       ./gradlew ciktlint
     artifact_paths:
       - "**/build/ktlint.xml"
   - label: "lint"
+    key: "lint"
     plugins:
-      - *docker-container
+      - *publish-android-artifacts-docker-container
     command: |
       ./gradlew lintRelease
     artifact_paths:
       - "**/build/reports/lint-results*.*"
   - label: "Unit test"
+    key: "unit-test"
     plugins:
-      - *docker-container
+      - *publish-android-artifacts-docker-container
     command: |
       ./gradlew testRelease
-  - label: "Assemble Release"
+
+  # Publish tasks
+  - label: "Publish :mediapicker:domain"
+    key: "publish-mediapicker-domain"
+    depends_on:
+      - "ktlint"
+      - "lint"
+      - "unit-test"
     plugins:
-      - *docker-container
+      - *publish-android-artifacts-docker-container
     command: |
-      ./gradlew assembleRelease
+      .buildkite/publish-mediapicker-domain.sh
+  - label: "Publish :mediapicker:source-device"
+    depends_on:
+      - "publish-mediapicker-domain"
+    plugins:
+      - *publish-android-artifacts-docker-container
+    command: |
+      .buildkite/publish-mediapicker-source-device.sh
+  - label: "Publish :mediapicker:source-gif"
+    depends_on:
+      - "publish-mediapicker-domain"
+    plugins:
+      - *publish-android-artifacts-docker-container
+    command: |
+      .buildkite/publish-mediapicker-source-gif.sh
+  - label: "Publish :mediapicker"
+    depends_on:
+      - "publish-mediapicker-domain"
+    plugins:
+      - *publish-android-artifacts-docker-container
+    command: |
+      .buildkite/publish-mediapicker.sh
