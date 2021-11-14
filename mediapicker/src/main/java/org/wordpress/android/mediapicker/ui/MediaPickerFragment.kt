@@ -104,7 +104,7 @@ internal class MediaPickerFragment : Fragment() {
         RequestMultiplePermissions()
     ) { permissions ->
         lifecycleScope.launch {
-            permissionUtils.persistPermissionRequestResults(requireActivity(), permissions, false)
+            permissionUtils.persistPermissionRequestResults(permissions)
             checkStoragePermission()
         }
     }
@@ -114,7 +114,7 @@ internal class MediaPickerFragment : Fragment() {
     ) { permissions ->
         lifecycleScope.launch {
             val allGranted = permissions.values.all { it }
-            permissionUtils.persistPermissionRequestResults(requireActivity(), permissions, true)
+            permissionUtils.persistPermissionRequestResults(permissions)
             if (allGranted) {
                 viewModel.onCameraPermissionsGranted()
             } else {
