@@ -34,9 +34,6 @@
     <item name="media_grid_item_ratio" type="string" format="string">4:3</item>
     <string name="photo_picker_image_thumbnail_content_description">Image Thumbnail</string>
     <string name="photo_picker_thumbnail_desc">Play video</string>
-    <string name="permissions_denied_title">Permissions</string>
-    <string name="permissions_denied_message">It looks like you turned off permissions required for this feature.&lt;br/&gt;&lt;br/&gt;To change this, edit your permissions and make sure &lt;strong&gt;%s&lt;/strong&gt; is enabled.</string>
-    <string name="button_not_now">Not now</string>
     <string name="media_browse_for_items">Browse for items</string>
     <string name="search">Search</string>
     <string name="reader_toast_err_url_intent">Unable to open %s</string>
