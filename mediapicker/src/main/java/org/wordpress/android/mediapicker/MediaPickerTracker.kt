@@ -9,6 +9,7 @@ import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.GIF_LIBRARY
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.SYSTEM_PICKER
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.WP_MEDIA_LIBRARY
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.SearchMode.VISIBLE_TOGGLED
 import org.wordpress.android.mediapicker.api.Tracker
 import org.wordpress.android.mediapicker.api.Tracker.Event.MEDIA_PICKER_CAPTURE_PHOTO
 import org.wordpress.android.mediapicker.api.Tracker.Event.MEDIA_PICKER_ITEM_SELECTED
@@ -150,7 +151,7 @@ internal class MediaPickerTracker @Inject constructor(
             WP_MEDIA_LIBRARY -> "wordpress_media_library"
         }
         this["can_multiselect"] = mediaPickerSetup.isMultiSelectEnabled
-        this["default_search_view"] = mediaPickerSetup.isSearchToggledByDefault
+        this["default_search_view"] = mediaPickerSetup.searchMode == VISIBLE_TOGGLED
         return this
     }
 

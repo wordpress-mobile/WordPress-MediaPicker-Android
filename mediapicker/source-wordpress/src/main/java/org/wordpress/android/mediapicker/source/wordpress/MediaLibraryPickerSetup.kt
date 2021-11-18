@@ -2,6 +2,7 @@ package org.wordpress.android.mediapicker.source.wordpress
 
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.WP_MEDIA_LIBRARY
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.SearchMode.HIDDEN
 import org.wordpress.android.mediapicker.model.MediaTypes
 
 class MediaLibraryPickerSetup {
@@ -14,7 +15,7 @@ class MediaLibraryPickerSetup {
                 isStoragePermissionRequired = false,
                 allowedTypes = mediaTypes.allowedTypes,
                 areResultsQueued = false,
-                isSearchToggledByDefault = false,
+                searchMode = HIDDEN,
                 title = R.string.media_library_title
             )
         }

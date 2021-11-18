@@ -10,11 +10,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.Build.VERSION_CODES
 import android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-import androidx.appcompat.app.AlertDialog.Builder
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.text.HtmlCompat
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.wordpress.android.mediapicker.Key
 import org.wordpress.android.mediapicker.Permissions
@@ -33,47 +30,20 @@ internal class MediaPickerPermissionUtils @Inject constructor(
     private val tracker: Tracker,
     @ApplicationContext private val context: Context
 ) {
-    // permission request codes - note these are reported to analytics so they shouldn't be changed
-    companion object {
-        const val SHARE_MEDIA_PERMISSION_REQUEST_CODE = 10
-        const val MEDIA_BROWSER_PERMISSION_REQUEST_CODE = 20
-        const val MEDIA_PREVIEW_PERMISSION_REQUEST_CODE = 30
-        const val PHOTO_PICKER_STORAGE_PERMISSION_REQUEST_CODE = 40
-        const val PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE = 41
-        const val EDITOR_LOCATION_PERMISSION_REQUEST_CODE = 50
-        const val EDITOR_MEDIA_PERMISSION_REQUEST_CODE = 60
-        const val EDITOR_DRAG_DROP_PERMISSION_REQUEST_CODE = 70
-        const val READER_FILE_DOWNLOAD_PERMISSION_REQUEST_CODE = 80
-    }
-
     /**
      * called by the onRequestPermissionsResult() of various activities and fragments - tracks
-     * the permission results, remembers that the permissions have been asked for, and optionally
-     * shows a dialog enabling the user to edit permissions if any are always denied
+     * the permission results, remembers that the permissions have been asked for
      *
-     * @param activity host activity
-     * @param grantResults list of results for above permissions
-     * @param checkForAlwaysDenied show dialog if any permissions always denied
-     * @return true if all permissions granted
+     * @param permissionRequestResults list of results for above permissions
      */
-    suspend fun setPermissionListAsked(
-        activity: Activity,
-        grantResults: Map<String, Boolean>,
-        checkForAlwaysDenied: Boolean
+    suspend fun persistPermissionRequestResults(
+        permissionRequestResults: Map<String, Boolean>
     ) {
-        grantResults.forEach { permission ->
+        permissionRequestResults.forEach { permission ->
             getPermissionAskedKey(permission.key)?.let { key ->
                 val isFirstTime = perms.wasPermissionAsked(key)
                 trackPermissionResult(permission.key, permission.value, isFirstTime)
                 perms.markAsAsked(key)
-            }
-        }
-
-        grantResults.filter { !it.value }.forEach { deniedPermission ->
-            if (checkForAlwaysDenied &&
-                !ActivityCompat.shouldShowRequestPermissionRationale(activity, deniedPermission.key)
-            ) {
-                showPermissionAlwaysDeniedDialog(activity, deniedPermission.key)
             }
         }
     }
@@ -191,25 +161,6 @@ internal class MediaPickerPermissionUtils @Inject constructor(
                 context.getString(string.unknown)
             }
         }
-    }
-
-    /*
-     * called when the app detects that the user has permanently denied a permission, shows a dialog
-     * alerting them to this fact and enabling them to visit the app settings to edit permissions
-     */
-    private fun showPermissionAlwaysDeniedDialog(context: Context, permission: String) {
-        val message = String.format(
-            context.getString(string.permissions_denied_message),
-            getPermissionName(permission)
-        )
-        val builder: Builder = MaterialAlertDialogBuilder(context)
-            .setTitle(context.getString(string.permissions_denied_title))
-            .setMessage(HtmlCompat.fromHtml(message, HtmlCompat.FROM_HTML_MODE_LEGACY))
-            .setPositiveButton(
-                string.button_edit_permissions
-            ) { _, _ -> showAppSettings(context) }
-            .setNegativeButton(string.button_not_now, null)
-        builder.show()
     }
 
     /*

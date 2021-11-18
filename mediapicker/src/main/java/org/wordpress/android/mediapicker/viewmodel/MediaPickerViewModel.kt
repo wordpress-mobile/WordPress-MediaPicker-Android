@@ -24,6 +24,9 @@ import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.GIF_LIBRARY
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.SYSTEM_PICKER
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.SearchMode.HIDDEN
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.SearchMode.VISIBLE_TOGGLED
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.SearchMode.VISIBLE_UNTOGGLED
 import org.wordpress.android.mediapicker.api.MimeTypeProvider
 import org.wordpress.android.mediapicker.loader.MediaLoader
 import org.wordpress.android.mediapicker.loader.MediaLoader.DomainModel
@@ -36,7 +39,6 @@ import org.wordpress.android.mediapicker.model.MediaItem.Identifier.RemoteMedia
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.ChooseMediaPickerAction
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.Exit
-import org.wordpress.android.mediapicker.model.MediaNavigationEvent.PreviewMedia
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.PreviewUrl
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.RequestCameraPermission
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.RequestStoragePermission
@@ -51,8 +53,8 @@ import org.wordpress.android.mediapicker.model.MediaPickerContext
 import org.wordpress.android.mediapicker.model.MediaPickerContext.MEDIA_FILE
 import org.wordpress.android.mediapicker.model.MediaPickerContext.PHOTO_OR_VIDEO
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem
-import org.wordpress.android.mediapicker.model.MediaPickerUiItem.ClickAction
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem.FileItem
+import org.wordpress.android.mediapicker.model.MediaPickerUiItem.LongClickAction
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem.NextPageLoader
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem.PhotoItem
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem.ToggleAction
@@ -65,6 +67,7 @@ import org.wordpress.android.mediapicker.model.MediaType.VIDEO
 import org.wordpress.android.mediapicker.model.MediaUri
 import org.wordpress.android.mediapicker.model.UiString
 import org.wordpress.android.mediapicker.model.UiString.UiStringRes
+import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent
 import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.CapturePhoto
 import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.ChooseFromAndroidDevice
 import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.SwitchSource
@@ -123,12 +126,11 @@ internal class MediaPickerViewModel @Inject constructor(
             fabUiModel = FabUiModel(
                 show = mediaPickerSetup.availableDataSources.contains(DataSource.CAMERA) &&
                     selectedIds.isNullOrEmpty(),
-                action = this::clickOnCamera
+                action = this::onCameraClicked
             ),
             actionModeUiModel = buildActionModeUiModel(selectedIds),
             searchUiModel = buildSearchUiModel(
-                isVisible = softAskRequest?.show != true &&
-                    mediaPickerSetup.primaryDataSource != DataSource.CAMERA,
+                isVisible = softAskRequest?.show != true && mediaPickerSetup.searchMode != HIDDEN,
                 filter = domainModel?.filter,
                 searchExpanded = searchExpanded
             ),
@@ -149,7 +151,10 @@ internal class MediaPickerViewModel @Inject constructor(
 
     private fun buildSearchUiModel(isVisible: Boolean, filter: String?, searchExpanded: Boolean?): SearchUiModel {
         return when {
-            searchExpanded == true -> Expanded(filter ?: "", !mediaPickerSetup.isSearchToggledByDefault)
+            searchExpanded == true -> Expanded(
+                filter ?: "",
+                mediaPickerSetup.searchMode != VISIBLE_TOGGLED
+            )
             isVisible -> Collapsed
             else -> SearchUiModel.Hidden
         }
@@ -171,7 +176,7 @@ internal class MediaPickerViewModel @Inject constructor(
         return BrowseMenuUiModel(actions.toSet())
     }
 
-    var lastTappedAction: org.wordpress.android.mediapicker.ui.MediaPickerActionEvent? = null
+    var lastTappedAction: MediaPickerActionEvent? = null
     private lateinit var mediaPickerSetup: MediaPickerSetup
 
     private fun buildUiModel(
@@ -186,10 +191,20 @@ internal class MediaPickerViewModel @Inject constructor(
         } else if (data != null && data.isNotEmpty()) {
             val uiItems = data.map {
                 val showOrderCounter = mediaPickerSetup.isMultiSelectEnabled
-                val toggleAction = ToggleAction(it.identifier, showOrderCounter, this::onActionToggled)
-                val clickAction = ClickAction(it.identifier, it.type == VIDEO, this::onActionClicked)
-                val (selectedOrder, isSelected) = if (selectedIds != null && selectedIds.contains(it.identifier)) {
-                    val selectedOrder = if (showOrderCounter) selectedIds.indexOf(it.identifier) + 1 else null
+                val toggleAction = ToggleAction(it.identifier, showOrderCounter, ::onItemToggled)
+                val longClickAction = LongClickAction(
+                    it.identifier,
+                    it.type == VIDEO,
+                    ::onItemLongClicked
+                )
+                val (selectedOrder, isSelected) = if (selectedIds != null &&
+                    selectedIds.contains(it.identifier)
+                ) {
+                    val selectedOrder = if (showOrderCounter) {
+                        selectedIds.indexOf(it.identifier) + 1
+                    } else {
+                        null
+                    }
                     val isSelected = true
                     selectedOrder to isSelected
                 } else {
@@ -208,7 +223,7 @@ internal class MediaPickerViewModel @Inject constructor(
                         selectedOrder = selectedOrder,
                         showOrderCounter = showOrderCounter,
                         toggleAction = toggleAction,
-                        clickAction = clickAction
+                        longClickAction = longClickAction
                     )
                     VIDEO -> VideoItem(
                         url = it.url,
@@ -217,7 +232,7 @@ internal class MediaPickerViewModel @Inject constructor(
                         selectedOrder = selectedOrder,
                         showOrderCounter = showOrderCounter,
                         toggleAction = toggleAction,
-                        clickAction = clickAction
+                        longClickAction = longClickAction
                     )
                     AUDIO, DOCUMENT -> FileItem(
                         fileName = it.name ?: "",
@@ -227,7 +242,7 @@ internal class MediaPickerViewModel @Inject constructor(
                         selectedOrder = selectedOrder,
                         showOrderCounter = showOrderCounter,
                         toggleAction = toggleAction,
-                        clickAction = clickAction
+                        longClickAction = longClickAction
                     )
                 }
             }
@@ -314,7 +329,7 @@ internal class MediaPickerViewModel @Inject constructor(
         return ActionModeUiModel.Visible(title)
     }
 
-    fun refreshData(forceReload: Boolean) {
+    private fun refreshData(forceReload: Boolean) {
         if (!permissionsHandler.hasReadStoragePermission()) {
             return
         }
@@ -339,7 +354,7 @@ internal class MediaPickerViewModel @Inject constructor(
     fun start(
         selectedIds: List<Identifier>,
         mediaPickerSetup: MediaPickerSetup,
-        lastTappedAction: org.wordpress.android.mediapicker.ui.MediaPickerActionEvent?
+        lastTappedAction: MediaPickerActionEvent?
     ) {
         _selectedIds.value = selectedIds
 
@@ -374,12 +389,12 @@ internal class MediaPickerViewModel @Inject constructor(
                 }
             }
         }
-        if (mediaPickerSetup.isSearchToggledByDefault) {
+        if (mediaPickerSetup.searchMode == VISIBLE_TOGGLED) {
             _searchExpanded.postValue(true)
         }
     }
 
-    private fun onActionToggled(identifier: Identifier, canMultiselect: Boolean) {
+    private fun onItemToggled(identifier: Identifier, canMultiselect: Boolean) {
         val updatedUris = _selectedIds.value?.toMutableList() ?: mutableListOf()
         if (updatedUris.contains(identifier)) {
             mediaPickerTracker.trackItemUnselected(mediaPickerSetup)
@@ -394,7 +409,7 @@ internal class MediaPickerViewModel @Inject constructor(
         _selectedIds.postValue(updatedUris)
     }
 
-    private fun onActionClicked(identifier: Identifier, isVideo: Boolean) {
+    private fun onItemLongClicked(identifier: Identifier, isVideo: Boolean) {
         viewModelScope.launch {
             mediaPickerTracker.trackPreview(isVideo, identifier, mediaPickerSetup)
         }
@@ -403,9 +418,7 @@ internal class MediaPickerViewModel @Inject constructor(
                 _onNavigate.postValue(Event(PreviewUrl(identifier.uri.toString())))
             }
             is RemoteMedia -> {
-                viewModelScope.launch {
-                    _onNavigate.postValue(Event(PreviewMedia(identifier.id)))
-                }
+                _onNavigate.postValue(Event(PreviewUrl(identifier.url)))
             }
             else -> {
                 // not relevant
@@ -437,20 +450,15 @@ internal class MediaPickerViewModel @Inject constructor(
             return
         }
         _onNavigate.postValue(
-            Event(
-                populateIconClickEvent(
-                    CapturePhoto,
-                    mediaPickerSetup.isMultiSelectEnabled
-                )
-            )
+            Event(populateActionEvent(CapturePhoto, mediaPickerSetup.isMultiSelectEnabled))
         )
     }
 
     private fun startSystemPicker() {
-        clickIcon(ChooseFromAndroidDevice(mediaPickerSetup.allowedTypes))
+        triggerAction(ChooseFromAndroidDevice(mediaPickerSetup.allowedTypes))
     }
 
-    private fun clickIcon(action: org.wordpress.android.mediapicker.ui.MediaPickerActionEvent) {
+    private fun triggerAction(action: MediaPickerActionEvent) {
         mediaPickerTracker.trackIconClick(action, mediaPickerSetup)
         if (action is CapturePhoto) {
             if (!permissionsHandler.hasPermissionsToTakePhotos(mediaPickerSetup.isStoragePermissionRequired)) {
@@ -460,22 +468,20 @@ internal class MediaPickerViewModel @Inject constructor(
             }
         }
         _onNavigate.postValue(
-            Event(
-                populateIconClickEvent(
-                    action,
-                    mediaPickerSetup.isMultiSelectEnabled
-                )
-            )
+            Event(populateActionEvent(action, mediaPickerSetup.isMultiSelectEnabled))
         )
     }
 
-    private fun clickOnCamera() {
+    private fun onCameraClicked() {
         if (mediaPickerSetup.availableDataSources.contains(DataSource.CAMERA)) {
-            clickIcon(CapturePhoto)
+            triggerAction(CapturePhoto)
         }
     }
 
-    private fun populateIconClickEvent(action: org.wordpress.android.mediapicker.ui.MediaPickerActionEvent, canMultiselect: Boolean): ChooseMediaPickerAction {
+    private fun populateActionEvent(
+        action: MediaPickerActionEvent,
+        canMultiselect: Boolean
+    ): ChooseMediaPickerAction {
         val actionEvent: MediaPickerAction = when (action) {
             is ChooseFromAndroidDevice -> {
                 getSystemPickerAction(action.allowedTypes, canMultiselect)
@@ -492,7 +498,11 @@ internal class MediaPickerViewModel @Inject constructor(
                     mediaPickerSetup.copy(
                         primaryDataSource = action.dataSource,
                         availableDataSources = availableSources,
-                        isSearchToggledByDefault = false
+                        searchMode = when (action.dataSource) {
+                            GIF_LIBRARY -> VISIBLE_TOGGLED
+                            DEVICE -> VISIBLE_UNTOGGLED
+                            else -> HIDDEN
+                        }
                     )
                 )
             }
@@ -582,7 +592,7 @@ internal class MediaPickerViewModel @Inject constructor(
             GIF_LIBRARY -> SwitchSource(GIF_LIBRARY)
             else -> throw InvalidParameterException()
         }
-        clickIcon(icon)
+        triggerAction(icon)
     }
 
     private fun buildSoftAskView(softAskRequest: SoftAskRequest?): SoftAskViewUiModel {
@@ -600,7 +610,7 @@ internal class MediaPickerViewModel @Inject constructor(
                     "<strong>${
                     when (softAskRequest.type) {
                         STORAGE -> storage
-                        CAMERA -> camera + if (alsoStorageAccess) "& $storage" else ""
+                        CAMERA -> camera + if (alsoStorageAccess) " & $storage" else ""
                     }
                     }</strong>"
                     )
@@ -652,7 +662,7 @@ internal class MediaPickerViewModel @Inject constructor(
     }
 
     fun onSearchCollapsed() {
-        if (!mediaPickerSetup.isSearchToggledByDefault) {
+        if (mediaPickerSetup.searchMode != VISIBLE_TOGGLED) {
             _searchExpanded.value = false
             searchJob?.cancel()
             searchJob = viewModelScope.launch {
@@ -780,17 +790,4 @@ internal class MediaPickerViewModel @Inject constructor(
         val type: PermissionsRequested = STORAGE,
         val isAlwaysDenied: Boolean = false,
     ) : Parcelable
-
-    @Parcelize
-    data class SnackbarMessageHolder(
-        val message: UiString,
-        val buttonTitle: UiString? = null,
-        val buttonAction: () -> Unit = {},
-        val onDismissAction: () -> Unit = {}
-    ) : Parcelable
-
-    sealed class ProgressDialogUiModel : Parcelable {
-        @Parcelize object Hidden : ProgressDialogUiModel()
-        @Parcelize data class Visible(val title: Int, val cancelAction: () -> Unit) : ProgressDialogUiModel()
-    }
 }

@@ -1,3 +1,11 @@
+plugins {
+    id 'com.android.application' apply false
+    id 'com.android.library' apply false
+    id 'org.jetbrains.kotlin.android' apply false
+    id 'dagger.hilt.android.plugin' apply false
+    id "com.automattic.android.publish-to-s3" apply false
+}
+
 allprojects {
     repositories {
         google()
@@ -31,6 +39,7 @@ ext {
     wordpressUtilsVersion = "2.0.0"
     tenorVersion = "0.5.1"
     fluxCVersion = 'develop-eb59f32bf58a596a75cbdc524d3f3284cb7ba40a'
+    mediaPickerDomainDependency = project.hasProperty("mediaPickerDomainVersion") ? "org.wordpress.mediapicker:domain:${project.getProperty("mediaPickerDomainVersion")}" : project(":mediapicker:domain")
 }
 
 subprojects {

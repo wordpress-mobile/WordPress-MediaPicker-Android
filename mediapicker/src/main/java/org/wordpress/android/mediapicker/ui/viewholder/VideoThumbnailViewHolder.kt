@@ -47,9 +47,9 @@ internal class VideoThumbnailViewHolder(
         mediaThumbnailViewUtils.setupListeners(
             imgThumbnail, item.isSelected,
             item.toggleAction,
-            item.clickAction,
+            item.longClickAction,
             animateSelection
         )
-        mediaThumbnailViewUtils.setupVideoOverlay(videoOverlay, item.clickAction)
+        mediaThumbnailViewUtils.setupVideoOverlay(videoOverlay, item.longClickAction)
     }
 }

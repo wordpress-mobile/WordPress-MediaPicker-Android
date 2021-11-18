@@ -12,11 +12,15 @@ data class MediaPickerSetup(
     val isStoragePermissionRequired: Boolean,
     val allowedTypes: Set<MediaType>,
     val areResultsQueued: Boolean,
-    val isSearchToggledByDefault: Boolean,
+    val searchMode: SearchMode,
     @StringRes val title: Int
 ) {
     enum class DataSource {
         DEVICE, GIF_LIBRARY, CAMERA, SYSTEM_PICKER, WP_MEDIA_LIBRARY
+    }
+
+    enum class SearchMode {
+        HIDDEN, VISIBLE_TOGGLED, VISIBLE_UNTOGGLED
     }
 
     fun toBundle(bundle: Bundle) {
@@ -26,7 +30,7 @@ data class MediaPickerSetup(
         bundle.putBoolean(KEY_CAN_MULTISELECT, isMultiSelectEnabled)
         bundle.putBoolean(KEY_REQUIRES_STORAGE_PERMISSIONS, isStoragePermissionRequired)
         bundle.putBoolean(KEY_QUEUE_RESULTS, areResultsQueued)
-        bundle.putBoolean(KEY_DEFAULT_SEARCH_VIEW, isSearchToggledByDefault)
+        bundle.putInt(KEY_SEARCH_MODE, searchMode.ordinal)
         bundle.putInt(KEY_TITLE, title)
     }
 
@@ -37,7 +41,7 @@ data class MediaPickerSetup(
         intent.putExtra(KEY_CAN_MULTISELECT, isMultiSelectEnabled)
         intent.putExtra(KEY_REQUIRES_STORAGE_PERMISSIONS, isStoragePermissionRequired)
         intent.putExtra(KEY_QUEUE_RESULTS, areResultsQueued)
-        intent.putExtra(KEY_DEFAULT_SEARCH_VIEW, isSearchToggledByDefault)
+        intent.putExtra(KEY_SEARCH_MODE, searchMode.ordinal)
         intent.putExtra(KEY_TITLE, title)
     }
 
@@ -48,7 +52,7 @@ data class MediaPickerSetup(
         private const val KEY_REQUIRES_STORAGE_PERMISSIONS = "key_requires_storage_permissions"
         private const val KEY_ALLOWED_TYPES = "key_allowed_types"
         private const val KEY_QUEUE_RESULTS = "key_queue_results"
-        private const val KEY_DEFAULT_SEARCH_VIEW = "key_default_search_view"
+        private const val KEY_SEARCH_MODE = "key_search_mode"
         private const val KEY_TITLE = "key_title"
 
         fun fromBundle(bundle: Bundle): MediaPickerSetup {
@@ -62,7 +66,7 @@ data class MediaPickerSetup(
             val multipleSelectionAllowed = bundle.getBoolean(KEY_CAN_MULTISELECT)
             val requiresStoragePermissions = bundle.getBoolean(KEY_REQUIRES_STORAGE_PERMISSIONS)
             val queueResults = bundle.getBoolean(KEY_QUEUE_RESULTS)
-            val defaultSearchView = bundle.getBoolean(KEY_DEFAULT_SEARCH_VIEW)
+            val searchMode = SearchMode.values()[bundle.getInt(KEY_SEARCH_MODE)]
             val title = bundle.getInt(KEY_TITLE)
             return MediaPickerSetup(
                 dataSource,
@@ -71,7 +75,7 @@ data class MediaPickerSetup(
                 requiresStoragePermissions,
                 allowedTypes,
                 queueResults,
-                defaultSearchView,
+                searchMode,
                 title
             )
         }
@@ -90,7 +94,7 @@ data class MediaPickerSetup(
             val multipleSelectionAllowed = intent.getBooleanExtra(KEY_CAN_MULTISELECT, false)
             val requiresStoragePermissions = intent.getBooleanExtra(KEY_REQUIRES_STORAGE_PERMISSIONS, false)
             val queueResults = intent.getBooleanExtra(KEY_QUEUE_RESULTS, false)
-            val defaultSearchView = intent.getBooleanExtra(KEY_DEFAULT_SEARCH_VIEW, false)
+            val searchMode = SearchMode.values()[intent.getIntExtra(KEY_SEARCH_MODE, 0)]
             val title = intent.getIntExtra(KEY_TITLE, 0)
             return MediaPickerSetup(
                 dataSource,
@@ -99,7 +103,7 @@ data class MediaPickerSetup(
                 requiresStoragePermissions,
                 allowedTypes,
                 queueResults,
-                defaultSearchView,
+                searchMode,
                 title
             )
         }

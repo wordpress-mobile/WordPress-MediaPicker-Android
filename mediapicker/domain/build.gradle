@@ -3,9 +3,9 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.plugin.parcelize'
     id 'org.jetbrains.kotlin.kapt'
+    id 'maven-publish'
+    id "com.automattic.android.publish-to-s3"
 }
-
-apply from: "$rootDir/publish.gradle"
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -21,4 +21,19 @@ dependencies {
     implementation "androidx.core:core-ktx:$coreVersion"
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+}
+
+project.afterEvaluate {
+    publishing {
+        publications {
+            MediaPickerDomainPublication(MavenPublication) {
+                from components.release
+
+                groupId "org.wordpress.mediapicker"
+                artifactId "domain"
+                artifact tasks.named("androidSourcesJar") // This task is added by 'publish-to-s3' plugin
+                // version is set by 'publish-to-s3' plugin
+            }
+        }
+   }
 }

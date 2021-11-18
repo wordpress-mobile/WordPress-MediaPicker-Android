@@ -39,7 +39,6 @@ import org.wordpress.android.mediapicker.databinding.MediaPickerLibFragmentBindi
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.ChooseMediaPickerAction
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.Exit
-import org.wordpress.android.mediapicker.model.MediaNavigationEvent.PreviewMedia
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.PreviewUrl
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.RequestCameraPermission
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.RequestStoragePermission
@@ -104,7 +103,7 @@ internal class MediaPickerFragment : Fragment() {
         RequestMultiplePermissions()
     ) { permissions ->
         lifecycleScope.launch {
-            permissionUtils.setPermissionListAsked(requireActivity(), permissions, false)
+            permissionUtils.persistPermissionRequestResults(permissions)
             checkStoragePermission()
         }
     }
@@ -114,7 +113,7 @@ internal class MediaPickerFragment : Fragment() {
     ) { permissions ->
         lifecycleScope.launch {
             val allGranted = permissions.values.all { it }
-            permissionUtils.setPermissionListAsked(requireActivity(), permissions, true)
+            permissionUtils.persistPermissionRequestResults(permissions)
             if (allGranted) {
                 viewModel.onCameraPermissionsGranted()
             } else {
@@ -266,8 +265,6 @@ internal class MediaPickerFragment : Fragment() {
                         RequestCameraPermission -> requestCameraPermissions()
                         RequestStoragePermission -> requestStoragePermission()
                         ShowAppSettings -> permissionUtils.showAppSettings(requireActivity())
-                        is PreviewMedia -> {
-                        }
                     }
                 }
             )
