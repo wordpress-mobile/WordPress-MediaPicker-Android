@@ -51,6 +51,15 @@ import org.wordpress.android.mediapicker.model.MediaPickerAction.OpenSystemPicke
 import org.wordpress.android.mediapicker.model.MediaPickerAction.SwitchMediaPicker
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem
 import org.wordpress.android.mediapicker.model.MediaUri
+import org.wordpress.android.mediapicker.model.UiStateModels.ActionModeUiModel
+import org.wordpress.android.mediapicker.model.UiStateModels.FabUiModel
+import org.wordpress.android.mediapicker.model.UiStateModels.PhotoListUiModel
+import org.wordpress.android.mediapicker.model.UiStateModels.PhotoListUiModel.Data
+import org.wordpress.android.mediapicker.model.UiStateModels.PhotoListUiModel.Empty
+import org.wordpress.android.mediapicker.model.UiStateModels.PhotoListUiModel.Hidden
+import org.wordpress.android.mediapicker.model.UiStateModels.PhotoListUiModel.Loading
+import org.wordpress.android.mediapicker.model.UiStateModels.SearchUiModel
+import org.wordpress.android.mediapicker.model.UiStateModels.SoftAskViewUiModel
 import org.wordpress.android.mediapicker.util.AnimUtils
 import org.wordpress.android.mediapicker.util.AnimUtils.Duration.MEDIUM
 import org.wordpress.android.mediapicker.util.MediaPickerLinkMovementMethod
@@ -58,15 +67,6 @@ import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils
 import org.wordpress.android.mediapicker.util.MediaUtils
 import org.wordpress.android.mediapicker.util.UiHelpers
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel
-import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.ActionModeUiModel
-import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.FabUiModel
-import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PhotoListUiModel
-import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PhotoListUiModel.Data
-import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PhotoListUiModel.Empty
-import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PhotoListUiModel.Hidden
-import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PhotoListUiModel.Loading
-import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.SearchUiModel
-import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.SoftAskViewUiModel
 import org.wordpress.android.mediapicker.viewmodel.observeEvent
 import javax.inject.Inject
 
@@ -88,8 +88,6 @@ internal class MediaPickerFragment : Fragment() {
     private val viewModel: MediaPickerViewModel by viewModels()
     private var binding: MediaPickerLibFragmentBinding? = null
     private lateinit var mediaPickerSetup: MediaPickerSetup
-
-    private val switchSource = registerForActivityResult(StartActivityForResult()) {}
 
     private val systemPicker = registerForActivityResult(StartActivityForResult()) {
         handleSystemPickerResult(it)
@@ -283,12 +281,9 @@ internal class MediaPickerFragment : Fragment() {
                 systemPicker.launch(systemPickerIntent)
             }
             is SwitchMediaPicker -> {
-                switchSource.launch(
-                    MediaPickerActivity.buildIntent(
-                        requireContext(),
-                        action.mediaPickerSetup
-                    )
-                )
+                mediaPickerSetup = action.mediaPickerSetup
+                viewModel.restart(action.mediaPickerSetup)
+                checkPermissions()
             }
             is OpenCameraForPhotos -> {
                 action.imagePath?.let {

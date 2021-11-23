@@ -10,9 +10,11 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.mediapicker.MediaPickerConstants
 import org.wordpress.android.mediapicker.MediaPickerUtils
-import org.wordpress.android.mediapicker.model.MediaTypes.IMAGES
-import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup
-import org.wordpress.android.mediapicker.source.gif.GifMediaPickerSetup
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.CAMERA
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.GIF_LIBRARY
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.SYSTEM_PICKER
+import org.wordpress.android.mediapicker.api.MediaPickerSetupProvider
 import org.wordpress.android.mediapicker.ui.MediaPickerActivity
 import org.wordpress.android.sampleapp.R.id
 import org.wordpress.android.sampleapp.databinding.ActivityMainBinding
@@ -25,6 +27,9 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var mediaPickerUtils: MediaPickerUtils
+
+    @Inject
+    lateinit var setupProvider: MediaPickerSetupProvider
 
     private val resultLauncher = registerForActivityResult(StartActivityForResult()) {
         handleMediaPickerResult(it)
@@ -48,10 +53,7 @@ class MainActivity : AppCompatActivity() {
         binding.devicePickerButton.setOnClickListener {
             val mediaPickerIntent = MediaPickerActivity.buildIntent(
                 context = this,
-                DeviceMediaPickerSetup.buildMediaPicker(
-                    mediaTypes = IMAGES,
-                    canMultiSelect = true
-                )
+                setupProvider.provideSetupForSource(DEVICE)
             )
             resultLauncher.launch(mediaPickerIntent)
         }
@@ -59,10 +61,7 @@ class MainActivity : AppCompatActivity() {
         binding.systemPickerButton.setOnClickListener {
             val mediaPickerIntent = MediaPickerActivity.buildIntent(
                 context = this,
-                DeviceMediaPickerSetup.buildSystemPicker(
-                    mediaTypes = IMAGES,
-                    canMultiSelect = false
-                )
+                setupProvider.provideSetupForSource(SYSTEM_PICKER)
             )
             resultLauncher.launch(mediaPickerIntent)
         }
@@ -70,7 +69,7 @@ class MainActivity : AppCompatActivity() {
         binding.cameraPickerButton.setOnClickListener {
             val mediaPickerIntent = MediaPickerActivity.buildIntent(
                 context = this,
-                DeviceMediaPickerSetup.buildCameraPicker()
+                setupProvider.provideSetupForSource(CAMERA)
             )
             resultLauncher.launch(mediaPickerIntent)
         }
@@ -78,7 +77,7 @@ class MainActivity : AppCompatActivity() {
         binding.gifPickerButton.setOnClickListener {
             val mediaPickerIntent = MediaPickerActivity.buildIntent(
                 context = this,
-                GifMediaPickerSetup.build(canMultiSelect = true)
+                setupProvider.provideSetupForSource(GIF_LIBRARY)
             )
             resultLauncher.launch(mediaPickerIntent)
         }
