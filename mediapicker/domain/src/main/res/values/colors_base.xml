@@ -18,4 +18,8 @@
     <color name="gray_5">#dcdcde</color>
     <color name="gray_10">#c3c4c7</color>
     <color name="gray_70">#3c434a</color>
+
+    <color name="black_translucent_50">#80000000</color>
+    <color name="black_90_alpha_087">#DE121212</color>
+    <color name="white_alpha_087">#DEFFFFFF</color>
 </resources>
