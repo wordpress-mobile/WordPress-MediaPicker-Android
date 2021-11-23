@@ -10,6 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import org.wordpress.android.mediapicker.api.Log
+import org.wordpress.android.mediapicker.api.MediaPickerSetupProvider
 import org.wordpress.android.mediapicker.api.MimeTypeProvider
 import org.wordpress.android.mediapicker.api.Tracker
 import org.wordpress.android.mediapicker.loader.MediaLoaderFactory
@@ -51,4 +52,9 @@ abstract class AppModule {
 
     @Binds
     abstract fun bindTracker(tracker: SampleTracker): Tracker
+
+    @Binds
+    abstract fun bindMediaPickerSetupProvider(
+        provider: SampleMediaPickerSetupProvider
+    ): MediaPickerSetupProvider
 }

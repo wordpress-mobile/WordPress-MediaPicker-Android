@@ -1,7 +1,6 @@
 package org.wordpress.android.mediapicker.viewmodel
 
 import android.Manifest.permission
-import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -13,7 +12,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.parcelize.Parcelize
 import org.wordpress.android.mediapicker.MediaManager
 import org.wordpress.android.mediapicker.MediaPickerTracker
 import org.wordpress.android.mediapicker.MediaPickerUtils
@@ -21,12 +19,10 @@ import org.wordpress.android.mediapicker.R.drawable
 import org.wordpress.android.mediapicker.R.string
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
-import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
-import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.GIF_LIBRARY
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.SYSTEM_PICKER
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.SearchMode.HIDDEN
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.SearchMode.VISIBLE_TOGGLED
-import org.wordpress.android.mediapicker.api.MediaPickerSetup.SearchMode.VISIBLE_UNTOGGLED
+import org.wordpress.android.mediapicker.api.MediaPickerSetupProvider
 import org.wordpress.android.mediapicker.api.MimeTypeProvider
 import org.wordpress.android.mediapicker.loader.MediaLoader
 import org.wordpress.android.mediapicker.loader.MediaLoader.DomainModel
@@ -52,7 +48,6 @@ import org.wordpress.android.mediapicker.model.MediaPickerAction.SwitchMediaPick
 import org.wordpress.android.mediapicker.model.MediaPickerContext
 import org.wordpress.android.mediapicker.model.MediaPickerContext.MEDIA_FILE
 import org.wordpress.android.mediapicker.model.MediaPickerContext.PHOTO_OR_VIDEO
-import org.wordpress.android.mediapicker.model.MediaPickerUiItem
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem.FileItem
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem.LongClickAction
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem.NextPageLoader
@@ -101,7 +96,8 @@ internal class MediaPickerViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val mimeTypeProvider: MimeTypeProvider,
     private val mediaPickerUtils: MediaPickerUtils,
-    private val mediaManager: MediaManager
+    private val mediaManager: MediaManager,
+    private val setupProvider: MediaPickerSetupProvider
 ) : ViewModel() {
     companion object {
         private const val CAPTURED_PHOTO_PATH = "CAPTURED_PHOTO_PATH"
@@ -157,7 +153,11 @@ internal class MediaPickerViewModel @Inject constructor(
     val selectedIdentifiers: List<Identifier>
         get() = _selectedIds.value ?: listOf()
 
-    private fun buildSearchUiModel(isVisible: Boolean, filter: String?, searchExpanded: Boolean?): SearchUiModel {
+    private fun buildSearchUiModel(
+        isVisible: Boolean,
+        filter: String?,
+        searchExpanded: Boolean?
+    ): SearchUiModel {
         return when {
             searchExpanded == true -> Expanded(
                 filter ?: "",
@@ -359,10 +359,15 @@ internal class MediaPickerViewModel @Inject constructor(
         }
     }
 
+    fun restart(mediaPickerSetup: MediaPickerSetup) {
+        start(emptyList(), mediaPickerSetup, null, true)
+    }
+
     fun start(
         selectedIds: List<Identifier>,
         mediaPickerSetup: MediaPickerSetup,
-        lastTappedAction: MediaPickerActionEvent?
+        lastTappedAction: MediaPickerActionEvent?,
+        reload: Boolean = false
     ) {
         _selectedIds.value = selectedIds
 
@@ -370,7 +375,7 @@ internal class MediaPickerViewModel @Inject constructor(
         this.lastTappedAction = lastTappedAction
         this.mediaLoader = mediaSourceFactory.build(mediaPickerSetup)
 
-        if (_domainModel.value == null) {
+        if (_domainModel.value == null || reload) {
             if (mediaPickerSetup.primaryDataSource == DataSource.CAMERA) {
                 startCamera()
             } else if (mediaPickerSetup.primaryDataSource == SYSTEM_PICKER) {
@@ -382,7 +387,7 @@ internal class MediaPickerViewModel @Inject constructor(
             if (mediaPickerSetup.primaryDataSource == DataSource.CAMERA ||
                 mediaPickerSetup.primaryDataSource == SYSTEM_PICKER
             ) {
-                _domainModel.value = DomainModel(isLoading = true)
+                _domainModel.value = DomainModel(domainItems = emptyList(), isLoading = true)
             } else {
                 viewModelScope.launch {
                     mediaLoader.loadMedia(loadActions).collect { domainModel ->
@@ -457,9 +462,7 @@ internal class MediaPickerViewModel @Inject constructor(
             lastTappedAction = CapturePhoto
             return
         }
-        _onNavigate.postValue(
-            Event(populateActionEvent(CapturePhoto, mediaPickerSetup.isMultiSelectEnabled))
-        )
+        triggerAction(CapturePhoto)
     }
 
     private fun startSystemPicker() {
@@ -468,13 +471,6 @@ internal class MediaPickerViewModel @Inject constructor(
 
     private fun triggerAction(action: MediaPickerActionEvent) {
         mediaPickerTracker.trackIconClick(action, mediaPickerSetup)
-        if (action is CapturePhoto) {
-            if (!permissionsHandler.hasPermissionsToTakePhotos(mediaPickerSetup.isStoragePermissionRequired)) {
-                _onNavigate.value = Event(RequestCameraPermission)
-                lastTappedAction = action
-                return
-            }
-        }
         _onNavigate.postValue(
             Event(populateActionEvent(action, mediaPickerSetup.isMultiSelectEnabled))
         )
@@ -482,13 +478,13 @@ internal class MediaPickerViewModel @Inject constructor(
 
     private fun onCameraClicked() {
         if (mediaPickerSetup.availableDataSources.contains(DataSource.CAMERA)) {
-            triggerAction(CapturePhoto)
+            _onNavigate.postValue(Event(populateActionEvent(SwitchSource(DataSource.CAMERA))))
         }
     }
 
     private fun populateActionEvent(
         action: MediaPickerActionEvent,
-        canMultiselect: Boolean
+        canMultiselect: Boolean = true
     ): ChooseMediaPickerAction {
         val actionEvent: MediaPickerAction = when (action) {
             is ChooseFromAndroidDevice -> {
@@ -499,20 +495,7 @@ internal class MediaPickerViewModel @Inject constructor(
                 OpenCameraForPhotos(capturedPhotoPath)
             }
             is SwitchSource -> {
-                val availableSources = mutableSetOf<DataSource>().apply {
-                    if (action.dataSource == DEVICE) add(SYSTEM_PICKER)
-                }
-                SwitchMediaPicker(
-                    mediaPickerSetup.copy(
-                        primaryDataSource = action.dataSource,
-                        availableDataSources = availableSources,
-                        searchMode = when (action.dataSource) {
-                            GIF_LIBRARY -> VISIBLE_TOGGLED
-                            DEVICE -> VISIBLE_UNTOGGLED
-                            else -> HIDDEN
-                        }
-                    )
-                )
+                SwitchMediaPicker(setupProvider.provideSetupForSource(action.dataSource))
             }
         }
 
@@ -568,11 +551,12 @@ internal class MediaPickerViewModel @Inject constructor(
         ) {
             showSoftRequest(permission = CAMERA, isAlwaysDenied = isCameraPermissionAlwaysDenied)
         } else {
-            _domainModel.value = _domainModel.value?.copy(isLoading = true, emptyState = null)
-            if (_softAskRequest.value?.show == true) {
-                startCamera()
-                hideSoftRequest(CAMERA)
-            }
+            _domainModel.value = _domainModel.value?.copy(
+                domainItems = emptyList(),
+                isLoading = true,
+                emptyState = null
+            )
+            hideSoftRequest(CAMERA)
         }
     }
 
@@ -593,14 +577,8 @@ internal class MediaPickerViewModel @Inject constructor(
         _domainModel.value = _domainModel.value?.copy(isLoading = false, emptyState = null)
     }
 
-    fun onMenuItemClicked(action: DataSource) {
-        val icon = when (action) {
-            DEVICE -> SwitchSource(DEVICE)
-            SYSTEM_PICKER -> ChooseFromAndroidDevice(mediaPickerSetup.allowedTypes)
-            GIF_LIBRARY -> SwitchSource(GIF_LIBRARY)
-            else -> throw InvalidParameterException()
-        }
-        triggerAction(icon)
+    fun onMenuItemClicked(source: DataSource) {
+        triggerAction(SwitchSource(source))
     }
 
     private fun buildSoftAskView(softAskRequest: SoftAskRequest?): SoftAskViewUiModel {

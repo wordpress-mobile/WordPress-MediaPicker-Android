@@ -28,11 +28,11 @@ import org.wordpress.android.mediapicker.api.Tracker.Event.MEDIA_PICKER_SELECTIO
 import org.wordpress.android.mediapicker.api.Tracker.Event.MEDIA_PICKER_SHOW_PERMISSIONS_SCREEN
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier.LocalUri
+import org.wordpress.android.mediapicker.model.UiStateModels.PermissionsRequested
 import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent
 import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.CapturePhoto
 import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.ChooseFromAndroidDevice
 import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.SwitchSource
-import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PermissionsRequested
 import org.wordpress.android.util.MediaUtils
 import javax.inject.Inject
 
