@@ -105,6 +105,7 @@ internal class MediaPickerViewModel @Inject constructor(
     private lateinit var mediaLoader: MediaLoader
     private val loadActions = Channel<LoadAction>()
     private var searchJob: Job? = null
+    private var loadJob: Job? = null
     private val _domainModel = savedStateHandle.getLiveData<DomainModel>("domain")
     private val _selectedIds = savedStateHandle.getLiveData<List<Identifier>>("selectedIds")
     private val _softAskRequest = savedStateHandle.getLiveData<SoftAskRequest>("softAsk")
@@ -360,6 +361,7 @@ internal class MediaPickerViewModel @Inject constructor(
     }
 
     fun restart(mediaPickerSetup: MediaPickerSetup) {
+        loadJob?.cancel()
         start(emptyList(), mediaPickerSetup, null, true)
     }
 
@@ -389,7 +391,7 @@ internal class MediaPickerViewModel @Inject constructor(
             ) {
                 _domainModel.value = DomainModel(domainItems = emptyList(), isLoading = true)
             } else {
-                viewModelScope.launch {
+                loadJob = viewModelScope.launch {
                     mediaLoader.loadMedia(loadActions).collect { domainModel ->
                         _domainModel.value = domainModel
                     }
