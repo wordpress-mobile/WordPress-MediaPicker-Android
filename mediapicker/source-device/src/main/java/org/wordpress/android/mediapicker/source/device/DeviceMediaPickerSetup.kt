@@ -5,6 +5,7 @@ import android.os.Build.VERSION_CODES
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.CAMERA
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.GIF_LIBRARY
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.SYSTEM_PICKER
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.SearchMode.HIDDEN
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.SearchMode.VISIBLE_UNTOGGLED
@@ -20,7 +21,7 @@ class DeviceMediaPickerSetup {
         fun buildMediaPicker(mediaTypes: MediaTypes, canMultiSelect: Boolean): MediaPickerSetup {
             return MediaPickerSetup(
                 primaryDataSource = DEVICE,
-                availableDataSources = setOf(SYSTEM_PICKER),
+                availableDataSources = setOf(SYSTEM_PICKER, CAMERA, GIF_LIBRARY),
                 isMultiSelectEnabled = canMultiSelect,
                 isStoragePermissionRequired = true,
                 allowedTypes = mediaTypes.allowedTypes,
