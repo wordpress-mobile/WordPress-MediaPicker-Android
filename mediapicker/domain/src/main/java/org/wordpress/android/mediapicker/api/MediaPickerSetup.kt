@@ -108,4 +108,8 @@ data class MediaPickerSetup(
             )
         }
     }
+
+    interface Factory {
+        fun build(source: DataSource, isMultiSelectAllowed: Boolean = false): MediaPickerSetup
+    }
 }

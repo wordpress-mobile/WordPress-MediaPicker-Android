@@ -10,11 +10,11 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.mediapicker.MediaPickerConstants
 import org.wordpress.android.mediapicker.MediaPickerUtils
+import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.CAMERA
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.GIF_LIBRARY
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.SYSTEM_PICKER
-import org.wordpress.android.mediapicker.api.MediaPickerSetupProvider
 import org.wordpress.android.mediapicker.ui.MediaPickerActivity
 import org.wordpress.android.sampleapp.R.id
 import org.wordpress.android.sampleapp.databinding.ActivityMainBinding
@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var mediaPickerUtils: MediaPickerUtils
 
     @Inject
-    lateinit var setupProvider: MediaPickerSetupProvider
+    lateinit var mediaPickerSetupFactory: MediaPickerSetup.Factory
 
     private val resultLauncher = registerForActivityResult(StartActivityForResult()) {
         handleMediaPickerResult(it)
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         binding.devicePickerButton.setOnClickListener {
             val mediaPickerIntent = MediaPickerActivity.buildIntent(
                 context = this,
-                setupProvider.provideSetupForSource(DEVICE)
+                mediaPickerSetupFactory.build(DEVICE)
             )
             resultLauncher.launch(mediaPickerIntent)
         }
@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
         binding.systemPickerButton.setOnClickListener {
             val mediaPickerIntent = MediaPickerActivity.buildIntent(
                 context = this,
-                setupProvider.provideSetupForSource(SYSTEM_PICKER)
+                mediaPickerSetupFactory.build(SYSTEM_PICKER)
             )
             resultLauncher.launch(mediaPickerIntent)
         }
@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity() {
         binding.cameraPickerButton.setOnClickListener {
             val mediaPickerIntent = MediaPickerActivity.buildIntent(
                 context = this,
-                setupProvider.provideSetupForSource(CAMERA)
+                mediaPickerSetupFactory.build(CAMERA)
             )
             resultLauncher.launch(mediaPickerIntent)
         }
@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity() {
         binding.gifPickerButton.setOnClickListener {
             val mediaPickerIntent = MediaPickerActivity.buildIntent(
                 context = this,
-                setupProvider.provideSetupForSource(GIF_LIBRARY)
+                mediaPickerSetupFactory.build(GIF_LIBRARY)
             )
             resultLauncher.launch(mediaPickerIntent)
         }

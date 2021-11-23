@@ -22,7 +22,6 @@ import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.SYSTEM_PICKER
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.SearchMode.HIDDEN
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.SearchMode.VISIBLE_TOGGLED
-import org.wordpress.android.mediapicker.api.MediaPickerSetupProvider
 import org.wordpress.android.mediapicker.api.MimeTypeProvider
 import org.wordpress.android.mediapicker.loader.MediaLoader
 import org.wordpress.android.mediapicker.loader.MediaLoader.DomainModel
@@ -97,7 +96,7 @@ internal class MediaPickerViewModel @Inject constructor(
     private val mimeTypeProvider: MimeTypeProvider,
     private val mediaPickerUtils: MediaPickerUtils,
     private val mediaManager: MediaManager,
-    private val setupProvider: MediaPickerSetupProvider
+    private val mediaPickerSetupFactory: MediaPickerSetup.Factory
 ) : ViewModel() {
     companion object {
         private const val CAPTURED_PHOTO_PATH = "CAPTURED_PHOTO_PATH"
@@ -486,7 +485,7 @@ internal class MediaPickerViewModel @Inject constructor(
 
     private fun populateActionEvent(
         action: MediaPickerActionEvent,
-        canMultiselect: Boolean = true
+        canMultiselect: Boolean = false
     ): ChooseMediaPickerAction {
         val actionEvent: MediaPickerAction = when (action) {
             is ChooseFromAndroidDevice -> {
@@ -497,7 +496,7 @@ internal class MediaPickerViewModel @Inject constructor(
                 OpenCameraForPhotos(capturedPhotoPath)
             }
             is SwitchSource -> {
-                SwitchMediaPicker(setupProvider.provideSetupForSource(action.dataSource))
+                SwitchMediaPicker(mediaPickerSetupFactory.build(action.dataSource, canMultiselect))
             }
         }
 
