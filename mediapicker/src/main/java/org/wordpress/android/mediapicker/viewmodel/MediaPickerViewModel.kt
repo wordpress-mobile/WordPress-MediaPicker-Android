@@ -65,6 +65,22 @@ import org.wordpress.android.mediapicker.model.MediaType.DOCUMENT
 import org.wordpress.android.mediapicker.model.MediaType.IMAGE
 import org.wordpress.android.mediapicker.model.MediaType.VIDEO
 import org.wordpress.android.mediapicker.model.MediaUri
+import org.wordpress.android.mediapicker.model.UiStateModels.ActionModeUiModel
+import org.wordpress.android.mediapicker.model.UiStateModels.BrowseMenuUiModel
+import org.wordpress.android.mediapicker.model.UiStateModels.FabUiModel
+import org.wordpress.android.mediapicker.model.UiStateModels.MediaPickerUiState
+import org.wordpress.android.mediapicker.model.UiStateModels.PermissionsRequested
+import org.wordpress.android.mediapicker.model.UiStateModels.PermissionsRequested.CAMERA
+import org.wordpress.android.mediapicker.model.UiStateModels.PermissionsRequested.STORAGE
+import org.wordpress.android.mediapicker.model.UiStateModels.PhotoListUiModel
+import org.wordpress.android.mediapicker.model.UiStateModels.PhotoListUiModel.Data
+import org.wordpress.android.mediapicker.model.UiStateModels.PhotoListUiModel.Empty
+import org.wordpress.android.mediapicker.model.UiStateModels.PhotoListUiModel.Loading
+import org.wordpress.android.mediapicker.model.UiStateModels.SearchUiModel
+import org.wordpress.android.mediapicker.model.UiStateModels.SearchUiModel.Collapsed
+import org.wordpress.android.mediapicker.model.UiStateModels.SearchUiModel.Expanded
+import org.wordpress.android.mediapicker.model.UiStateModels.SoftAskRequest
+import org.wordpress.android.mediapicker.model.UiStateModels.SoftAskViewUiModel
 import org.wordpress.android.mediapicker.model.UiString
 import org.wordpress.android.mediapicker.model.UiString.UiStringRes
 import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent
@@ -74,14 +90,6 @@ import org.wordpress.android.mediapicker.ui.MediaPickerActionEvent.SwitchSource
 import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils
 import org.wordpress.android.mediapicker.util.distinct
 import org.wordpress.android.mediapicker.util.merge
-import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PermissionsRequested.CAMERA
-import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PermissionsRequested.STORAGE
-import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PhotoListUiModel.Data
-import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PhotoListUiModel.Empty
-import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.PhotoListUiModel.Loading
-import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.SearchUiModel.Collapsed
-import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel.SearchUiModel.Expanded
-import java.security.InvalidParameterException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -723,71 +731,4 @@ internal class MediaPickerViewModel @Inject constructor(
             _onNavigate.postValue(Event(navigationEvent))
         }
     }
-
-    data class MediaPickerUiState(
-        val photoListUiModel: PhotoListUiModel,
-        val softAskViewUiModel: SoftAskViewUiModel,
-        val fabUiModel: FabUiModel,
-        val actionModeUiModel: ActionModeUiModel,
-        val searchUiModel: SearchUiModel,
-        val isRefreshing: Boolean,
-        val browseMenuUiModel: BrowseMenuUiModel
-    )
-
-    sealed class PhotoListUiModel {
-        data class Data(val items: List<MediaPickerUiItem>) : PhotoListUiModel()
-
-        data class Empty(
-            val title: UiString,
-            val htmlSubtitle: UiString? = null,
-            val image: Int? = null,
-            val bottomImage: Int? = null,
-            val bottomImageDescription: UiString? = null,
-            val isSearching: Boolean = false,
-            val retryAction: (() -> Unit)? = null
-        ) : PhotoListUiModel()
-
-        object Hidden : PhotoListUiModel()
-        object Loading : PhotoListUiModel()
-    }
-
-    sealed class SoftAskViewUiModel {
-        data class Visible(
-            val label: String,
-            val allowId: UiStringRes,
-            val isAlwaysDenied: Boolean,
-            val onClick: () -> Unit
-        ) : SoftAskViewUiModel()
-
-        object Hidden : SoftAskViewUiModel()
-    }
-
-    data class FabUiModel(val show: Boolean, val action: () -> Unit)
-
-    sealed class ActionModeUiModel {
-        data class Visible(
-            val actionModeTitle: UiString? = null
-        ) : ActionModeUiModel()
-
-        object Hidden : ActionModeUiModel()
-    }
-
-    sealed class SearchUiModel {
-        object Collapsed : SearchUiModel()
-        data class Expanded(val filter: String, val closeable: Boolean = true) : SearchUiModel()
-        object Hidden : SearchUiModel()
-    }
-
-    data class BrowseMenuUiModel(val shownActions: Set<DataSource>)
-
-    enum class PermissionsRequested {
-        CAMERA, STORAGE
-    }
-
-    @Parcelize
-    data class SoftAskRequest(
-        val show: Boolean,
-        val type: PermissionsRequested = STORAGE,
-        val isAlwaysDenied: Boolean = false,
-    ) : Parcelable
 }
