@@ -17,15 +17,22 @@
         <item name="queryBackground">?attr/colorPrimary</item>
     </style>
 
+    <style name="MediaPicker.ActionMode" parent="@style/Widget.AppCompat.ActionMode">
+        <item name="titleTextStyle">@style/MediaPicker.ActionMode.TitleTextStyle</item>
+    </style>
+
     <style name="MediaPicker.ToolBar" parent="Widget.MaterialComponents.Toolbar.Surface">
         <item name="titleTextColor">?attr/colorOnSecondary</item>
         <item name="android:background">?attr/colorPrimary</item>
         <item name="theme">@style/Theme.MediaPicker</item>
-        <item name="popupTheme">@style/ThemeOverlay.AppCompat.DayNight</item>
     </style>
 
     <style name="Subtitle">
         <item name="android:textColor">@color/color_on_surface_high</item>
+    </style>
+
+    <style name="MediaPicker.ActionMode.TitleTextStyle" parent="@android:style/TextAppearance.Material.Widget.ActionBar.Title">
+        <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
     <style name="Button.Colored" parent="Widget.MaterialComponents.Button.UnelevatedButton">
