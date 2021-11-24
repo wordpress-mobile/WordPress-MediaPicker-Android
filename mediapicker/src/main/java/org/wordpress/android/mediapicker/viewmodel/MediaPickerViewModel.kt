@@ -29,6 +29,7 @@ import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction
 import org.wordpress.android.mediapicker.loader.MediaLoader.LoadAction.NextPage
 import org.wordpress.android.mediapicker.loader.MediaLoaderFactory
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
+import org.wordpress.android.mediapicker.model.MediaItem.Identifier.GifMedia
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier.LocalUri
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier.RemoteMedia
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent
@@ -433,6 +434,9 @@ internal class MediaPickerViewModel @Inject constructor(
             }
             is RemoteMedia -> {
                 _onNavigate.postValue(Event(PreviewUrl(identifier.url)))
+            }
+            is GifMedia -> {
+                _onNavigate.postValue(Event(PreviewUrl(identifier.uri.uri)))
             }
             else -> {
                 // not relevant
