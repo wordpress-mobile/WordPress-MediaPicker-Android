@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="MediaPicker.ActionBar" parent="Theme.MediaPicker">
-        <item name="colorControlNormal">?attr/colorOnSecondary</item>
-        <item name="android:colorControlNormal">?attr/colorOnSecondary</item>
-        <item name="android:editTextColor">?attr/colorOnSecondary</item>
-        <item name="android:textColorHint">?attr/colorOnSecondary</item>
+        <item name="colorControlNormal">@android:color/white</item>
+        <item name="android:colorControlNormal">@android:color/white</item>
+        <item name="android:editTextColor">@android:color/white</item>
+        <item name="android:textColorHint">@android:color/white</item>
     </style>
 
     <style name="MediaPicker.NoActionBar" parent="Theme.MediaPicker">
@@ -22,9 +22,10 @@
     </style>
 
     <style name="MediaPicker.ToolBar" parent="Widget.MaterialComponents.Toolbar.Surface">
-        <item name="titleTextColor">?attr/colorOnSecondary</item>
+        <item name="titleTextColor">@android:color/white</item>
         <item name="android:background">?attr/colorPrimary</item>
         <item name="theme">@style/Theme.MediaPicker</item>
+        <item name="popupTheme">@style/Theme.AppCompat.DayNight</item>
     </style>
 
     <style name="Subtitle">
@@ -39,6 +40,6 @@
         <item name="android:paddingStart">@dimen/major_100</item>
         <item name="android:paddingEnd">@dimen/major_100</item>
         <item name="backgroundTint">@color/button_colored_bg_selector</item>
-        <item name="android:textColor">?attr/colorOnSecondary</item>
+        <item name="android:textColor">@android:color/white</item>
     </style>
 </resources>
