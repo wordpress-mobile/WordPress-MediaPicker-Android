@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Base application theme. -->
     <style name="Theme.MediaPicker" parent="Theme.MaterialComponents.DayNight">
         <!-- Primary brand color. -->
@@ -9,14 +9,18 @@
         <item name="colorSecondary">@color/color_secondary</item>
         <item name="colorSecondaryVariant">@color/color_secondary_variant</item>
         <item name="colorOnSecondary">@color/color_on_surface_inverted</item>
+
         <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor">@color/color_media_picker_toolbar_background</item>
+        <item name="android:navigationBarColor">@color/color_media_picker_toolbar_foreground</item>
+
         <!-- Customize your theme here. -->
         <item name="toolbarStyle">@style/MediaPicker.ToolBar</item>
         <item name="searchViewStyle">@style/MediaPicker.SearchView</item>
         <item name="windowActionModeOverlay">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="actionModeStyle">@style/MediaPicker.ActionMode</item>
+        <item name="actionMenuTextColor">?attr/colorSecondary</item>
         <item name="actionModeCloseDrawable">@drawable/ic_back_24dp</item>
     </style>
 </resources>

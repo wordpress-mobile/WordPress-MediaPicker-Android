@@ -8,4 +8,7 @@
     <color name="color_on_surface_high">@color/black_90_alpha_087</color>
     <color name="color_on_surface">@android:color/black</color>
     <color name="color_on_surface_inverted">@android:color/white</color>
+
+    <color name="color_media_picker_toolbar_background">@color/color_primary</color>
+    <color name="color_media_picker_toolbar_foreground">@color/color_on_surface</color>
 </resources>

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="MediaPicker.ActionBar" parent="Theme.MediaPicker">
-        <item name="colorControlNormal">@android:color/white</item>
-        <item name="android:colorControlNormal">@android:color/white</item>
-        <item name="android:editTextColor">@android:color/white</item>
-        <item name="android:textColorHint">@android:color/white</item>
+        <item name="colorControlNormal">@color/color_media_picker_toolbar_foreground</item>
+        <item name="android:colorControlNormal">@color/color_media_picker_toolbar_foreground</item>
+        <item name="android:editTextColor">@color/color_media_picker_toolbar_foreground</item>
+        <item name="android:textColorHint">@color/color_media_picker_toolbar_foreground</item>
     </style>
 
     <style name="MediaPicker.NoActionBar" parent="Theme.MediaPicker">
@@ -13,8 +13,8 @@
     </style>
 
     <style name="MediaPicker.SearchView" parent="Widget.AppCompat.Light.SearchView">
-        <item name="submitBackground">?attr/colorPrimary</item>
-        <item name="queryBackground">?attr/colorPrimary</item>
+        <item name="submitBackground">@color/color_media_picker_toolbar_background</item>
+        <item name="queryBackground">@color/color_media_picker_toolbar_background</item>
     </style>
 
     <style name="MediaPicker.ActionMode" parent="@style/Widget.AppCompat.ActionMode">
@@ -22,8 +22,8 @@
     </style>
 
     <style name="MediaPicker.ToolBar" parent="Widget.MaterialComponents.Toolbar.Surface">
-        <item name="titleTextColor">@android:color/white</item>
-        <item name="android:background">?attr/colorPrimary</item>
+        <item name="titleTextColor">@color/color_media_picker_toolbar_foreground</item>
+        <item name="android:background">@color/color_media_picker_toolbar_background</item>
         <item name="theme">@style/Theme.MediaPicker</item>
         <item name="popupTheme">@style/Theme.AppCompat.DayNight</item>
     </style>
@@ -40,6 +40,6 @@
         <item name="android:paddingStart">@dimen/major_100</item>
         <item name="android:paddingEnd">@dimen/major_100</item>
         <item name="backgroundTint">@color/button_colored_bg_selector</item>
-        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textColor">@color/color_media_picker_toolbar_foreground</item>
     </style>
 </resources>
