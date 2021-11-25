@@ -114,6 +114,10 @@ internal class MediaPickerViewModel @Inject constructor(
 
     val onNavigate = _onNavigate as LiveData<Event<MediaNavigationEvent>>
 
+    val title by lazy {
+        mediaPickerSetup.title
+    }
+
     val uiState: LiveData<MediaPickerUiState> = merge(
         _domainModel.distinct(),
         _selectedIds.distinct(),
@@ -314,7 +318,7 @@ internal class MediaPickerViewModel @Inject constructor(
             mediaPickerSetup.isMultiSelectEnabled -> {
                 UiString.UiStringText(
                     String.format(
-                        resourceProvider.getString(string.cab_selected),
+                        resourceProvider.getString(string.add_count),
                         numSelected
                     )
                 )

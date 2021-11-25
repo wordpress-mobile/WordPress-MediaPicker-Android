@@ -6,7 +6,6 @@
     <string name="photo_picker_image_thumbnail_selected">Image selected</string>
     <string name="photo_picker_image_thumbnail_unselected">Image unselected</string>
     <string name="media_empty_list">You don\'t have any media</string>
-    <string name="cab_selected">%d selected</string>
     <string name="photo_picker_use_photo">Use this photo</string>
     <string name="photo_picker_use_video">Use this video</string>
     <string name="photo_picker_use_audio">Use this audio</string>
@@ -22,7 +21,7 @@
     <string name="permission_camera">Camera</string>
     <string name="permission_microphone">Microphone</string>
     <string name="unknown">Unknown</string>
-    <string name="confirm">Confirm</string>
+    <string name="confirm">Add 0</string>
     <string name="error_generic_network">A network error occurred. Please check your connection and try again.</string>
     <string name="retry">Retry</string>
     <string name="loading">Loading…</string>

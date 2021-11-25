@@ -28,6 +28,9 @@ internal class MediaPickerActionModeCallback(private val viewModel: MediaPickerV
         lifecycleRegistry.handleLifecycleEvent(ON_START)
         val inflater = actionMode.menuInflater
         inflater.inflate(R.menu.media_picker_lib_action_mode, menu)
+        val doneItem = menu.findItem(id.mnu_confirm_selection)
+
+        actionMode.setTitle(viewModel.title)
         viewModel.uiState.observe(
             this,
             Observer { uiState ->
@@ -38,10 +41,10 @@ internal class MediaPickerActionModeCallback(private val viewModel: MediaPickerV
                     is ActionModeUiModel.Visible -> {
                         when (uiModel.actionModeTitle) {
                             is UiString.UiStringText -> {
-                                actionMode.title = uiModel.actionModeTitle.text
+                                doneItem.title = uiModel.actionModeTitle.text
                             }
                             is UiString.UiStringRes -> {
-                                actionMode.setTitle(uiModel.actionModeTitle.stringRes)
+                                doneItem.setTitle(uiModel.actionModeTitle.stringRes)
                             }
                         }
                     }

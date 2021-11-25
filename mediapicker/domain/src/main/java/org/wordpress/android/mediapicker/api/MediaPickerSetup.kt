@@ -13,7 +13,7 @@ data class MediaPickerSetup(
     val allowedTypes: Set<MediaType>,
     val areResultsQueued: Boolean,
     val searchMode: SearchMode,
-    @StringRes val title: Int
+    @StringRes val title: Int = 0
 ) {
     enum class DataSource {
         DEVICE, GIF_LIBRARY, CAMERA, SYSTEM_PICKER, WP_MEDIA_LIBRARY
