@@ -1,6 +1,6 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="Theme.MediaPicker" parent="Theme.MaterialComponents.DayNight">
+    <style name="Theme.MediaPicker" parent="Theme.MaterialComponents.DayNight.Bridge">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/color_primary</item>
         <item name="colorPrimaryVariant">@color/color_primary_variant</item>
@@ -8,7 +8,9 @@
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/color_secondary</item>
         <item name="colorSecondaryVariant">@color/color_secondary_variant</item>
-        <item name="colorOnSecondary">@color/color_on_surface_inverted</item>
+        <item name="colorOnSecondary">@color/color_on_surface_inverted</item>+
+
+        <item name="colorAccent">?attr/colorSecondary</item>
 
         <!-- Status bar color. -->
         <item name="android:statusBarColor">@color/color_media_picker_toolbar_background</item>
