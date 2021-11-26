@@ -12,7 +12,6 @@
 
         <!-- Status bar color. -->
         <item name="android:statusBarColor">@color/color_media_picker_toolbar_background</item>
-        <item name="android:navigationBarColor">@color/color_media_picker_toolbar_foreground</item>
 
         <!-- Customize your theme here. -->
         <item name="toolbarStyle">@style/MediaPicker.ToolBar</item>
