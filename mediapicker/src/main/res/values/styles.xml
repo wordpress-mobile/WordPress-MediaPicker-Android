@@ -28,7 +28,7 @@
         <item name="popupTheme">@style/Theme.AppCompat.DayNight</item>
     </style>
 
-    <style name="MediaPicker.Subtitle">
+    <style name="MediaPickerSubtitle">
         <item name="android:textColor">@color/color_on_surface_high</item>
     </style>
 
