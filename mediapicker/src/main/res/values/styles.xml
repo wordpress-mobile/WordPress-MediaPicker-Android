@@ -28,7 +28,7 @@
         <item name="popupTheme">@style/Theme.AppCompat.DayNight</item>
     </style>
 
-    <style name="Subtitle">
+    <style name="MediaPicker.Subtitle">
         <item name="android:textColor">@color/color_on_surface_high</item>
     </style>
 
@@ -36,7 +36,7 @@
         <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
-    <style name="Button.Colored" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+    <style name="MediaPicker.Button.Colored" parent="Widget.MaterialComponents.Button.UnelevatedButton">
         <item name="android:paddingStart">@dimen/major_100</item>
         <item name="android:paddingEnd">@dimen/major_100</item>
         <item name="backgroundTint">@color/button_colored_bg_selector</item>

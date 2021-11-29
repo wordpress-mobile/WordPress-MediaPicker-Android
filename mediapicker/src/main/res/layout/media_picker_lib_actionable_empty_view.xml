@@ -30,7 +30,7 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/title"
-                style="@style/Subtitle"
+                style="@style/MediaPicker.Subtitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -38,7 +38,7 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/subtitle"
-                style="@style/Subtitle"
+                style="@style/MediaPicker.Subtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
@@ -48,7 +48,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/button"
-                style="@style/Button.Colored"
+                style="@style/MediaPicker.Button.Colored"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/major_100"
