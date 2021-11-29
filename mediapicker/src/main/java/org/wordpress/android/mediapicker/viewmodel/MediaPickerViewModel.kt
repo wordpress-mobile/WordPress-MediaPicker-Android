@@ -471,6 +471,7 @@ internal class MediaPickerViewModel @Inject constructor(
             lastTappedAction = CapturePhoto
             return
         }
+        lastTappedAction = null
         triggerAction(CapturePhoto)
     }
 
@@ -566,6 +567,10 @@ internal class MediaPickerViewModel @Inject constructor(
                 emptyState = null
             )
             hideSoftRequest(CAMERA)
+
+            if (lastTappedAction == CapturePhoto) {
+                startCamera()
+            }
         }
     }
 
