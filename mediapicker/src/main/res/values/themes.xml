@@ -23,5 +23,6 @@
         <item name="actionModeStyle">@style/MediaPicker.ActionMode</item>
         <item name="actionMenuTextColor">?attr/colorSecondary</item>
         <item name="actionModeCloseDrawable">@drawable/ic_back_24dp</item>
+        <item name="actionModeBackground">@color/color_media_picker_toolbar_background</item>
     </style>
 </resources>
