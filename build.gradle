@@ -38,7 +38,7 @@ ext {
     navigationFragmentVersion = '2.3.5'
     wordpressUtilsVersion = "2.0.0"
     tenorVersion = "0.5.1"
-    fluxCVersion = 'develop-eb59f32bf58a596a75cbdc524d3f3284cb7ba40a'
+    fluxCVersion = 'develop-9c50991e56a5b95d0f164e846d6f8ad916a9cb94'
     mediaPickerDomainDependency = project.hasProperty("mediaPickerDomainVersion") ? "org.wordpress.mediapicker:domain:${project.getProperty("mediaPickerDomainVersion")}" : project(":mediapicker:domain")
 }
 
