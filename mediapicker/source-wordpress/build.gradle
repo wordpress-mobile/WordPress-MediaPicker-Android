@@ -33,10 +33,6 @@ dependencies {
         exclude group: "com.android.support"
         exclude group: "org.wordpress", module: "utils"
     }
-    implementation("org.wordpress.fluxc.plugins:woocommerce:$fluxCVersion") {
-        exclude group: "com.android.support"
-        exclude group: "org.wordpress", module: "utils"
-    }
 }
 
 project.afterEvaluate {
