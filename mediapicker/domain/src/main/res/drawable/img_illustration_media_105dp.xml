@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<vector
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:height="81dp"
     android:width="105dp"
     android:viewportHeight="81"
-    android:viewportWidth="105">
+    android:viewportWidth="105"
+    tools:ignore="UnusedResources">
 
     <path
         android:fillColor="@color/neutral_20"
