@@ -16,6 +16,14 @@ allprojects {
     }
 }
 
+subprojects {
+    repositories {
+        flatDir {
+            dirs '../../aars'
+        }
+    }
+}
+
 ext {
     minSdkVersion = 21
     compileSdkVersion = 31
@@ -36,7 +44,7 @@ ext {
     materialVersion = '1.4.0'
     photoViewVersion = '2.3.0'
     navigationFragmentVersion = '2.3.5'
-    wordpressUtilsVersion = "2.0.0"
+    retrofitVersion = "2.9.0"
     tenorVersion = "0.5.1"
     fluxCVersion = 'develop-fa819801570505a0e9b4f7f226bb704b88ccc1d2'
     mediaPickerDomainDependency = project.hasProperty("mediaPickerDomainVersion") ? "org.wordpress.mediapicker:domain:${project.getProperty("mediaPickerDomainVersion")}" : project(":mediapicker:domain")
