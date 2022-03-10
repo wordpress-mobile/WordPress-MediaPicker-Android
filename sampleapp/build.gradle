@@ -23,7 +23,7 @@ android {
         versionName "1.0"
 
         // Add your own Tenor API key (https://tenor.com/developer/keyregistration)
-        buildConfigField "String", "TENOR_API_KEY", "\"0402JHA0MUI6\""
+        buildConfigField "String", "TENOR_API_KEY", "\"<ADD API KEY HERE>\""
     }
 
     compileOptions {
