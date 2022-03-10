@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <style name="MediaPicker.ActionBar" parent="Theme.MediaPicker">
         <item name="colorControlNormal">@color/color_media_picker_toolbar_foreground</item>
         <item name="android:colorControlNormal">@color/color_media_picker_toolbar_foreground</item>
@@ -7,7 +7,7 @@
         <item name="android:textColorHint">@color/color_media_picker_toolbar_foreground</item>
     </style>
 
-    <style name="MediaPicker.NoActionBar" parent="Theme.MediaPicker">
+    <style name="MediaPicker.NoActionBar" parent="Theme.MediaPicker" tools:ignore="UnusedResources">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
