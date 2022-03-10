@@ -31,7 +31,7 @@ android {
     lintOptions {
         warningsAsErrors true
         checkReleaseBuilds false
-        disable 'ObsoleteLintCustomCheck'
+        disable 'GradleDependency'
     }
 
     packagingOptions {
