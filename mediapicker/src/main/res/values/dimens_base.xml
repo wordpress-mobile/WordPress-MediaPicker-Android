@@ -11,7 +11,7 @@ then `minor_100` just means the dimension value is 100% of the baseline of 8dp.
 Major: Larger dimensions often used for layout margins and padding. The most often used is 16dp,
 so that's the baseline as defined in `major_100`.
 -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources">
     <dimen name="minor_00">0dp</dimen>
     <dimen name="minor_10">1dp</dimen>
     <dimen name="minor_25">2dp</dimen>
