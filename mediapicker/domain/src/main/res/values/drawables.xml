@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources">
     <drawable name="media_picker_lib_load_error_image">@drawable/img_illustration_cloud_off_152dp</drawable>
     <drawable name="media_picker_lib_empty_search_image">@drawable/img_illustration_empty_results_216dp</drawable>
     <drawable name="media_picker_lib_empty_gallery_image">@drawable/img_illustration_media_105dp</drawable>
