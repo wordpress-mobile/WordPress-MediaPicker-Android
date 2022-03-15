@@ -154,8 +154,8 @@ class MediaPickerUtils @Inject constructor(
         ) { path: String, _: Uri? -> log.d("Media scanner finished scanning $path") }
     }
 
+    @Suppress("Deprecation", "Recycle")
     private fun getLegacyMediaStorePath(uri: Uri): String? {
-        @Suppress("Deprecation")
         val filePathColumn = arrayOf(Media.DATA)
         try {
             context.contentResolver.query(uri, filePathColumn, null, null, null)?.apply {

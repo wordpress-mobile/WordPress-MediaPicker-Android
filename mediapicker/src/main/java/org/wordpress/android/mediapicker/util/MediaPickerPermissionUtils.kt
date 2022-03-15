@@ -19,7 +19,6 @@ import org.wordpress.android.mediapicker.R.string
 import org.wordpress.android.mediapicker.api.Log
 import org.wordpress.android.mediapicker.api.Tracker
 import org.wordpress.android.mediapicker.api.Tracker.Event
-import java.util.HashMap
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -39,7 +38,7 @@ internal class MediaPickerPermissionUtils @Inject constructor(
     suspend fun persistPermissionRequestResults(
         permissionRequestResults: Map<String, Boolean>
     ) {
-        permissionRequestResults.forEach { permission ->
+        permissionRequestResults.asIterable().forEach { permission ->
             getPermissionAskedKey(permission.key)?.let { key ->
                 val isFirstTime = perms.wasPermissionAsked(key)
                 trackPermissionResult(permission.key, permission.value, isFirstTime)

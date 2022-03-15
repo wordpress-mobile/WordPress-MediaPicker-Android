@@ -36,6 +36,7 @@ fun View?.startAnimation(aniResId: Int) {
     startAnimation(animation)
 }
 
+@Suppress("Recycle")
 fun View?.fadeIn(duration: Long) {
     this?.let { view ->
         ObjectAnimator.ofFloat(this, View.ALPHA, 0.0f, 1.0f).apply {
@@ -50,6 +51,7 @@ fun View?.fadeIn(duration: Long) {
     }
 }
 
+@Suppress("Recycle")
 fun View?.fadeOut(duration: Long) {
     this?.let { view ->
         ObjectAnimator.ofFloat(this, View.ALPHA, 1.0f, 0.0f).apply {
