@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="sdcard_title">SD Card Required</string>
-    <string name="sdcard_message">A mounted SD card is required to upload media</string>
-    <string name="photo_picker_image_selected">,Selected</string>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="sdcard_title" tools:ignore="UnusedResources">SD Card Required</string>
+    <string name="sdcard_message" tools:ignore="UnusedResources">A mounted SD card is required to upload media</string>
+    <string name="photo_picker_image_selected" tools:ignore="UnusedResources">,Selected</string>
     <string name="photo_picker_image_thumbnail_selected">Image selected</string>
     <string name="photo_picker_image_thumbnail_unselected">Image unselected</string>
     <string name="media_empty_list">You don\'t have any media</string>
@@ -22,14 +22,14 @@
     <string name="permission_microphone">Microphone</string>
     <string name="unknown">Unknown</string>
     <string name="confirm">Add 0</string>
-    <string name="error_generic_network">A network error occurred. Please check your connection and try again.</string>
+    <string name="error_generic_network" tools:ignore="UnusedResources">A network error occurred. Please check your connection and try again.</string>
     <string name="retry">Retry</string>
     <string name="loading">Loading…</string>
-    <string name="stock_media_picker_search_hint">Search free photo library</string>
-    <string name="stock_media_picker_list_content_description">Photo library</string>
-    <string name="button_preview">Preview</string>
+    <string name="stock_media_picker_search_hint" tools:ignore="UnusedResources">Search free photo library</string>
+    <string name="stock_media_picker_list_content_description" tools:ignore="UnusedResources">Photo library</string>
+    <string name="button_preview" tools:ignore="UnusedResources">Preview</string>
     <string name="add_count">Add %d</string>
-    <string name="cancel">Cancel</string>
+    <string name="cancel" tools:ignore="UnusedResources">Cancel</string>
     <item name="media_grid_item_ratio" type="string" format="string">4:3</item>
     <string name="photo_picker_image_thumbnail_content_description">Image Thumbnail</string>
     <string name="photo_picker_thumbnail_desc">Play video</string>

@@ -11,6 +11,15 @@ plugins {
 android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+    }
+
+    lintOptions {
+        warningsAsErrors true
+    }
 }
 
 dependencies {

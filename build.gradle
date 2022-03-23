@@ -40,7 +40,7 @@ ext {
     constraintlayoutVersion = '2.1.1'
     appcompatVersion = '1.4.1'
     coreVersion = '1.7.0'
-    coroutinesVersion = '1.6.0'
+    coroutinesVersion = '1.5.2'
     materialVersion = '1.5.0'
     photoViewVersion = '2.3.0'
     navigationFragmentVersion = '2.3.5'

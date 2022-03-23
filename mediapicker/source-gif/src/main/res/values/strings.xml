@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="gif_powered_by_tenor">Powered by Tenor</string>
     <string name="gif_picker_initial_empty_text">Search to find GIFs to add to your Media Library!</string>
-    <string name="gif_picker_empty_search_list" >No media matching your search</string>
-    <string name="gif_list_search_returned_unknown_error" >There was a problem handling the request</string>
+    <string name="gif_picker_empty_search_list">No media matching your search</string>
+    <string name="gif_list_search_returned_unknown_error" tools:ignore="UnusedResources">There was a problem handling the request</string>
     <string name="media_loading_failed">Media loading failed</string>
     <string name="photo_picker_gif">Choose from Tenor</string>
 </resources>

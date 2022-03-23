@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <dimen name="fab_margin_default">@dimen/major_100</dimen>
     <dimen name="fab_margin">@dimen/fab_margin_default</dimen>
-    <dimen name="design_fab_size">@dimen/major_325</dimen>
+    <dimen name="design_fab_size" tools:ignore="UnusedResources">@dimen/major_325</dimen>
 </resources>

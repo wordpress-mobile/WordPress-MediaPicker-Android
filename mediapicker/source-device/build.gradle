@@ -16,6 +16,10 @@ android {
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
     }
+
+    lintOptions {
+        warningsAsErrors true
+    }
 }
 
 dependencies {
