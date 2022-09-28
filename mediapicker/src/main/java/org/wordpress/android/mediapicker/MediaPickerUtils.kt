@@ -172,14 +172,12 @@ class MediaPickerUtils @Inject constructor(
     }
 
     private fun createTempFile(): File? {
-        var file: File? = null
-        try {
-            val tempFileName = "temp-${System.currentTimeMillis()}.jpg"
-            file = File(context.cacheDir, tempFileName)
+        return try {
+            File.createTempFile("temp-${System.currentTimeMillis()}", ".jpg")
         } catch (e: RuntimeException) {
             log.e(e)
+            null
         }
-        return file
     }
 
     private fun readBinaryStream(
