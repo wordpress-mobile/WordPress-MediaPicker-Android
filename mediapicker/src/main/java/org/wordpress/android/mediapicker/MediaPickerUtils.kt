@@ -118,18 +118,20 @@ class MediaPickerUtils @Inject constructor(
         if (VERSION.SDK_INT >= VERSION_CODES.Q) {
             try {
                 val cachedFile = createTempFile()
-                val parcelFileDescriptor = context.contentResolver.openFile(uri, "r", null)
-                parcelFileDescriptor?.fileDescriptor?.let { fd ->
-                    val input = FileInputStream(fd)
-                    val byteArray = readBinaryStream(
-                        input,
-                        parcelFileDescriptor.statSize.toInt()
-                    )
-                    if (cachedFile != null) {
-                        val fileSaved = writeFile(cachedFile, byteArray)
-                        if (fileSaved) {
-                            path = cachedFile.absolutePath
-                        }
+                context.contentResolver.openFile(uri, "r", null)
+                    .use { parcelFileDescriptor ->
+                        parcelFileDescriptor?.fileDescriptor?.let { fd ->
+                            val input = FileInputStream(fd)
+                            val byteArray = readBinaryStream(
+                                input,
+                                parcelFileDescriptor.statSize.toInt()
+                            )
+                            if (cachedFile != null) {
+                                val fileSaved = writeFile(cachedFile, byteArray)
+                                if (fileSaved) {
+                                    path = cachedFile.absolutePath
+                                }
+                            }
                     }
                 }
             } catch (e: IOException) {
