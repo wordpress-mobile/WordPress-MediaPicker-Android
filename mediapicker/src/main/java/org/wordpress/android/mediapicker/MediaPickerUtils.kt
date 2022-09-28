@@ -113,7 +113,7 @@ class MediaPickerUtils @Inject constructor(
         }
     }
 
-    fun getMediaStoreFilePath(uri: Uri): String? {
+    private fun getMediaStoreFilePath(uri: Uri): String? {
         var path: String? = null
         if (VERSION.SDK_INT >= VERSION_CODES.Q) {
             try {
