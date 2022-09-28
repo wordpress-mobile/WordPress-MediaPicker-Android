@@ -132,8 +132,8 @@ class MediaPickerUtils @Inject constructor(
                                     path = cachedFile.absolutePath
                                 }
                             }
+                        }
                     }
-                }
             } catch (e: IOException) {
                 log.e(e)
             }
