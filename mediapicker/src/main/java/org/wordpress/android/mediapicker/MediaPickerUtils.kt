@@ -113,25 +113,27 @@ class MediaPickerUtils @Inject constructor(
         }
     }
 
-    fun getMediaStoreFilePath(uri: Uri): String? {
+    private fun getMediaStoreFilePath(uri: Uri): String? {
         var path: String? = null
         if (VERSION.SDK_INT >= VERSION_CODES.Q) {
             try {
                 val cachedFile = createTempFile()
-                val parcelFileDescriptor = context.contentResolver.openFile(uri, "r", null)
-                parcelFileDescriptor?.fileDescriptor?.let { fd ->
-                    val input = FileInputStream(fd)
-                    val byteArray = readBinaryStream(
-                        input,
-                        parcelFileDescriptor.statSize.toInt()
-                    )
-                    if (cachedFile != null) {
-                        val fileSaved = writeFile(cachedFile, byteArray)
-                        if (fileSaved) {
-                            path = cachedFile.absolutePath
+                context.contentResolver.openFile(uri, "r", null)
+                    .use { parcelFileDescriptor ->
+                        parcelFileDescriptor?.fileDescriptor?.let { fd ->
+                            val input = FileInputStream(fd)
+                            val byteArray = readBinaryStream(
+                                input,
+                                parcelFileDescriptor.statSize.toInt()
+                            )
+                            if (cachedFile != null) {
+                                val fileSaved = writeFile(cachedFile, byteArray)
+                                if (fileSaved) {
+                                    path = cachedFile.absolutePath
+                                }
+                            }
                         }
                     }
-                }
             } catch (e: IOException) {
                 log.e(e)
             }
@@ -172,14 +174,12 @@ class MediaPickerUtils @Inject constructor(
     }
 
     private fun createTempFile(): File? {
-        var file: File? = null
-        try {
-            val tempFileName = "temp-${System.currentTimeMillis()}.jpg"
-            file = File(context.cacheDir, tempFileName)
+        return try {
+            File.createTempFile("temp-${System.currentTimeMillis()}", ".jpg")
         } catch (e: RuntimeException) {
             log.e(e)
+            null
         }
-        return file
     }
 
     private fun readBinaryStream(
