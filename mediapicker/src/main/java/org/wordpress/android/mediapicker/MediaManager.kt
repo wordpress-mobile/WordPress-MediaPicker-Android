@@ -4,7 +4,6 @@ import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
 import android.os.Build
-import android.os.Build.VERSION_CODES
 import android.os.Environment
 import android.provider.MediaStore
 import android.provider.MediaStore.Images.Media
@@ -28,7 +27,7 @@ internal class MediaManager @Inject constructor(
     }
 
     suspend fun addImageToMediaStore(path: String): Uri? {
-        return if (Build.VERSION.SDK_INT >= VERSION_CODES.Q) {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             saveImageInQ(path)
         } else {
             saveImageLegacy(path)
@@ -44,7 +43,7 @@ internal class MediaManager @Inject constructor(
         }
     }
 
-    @RequiresApi(VERSION_CODES.Q)
+    @RequiresApi(Build.VERSION_CODES.Q)
     private suspend fun saveImageInQ(path: String): Uri? {
         val uri: Uri?
         withContext(Dispatchers.IO) {
