@@ -5,8 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.MediaScannerConnection
 import android.net.Uri
-import android.os.Build.VERSION
-import android.os.Build.VERSION_CODES
+import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.provider.MediaStore.Images.Media
@@ -35,7 +34,7 @@ class MediaPickerUtils @Inject constructor(
 ) {
     val externalStorageDir: File?
         get() {
-            return if (VERSION.SDK_INT >= VERSION_CODES.Q) {
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 context.getExternalFilesDir(Environment.DIRECTORY_DCIM)
             } else {
                 @Suppress("Deprecation")
@@ -115,7 +114,7 @@ class MediaPickerUtils @Inject constructor(
 
     private fun getMediaStoreFilePath(uri: Uri): String? {
         var path: String? = null
-        if (VERSION.SDK_INT >= VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             try {
                 val cachedFile = createTempFile()
                 context.contentResolver.openFile(uri, "r", null)

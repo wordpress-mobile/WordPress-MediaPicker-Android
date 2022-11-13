@@ -8,7 +8,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
-import android.os.Build.VERSION_CODES
 import android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -148,7 +147,7 @@ internal class MediaPickerPermissionUtils @Inject constructor(
         return when (permission) {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE -> context.getString(
-                if (Build.VERSION.SDK_INT > VERSION_CODES.Q)
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q)
                     string.permission_files_and_media
                 else
                     string.permission_storage

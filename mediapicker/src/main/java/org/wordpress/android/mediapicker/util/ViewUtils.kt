@@ -4,16 +4,13 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
-import android.os.Build
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AnimationUtils
 import android.view.animation.LinearInterpolator
 
 fun View.redirectContextClickToLongPressListener() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        this.setOnContextClickListener { it.performLongClick() }
-    }
+    this.setOnContextClickListener { it.performLongClick() }
 }
 
 fun View?.scale(scaleStart: Float, scaleEnd: Float, duration: Long) {

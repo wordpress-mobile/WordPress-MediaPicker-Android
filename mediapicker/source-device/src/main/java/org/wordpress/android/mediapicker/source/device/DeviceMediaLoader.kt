@@ -3,8 +3,7 @@ package org.wordpress.android.mediapicker.source.device
 import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
-import android.os.Build.VERSION
-import android.os.Build.VERSION_CODES
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore.Audio
@@ -33,7 +32,7 @@ class DeviceMediaLoader @Inject constructor(
         pageSize: Int,
         limitDate: Long? = null
     ): DeviceMediaList {
-        val baseUri = if (VERSION.SDK_INT >= VERSION_CODES.Q /*29*/) {
+        val baseUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q /*29*/) {
             when (mediaType) {
                 IMAGE -> Images.Media.getContentUri(VOLUME_EXTERNAL)
                 VIDEO -> Video.Media.getContentUri(VOLUME_EXTERNAL)
@@ -123,7 +122,7 @@ class DeviceMediaLoader @Inject constructor(
         pageSize: Int,
         baseUri: Uri,
         projection: Array<String>
-    ) = if (VERSION.SDK_INT >= VERSION_CODES.Q /*29*/) {
+    ) = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q /*29*/) {
         val bundle = Bundle().apply {
             putString(ContentResolver.QUERY_ARG_SQL_SELECTION, condition)
             putStringArray(
