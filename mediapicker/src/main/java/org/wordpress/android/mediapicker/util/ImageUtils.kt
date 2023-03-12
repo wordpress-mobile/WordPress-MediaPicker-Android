@@ -24,11 +24,11 @@ fun ImageView.setImageResourceWithTint(
 fun ImageView.announceSelectedImageForAccessibility(itemSelected: Boolean) {
     if (itemSelected) {
         announceForAccessibility(
-            context.getString(R.string.photo_picker_image_thumbnail_selected)
+            context.getString(R.string.media_picker_item_thumbnail_selected)
         )
     } else {
         announceForAccessibility(
-            context.getString(R.string.photo_picker_image_thumbnail_unselected)
+            context.getString(R.string.media_picker_item_thumbnail_unselected)
         )
     }
 }
