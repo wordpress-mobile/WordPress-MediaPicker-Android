@@ -1,9 +1,13 @@
 package org.wordpress.android.mediapicker.api
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.annotation.StringRes
 import org.wordpress.android.mediapicker.model.MediaType
+import org.wordpress.android.mediapicker.model.MediaType.AUDIO
+import org.wordpress.android.mediapicker.model.MediaType.IMAGE
+import org.wordpress.android.mediapicker.model.MediaType.VIDEO
 
 data class MediaPickerSetup(
     val primaryDataSource: DataSource,
@@ -22,6 +26,15 @@ data class MediaPickerSetup(
     enum class SearchMode {
         HIDDEN, VISIBLE_TOGGLED, VISIBLE_UNTOGGLED
     }
+
+    val isImagesPermissionRequired = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            allowedTypes.contains(IMAGE)
+
+    val isVideoPermissionRequired = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            allowedTypes.contains(VIDEO)
+
+    val isAudioPermissionRequired = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            allowedTypes.contains(AUDIO)
 
     fun toBundle(bundle: Bundle) {
         bundle.putInt(KEY_PRIMARY_DATA_SOURCE, primaryDataSource.ordinal)

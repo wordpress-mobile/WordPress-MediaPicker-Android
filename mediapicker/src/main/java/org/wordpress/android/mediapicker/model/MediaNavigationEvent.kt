@@ -2,6 +2,7 @@ package org.wordpress.android.mediapicker.model
 
 import android.net.Uri
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier
+import org.wordpress.android.mediapicker.model.UiStateModels.PermissionsRequested
 
 internal sealed class MediaNavigationEvent {
     data class PreviewUrl(val url: String) : MediaNavigationEvent()
@@ -15,4 +16,7 @@ internal sealed class MediaNavigationEvent {
     object ShowAppSettings : MediaNavigationEvent()
     object RequestStoragePermission : MediaNavigationEvent()
     object RequestCameraPermission : MediaNavigationEvent()
+    data class RequestMediaPermissions(
+        val permissions: List<PermissionsRequested>
+    ) : MediaNavigationEvent()
 }

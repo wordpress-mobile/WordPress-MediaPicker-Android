@@ -8,7 +8,9 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.os.Build.VERSION_CODES
 import android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -66,6 +68,30 @@ internal class MediaPickerPermissionUtils @Inject constructor(
         return ContextCompat.checkSelfPermission(
             context,
             permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    @RequiresApi(VERSION_CODES.TIRAMISU)
+    fun hasImagesPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            context,
+            permission.READ_MEDIA_IMAGES
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    @RequiresApi(VERSION_CODES.TIRAMISU)
+    fun hasAudioPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            context,
+            permission.READ_MEDIA_AUDIO
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    @RequiresApi(VERSION_CODES.TIRAMISU)
+    fun hasVideoPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            context,
+            permission.READ_MEDIA_VIDEO
         ) == PackageManager.PERMISSION_GRANTED
     }
 
@@ -133,6 +159,9 @@ internal class MediaPickerPermissionUtils @Inject constructor(
         return when (permission) {
             Manifest.permission.READ_EXTERNAL_STORAGE -> Permissions.PERMISSION_STORAGE_READ
             Manifest.permission.CAMERA -> Permissions.PERMISSION_CAMERA
+            Manifest.permission.READ_MEDIA_IMAGES -> Permissions.PERMISSION_IMAGES_READ
+            Manifest.permission.READ_MEDIA_VIDEO -> Permissions.PERMISSION_VIDEO_READ
+            Manifest.permission.READ_MEDIA_AUDIO -> Permissions.PERMISSION_AUDIO_READ
             else -> {
                 log.w("No key for requested permission")
                 null
@@ -147,13 +176,16 @@ internal class MediaPickerPermissionUtils @Inject constructor(
         return when (permission) {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE -> context.getString(
-                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q)
+                if (Build.VERSION.SDK_INT > VERSION_CODES.Q)
                     string.permission_files_and_media
                 else
                     string.permission_storage
             )
             Manifest.permission.CAMERA -> context.getString(string.permission_camera)
             Manifest.permission.RECORD_AUDIO -> context.getString(string.permission_microphone)
+            Manifest.permission.READ_MEDIA_IMAGES -> context.getString(string.permission_images)
+            Manifest.permission.READ_MEDIA_VIDEO -> context.getString(string.permission_video)
+            Manifest.permission.READ_MEDIA_AUDIO -> context.getString(string.permission_audio)
             else -> {
                 log.w("No name for requested permission")
                 context.getString(string.unknown)
