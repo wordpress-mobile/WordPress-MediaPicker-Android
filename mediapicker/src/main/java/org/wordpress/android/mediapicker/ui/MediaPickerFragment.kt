@@ -58,6 +58,7 @@ import org.wordpress.android.mediapicker.model.MediaUri
 import org.wordpress.android.mediapicker.model.UiStateModels.ActionModeUiModel
 import org.wordpress.android.mediapicker.model.UiStateModels.FabUiModel
 import org.wordpress.android.mediapicker.model.UiStateModels.PermissionsRequested
+import org.wordpress.android.mediapicker.model.UiStateModels.PermissionsRequested.Companion
 import org.wordpress.android.mediapicker.model.UiStateModels.PhotoListUiModel
 import org.wordpress.android.mediapicker.model.UiStateModels.PhotoListUiModel.Data
 import org.wordpress.android.mediapicker.model.UiStateModels.PhotoListUiModel.Empty
@@ -536,7 +537,11 @@ internal class MediaPickerFragment : Fragment() {
                 checkCameraPermissions()
             } else {
                 if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
-                    (mediaPickerSetup.allowedTypes)
+                    checkMediaPermissions(
+                        mediaPickerSetup.allowedTypes.map {
+                            PermissionsRequested.fromMediaType(it)
+                        }
+                    )
                 } else {
                     checkStoragePermission()
                 }

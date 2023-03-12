@@ -1,6 +1,7 @@
 package org.wordpress.android.mediapicker.viewmodel
 
 import android.Manifest.permission
+import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
@@ -586,8 +587,8 @@ internal class MediaPickerViewModel @Inject constructor(
 
     @RequiresApi(VERSION_CODES.TIRAMISU)
     fun checkMediaPermissions(permissions: List<PermissionsRequested>, isAlwaysDenied: Boolean) {
-        if (!mediaPickerSetup.isImagesPermissionRequired ||
-            !mediaPickerSetup.isVideoPermissionRequired ||
+        if (!mediaPickerSetup.isImagesPermissionRequired &&
+            !mediaPickerSetup.isVideoPermissionRequired &&
             !mediaPickerSetup.isAudioPermissionRequired
         ) {
             return
@@ -635,6 +636,22 @@ internal class MediaPickerViewModel @Inject constructor(
     }
 
     private fun buildSoftAskView(softAskRequest: SoftAskRequest?): SoftAskViewUiModel {
+        return if (softAskRequest?.types?.contains(IMAGES) == true ||
+            softAskRequest?.types?.contains(PermissionsRequested.VIDEO) == true ||
+            softAskRequest?.types?.contains(PermissionsRequested.AUDIO) == true) {
+            if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
+                buildMediaSoftAskRequest(softAskRequest)
+            } else {
+                throw UnsupportedOperationException(
+                    "Unsupported permissions for SDK < 33: ${softAskRequest.types.joinToString()}"
+                )
+            }
+        } else {
+            buildOldSoftAskView(softAskRequest)
+        }
+    }
+
+    private fun buildOldSoftAskView(softAskRequest: SoftAskRequest?): SoftAskViewUiModel {
         if (softAskRequest != null && softAskRequest.show) {
             val type = softAskRequest.types.first()
             mediaPickerTracker.trackShowPermissionsScreen(
