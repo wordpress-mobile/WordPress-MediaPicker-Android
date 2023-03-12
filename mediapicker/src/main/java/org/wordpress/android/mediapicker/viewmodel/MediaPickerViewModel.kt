@@ -727,7 +727,7 @@ internal class MediaPickerViewModel @Inject constructor(
                 )
             }
             val camera = permissionsHandler.getPermissionName(permission.CAMERA)
-            val images = permissionsHandler.getPermissionName(permission.READ_MEDIA_VIDEO)
+            val images = permissionsHandler.getPermissionName(permission.READ_MEDIA_IMAGES)
             val video = permissionsHandler.getPermissionName(permission.READ_MEDIA_VIDEO)
             val audio = permissionsHandler.getPermissionName(permission.READ_MEDIA_AUDIO)
             val permissions =
