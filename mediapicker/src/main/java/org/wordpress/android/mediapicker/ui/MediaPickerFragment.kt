@@ -4,6 +4,8 @@ import android.Manifest.permission.CAMERA
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.app.Activity
+import android.os.Build.VERSION
+import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
@@ -16,6 +18,7 @@ import android.view.ViewGroup
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.text.HtmlCompat
@@ -41,6 +44,7 @@ import org.wordpress.android.mediapicker.model.MediaNavigationEvent.ChooseMediaP
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.Exit
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.PreviewUrl
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.RequestCameraPermission
+import org.wordpress.android.mediapicker.model.MediaNavigationEvent.RequestMediaPermissions
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.RequestStoragePermission
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.ReturnCapturedImage
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.ReturnSelectedMedia
@@ -53,6 +57,7 @@ import org.wordpress.android.mediapicker.model.MediaPickerUiItem
 import org.wordpress.android.mediapicker.model.MediaUri
 import org.wordpress.android.mediapicker.model.UiStateModels.ActionModeUiModel
 import org.wordpress.android.mediapicker.model.UiStateModels.FabUiModel
+import org.wordpress.android.mediapicker.model.UiStateModels.PermissionsRequested
 import org.wordpress.android.mediapicker.model.UiStateModels.PhotoListUiModel
 import org.wordpress.android.mediapicker.model.UiStateModels.PhotoListUiModel.Data
 import org.wordpress.android.mediapicker.model.UiStateModels.PhotoListUiModel.Empty
@@ -117,6 +122,16 @@ internal class MediaPickerFragment : Fragment() {
             } else {
                 checkCameraPermissions()
             }
+        }
+    }
+
+    @RequiresApi(VERSION_CODES.TIRAMISU)
+    private val mediaPermissionRequest = registerForActivityResult(
+        RequestMultiplePermissions()
+    ) { permissions ->
+        lifecycleScope.launch {
+            permissionUtils.persistPermissionRequestResults(permissions)
+            checkMediaPermissions(permissions.keys.map { PermissionsRequested.fromString(it) })
         }
     }
 
@@ -201,71 +216,68 @@ internal class MediaPickerFragment : Fragment() {
             }
 
             var isShowingActionMode = false
-            viewModel.uiState.observe(
-                viewLifecycleOwner,
-                {
-                    it?.let { uiState ->
-                        setupPhotoList(uiState.photoListUiModel)
-                        setupSoftAskView(uiState.softAskViewUiModel)
-                        if (uiState.actionModeUiModel is ActionModeUiModel.Visible && !isShowingActionMode) {
-                            isShowingActionMode = true
-                            (activity as AppCompatActivity).startSupportActionMode(
-                                MediaPickerActionModeCallback(
-                                    viewModel
-                                )
+            viewModel.uiState.observe(viewLifecycleOwner) {
+                it?.let { uiState ->
+                    setupPhotoList(uiState.photoListUiModel)
+                    setupSoftAskView(uiState.softAskViewUiModel)
+                    if (uiState.actionModeUiModel is ActionModeUiModel.Visible && !isShowingActionMode) {
+                        isShowingActionMode = true
+                        (activity as AppCompatActivity).startSupportActionMode(
+                            MediaPickerActionModeCallback(
+                                viewModel
                             )
-                        } else if (uiState.actionModeUiModel is ActionModeUiModel.Hidden && isShowingActionMode) {
-                            isShowingActionMode = false
-                        }
-                        setupFab(uiState.fabUiModel)
-                        pullToRefresh.isRefreshing = uiState.isRefreshing
+                        )
+                    } else if (uiState.actionModeUiModel is ActionModeUiModel.Hidden && isShowingActionMode) {
+                        isShowingActionMode = false
                     }
+                    setupFab(uiState.fabUiModel)
+                    pullToRefresh.isRefreshing = uiState.isRefreshing
                 }
-            )
+            }
 
-            viewModel.onNavigate.observeEvent(
-                viewLifecycleOwner,
-                { navigationEvent ->
-                    when (navigationEvent) {
-                        is PreviewUrl -> {
-                            MediaViewerFragment.previewUrl(
-                                requireActivity(),
-                                navigationEvent.url
-                            )
-                        }
-                        is ReturnSelectedMedia -> {
-                            val resultIntent = ResultIntentHelper.getSelectedMediaResultIntent(
-                                navigationEvent.identifiers,
-                                mediaPickerSetup.primaryDataSource
-                            )
-                            requireActivity().apply {
-                                setResult(Activity.RESULT_OK, resultIntent)
-                                finish()
-                            }
-                        }
-                        is ReturnCapturedImage -> {
-                            val resultIntent = ResultIntentHelper.getCapturedImageResultIntent(
-                                navigationEvent.areResultsQueued,
-                                navigationEvent.capturedImageUri
-                            )
-                            requireActivity().apply {
-                                setResult(Activity.RESULT_OK, resultIntent)
-                                finish()
-                            }
-                        }
-                        is ChooseMediaPickerAction -> onActionSelected(navigationEvent.action)
-                        Exit -> {
-                            requireActivity().apply {
-                                setResult(Activity.RESULT_CANCELED)
-                                finish()
-                            }
-                        }
-                        RequestCameraPermission -> requestCameraPermissions()
-                        RequestStoragePermission -> requestStoragePermission()
-                        ShowAppSettings -> permissionUtils.showAppSettings(requireActivity())
+            viewModel.onNavigate.observeEvent(viewLifecycleOwner) { navigationEvent ->
+                when (navigationEvent) {
+                    is PreviewUrl -> {
+                        MediaViewerFragment.previewUrl(
+                            requireActivity(),
+                            navigationEvent.url
+                        )
                     }
+                    is ReturnSelectedMedia -> {
+                        val resultIntent = ResultIntentHelper.getSelectedMediaResultIntent(
+                            navigationEvent.identifiers,
+                            mediaPickerSetup.primaryDataSource
+                        )
+                        requireActivity().apply {
+                            setResult(Activity.RESULT_OK, resultIntent)
+                            finish()
+                        }
+                    }
+                    is ReturnCapturedImage -> {
+                        val resultIntent = ResultIntentHelper.getCapturedImageResultIntent(
+                            navigationEvent.areResultsQueued,
+                            navigationEvent.capturedImageUri
+                        )
+                        requireActivity().apply {
+                            setResult(Activity.RESULT_OK, resultIntent)
+                            finish()
+                        }
+                    }
+                    is ChooseMediaPickerAction -> onActionSelected(navigationEvent.action)
+                    Exit -> {
+                        requireActivity().apply {
+                            setResult(Activity.RESULT_CANCELED)
+                            finish()
+                        }
+                    }
+                    RequestCameraPermission -> requestCameraPermissions()
+                    RequestStoragePermission -> requestStoragePermission()
+                    is RequestMediaPermissions -> if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
+                        requestMediaPermissions(navigationEvent.permissions)
+                    }
+                    ShowAppSettings -> permissionUtils.showAppSettings(requireActivity())
                 }
-            )
+            }
 
             (requireActivity() as AppCompatActivity).supportActionBar
                 ?.setTitle(mediaPickerSetup.title)
@@ -316,28 +328,25 @@ internal class MediaPickerFragment : Fragment() {
         }
 
         initializeSearchView(searchMenuItem)
-        viewModel.uiState.observe(
-            viewLifecycleOwner,
-            { uiState ->
-                val searchView = searchMenuItem.actionView as SearchView
+        viewModel.uiState.observe(viewLifecycleOwner) { uiState ->
+            val searchView = searchMenuItem.actionView as SearchView
 
-                if (uiState.searchUiModel is SearchUiModel.Expanded && !searchMenuItem.isActionViewExpanded) {
-                    searchMenuItem.expandActionView()
-                    searchView.maxWidth = Integer.MAX_VALUE
-                    searchView.setQuery(uiState.searchUiModel.filter, true)
-                    searchView.setOnCloseListener { !uiState.searchUiModel.closeable }
-                } else if (uiState.searchUiModel is SearchUiModel.Collapsed && searchMenuItem.isActionViewExpanded) {
-                    searchMenuItem.collapseActionView()
-                }
-
-                searchMenuItem.isVisible = uiState.searchUiModel !is SearchUiModel.Hidden
-
-                val shownActions = uiState.browseMenuUiModel.shownActions
-                browseMenuItem.isVisible = shownActions.contains(SYSTEM_PICKER)
-                deviceMenuItem.isVisible = shownActions.contains(DEVICE)
-                tenorLibraryMenuItem.isVisible = shownActions.contains(GIF_LIBRARY)
+            if (uiState.searchUiModel is SearchUiModel.Expanded && !searchMenuItem.isActionViewExpanded) {
+                searchMenuItem.expandActionView()
+                searchView.maxWidth = Integer.MAX_VALUE
+                searchView.setQuery(uiState.searchUiModel.filter, true)
+                searchView.setOnCloseListener { !uiState.searchUiModel.closeable }
+            } else if (uiState.searchUiModel is SearchUiModel.Collapsed && searchMenuItem.isActionViewExpanded) {
+                searchMenuItem.collapseActionView()
             }
-        )
+
+            searchMenuItem.isVisible = uiState.searchUiModel !is SearchUiModel.Hidden
+
+            val shownActions = uiState.browseMenuUiModel.shownActions
+            browseMenuItem.isVisible = shownActions.contains(SYSTEM_PICKER)
+            deviceMenuItem.isVisible = shownActions.contains(DEVICE)
+            tenorLibraryMenuItem.isVisible = shownActions.contains(GIF_LIBRARY)
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -358,13 +367,13 @@ internal class MediaPickerFragment : Fragment() {
     private fun initializeSearchView(actionMenuItem: MenuItem) {
         var isExpanding = false
         actionMenuItem.setOnActionExpandListener(object : OnActionExpandListener {
-            override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+            override fun onMenuItemActionExpand(item: MenuItem): Boolean {
                 viewModel.onSearchExpanded()
                 isExpanding = true
                 return true
             }
 
-            override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+            override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
                 viewModel.onSearchCollapsed()
                 return true
             }
@@ -526,7 +535,11 @@ internal class MediaPickerFragment : Fragment() {
             if (mediaPickerSetup.primaryDataSource == DataSource.CAMERA) {
                 checkCameraPermissions()
             } else {
-                checkStoragePermission()
+                if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
+                    (mediaPickerSetup.allowedTypes)
+                } else {
+                    checkStoragePermission()
+                }
             }
         }
     }
@@ -539,10 +552,17 @@ internal class MediaPickerFragment : Fragment() {
         return permissionUtils.isPermissionAlwaysDenied(requireActivity(), CAMERA)
     }
 
+    @RequiresApi(VERSION_CODES.TIRAMISU)
+    private suspend fun isMediaPermissionAlwaysDenied(permissions: List<PermissionsRequested>): Boolean {
+        return permissions.any { permission ->
+            permissionUtils.isPermissionAlwaysDenied(requireActivity(), permission.toString())
+        }
+    }
+
     /*
-         * load the photos if we have the necessary permission, otherwise show the "soft ask" view
-         * which asks the user to allow the permission
-         */
+     * load the photos if we have the necessary permission, otherwise show the "soft ask" view
+     * which asks the user to allow the permission
+     */
     private suspend fun checkStoragePermission() {
         if (!isAdded) {
             return
@@ -560,6 +580,17 @@ internal class MediaPickerFragment : Fragment() {
         )
     }
 
+    @RequiresApi(VERSION_CODES.TIRAMISU)
+    private suspend fun checkMediaPermissions(permissions: List<PermissionsRequested>) {
+        if (!isAdded) {
+            return
+        }
+        viewModel.checkMediaPermissions(
+            permissions = permissions,
+            isAlwaysDenied = isMediaPermissionAlwaysDenied(permissions)
+        )
+    }
+
     private fun requestStoragePermission() {
         storagePermissionRequest.launch(arrayOf(READ_EXTERNAL_STORAGE))
     }
@@ -571,5 +602,10 @@ internal class MediaPickerFragment : Fragment() {
             arrayOf(CAMERA)
         }
         cameraPermissionRequest.launch(permissions)
+    }
+
+    @RequiresApi(VERSION_CODES.TIRAMISU)
+    private fun requestMediaPermissions(permissions: List<PermissionsRequested>) {
+        mediaPermissionRequest.launch(permissions.map { it.toString() }.toTypedArray())
     }
 }
