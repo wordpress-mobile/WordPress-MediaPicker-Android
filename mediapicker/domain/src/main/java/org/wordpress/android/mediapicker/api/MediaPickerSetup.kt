@@ -13,7 +13,7 @@ data class MediaPickerSetup(
     val primaryDataSource: DataSource,
     val availableDataSources: Set<DataSource>,
     val isMultiSelectEnabled: Boolean,
-    val isStoragePermissionRequired: Boolean,
+    val needsAccessToStorage: Boolean,
     val allowedTypes: Set<MediaType>,
     val areResultsQueued: Boolean,
     val searchMode: SearchMode,
@@ -26,6 +26,9 @@ data class MediaPickerSetup(
     enum class SearchMode {
         HIDDEN, VISIBLE_TOGGLED, VISIBLE_UNTOGGLED
     }
+
+    val isStoragePermissionRequired = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU &&
+        needsAccessToStorage
 
     val isImagesPermissionRequired = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             allowedTypes.contains(IMAGE)

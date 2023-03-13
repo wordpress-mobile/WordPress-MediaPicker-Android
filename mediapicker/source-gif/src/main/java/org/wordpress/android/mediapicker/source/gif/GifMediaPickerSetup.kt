@@ -12,7 +12,7 @@ class GifMediaPickerSetup {
                 primaryDataSource = GIF_LIBRARY,
                 availableDataSources = emptySet(),
                 isMultiSelectEnabled = canMultiSelect,
-                isStoragePermissionRequired = false,
+                needsAccessToStorage = false,
                 allowedTypes = setOf(IMAGE),
                 areResultsQueued = false,
                 searchMode = VISIBLE_TOGGLED,

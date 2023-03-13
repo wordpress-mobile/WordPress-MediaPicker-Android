@@ -17,7 +17,7 @@ class DeviceMediaPickerSetup {
                 primaryDataSource = DEVICE,
                 availableDataSources = setOf(SYSTEM_PICKER),
                 isMultiSelectEnabled = canMultiSelect,
-                isStoragePermissionRequired = true,
+                needsAccessToStorage = true,
                 allowedTypes = mediaTypes.allowedTypes,
                 areResultsQueued = false,
                 searchMode = VISIBLE_UNTOGGLED,
@@ -30,7 +30,7 @@ class DeviceMediaPickerSetup {
                 primaryDataSource = SYSTEM_PICKER,
                 availableDataSources = emptySet(),
                 isMultiSelectEnabled = canMultiSelect,
-                isStoragePermissionRequired = false,
+                needsAccessToStorage = false,
                 allowedTypes = mediaTypes.allowedTypes,
                 areResultsQueued = false,
                 searchMode = HIDDEN
@@ -44,7 +44,7 @@ class DeviceMediaPickerSetup {
                 primaryDataSource = CAMERA,
                 availableDataSources = emptySet(),
                 isMultiSelectEnabled = false,
-                isStoragePermissionRequired = Build.VERSION.SDK_INT < Build.VERSION_CODES.Q,
+                needsAccessToStorage = Build.VERSION.SDK_INT < Build.VERSION_CODES.Q,
                 allowedTypes = setOf(IMAGE),
                 areResultsQueued = false,
                 searchMode = HIDDEN
