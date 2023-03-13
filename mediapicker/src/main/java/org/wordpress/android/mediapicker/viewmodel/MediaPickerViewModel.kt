@@ -750,7 +750,7 @@ internal class MediaPickerViewModel @Inject constructor(
                     permissions
                 )
             } else {
-                resourceProvider.getString(string.media_picker_soft_ask_label_multiple, permissions)
+                resourceProvider.getString(string.media_picker_soft_ask_label_media_files)
             }
             val allowId = if (softAskRequest.isAlwaysDenied) {
                 string.button_edit_permissions

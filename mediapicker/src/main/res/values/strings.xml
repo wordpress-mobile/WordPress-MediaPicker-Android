@@ -7,9 +7,8 @@
     <string name="photo_picker_use_video">Use this video</string>
     <string name="photo_picker_use_audio">Use this audio</string>
     <string name="photo_picker_use_media">Use this media</string>
-    <string name="media_picker_soft_ask_permissions_denied">Denied access to your media files. To fix this, edit your permissions and turn on %1$s.</string>
+    <string name="media_picker_soft_ask_permissions_denied">Denied access to your media files. To fix this, edit your permissions and enable %1$s.</string>
     <string name="media_picker_soft_ask_label_media_files">We need permission to access your media files</string>
-    <string name="media_picker_soft_ask_label_multiple">We need permission to access your %1$s</string>
     <string name="camera_soft_ask_label">We need permission to access your camera</string>
     <string name="camera_and_files_soft_ask_label">We need permission to access your camera &amp; media files</string>
     <string name="button_edit_permissions">Edit permissions</string>
