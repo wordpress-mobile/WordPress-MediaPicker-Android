@@ -126,7 +126,6 @@ internal class MediaPickerFragment : Fragment() {
         }
     }
 
-    @RequiresApi(VERSION_CODES.TIRAMISU)
     private val mediaPermissionRequest = registerForActivityResult(
         RequestMultiplePermissions()
     ) { permissions ->
@@ -273,9 +272,7 @@ internal class MediaPickerFragment : Fragment() {
                     }
                     RequestCameraPermission -> requestCameraPermissions()
                     RequestStoragePermission -> requestStoragePermission()
-                    is RequestMediaPermissions -> if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
-                        requestMediaPermissions(navigationEvent.permissions)
-                    }
+                    is RequestMediaPermissions -> requestMediaPermissions(navigationEvent.permissions)
                     ShowAppSettings -> permissionUtils.showAppSettings(requireActivity())
                 }
             }
@@ -557,7 +554,6 @@ internal class MediaPickerFragment : Fragment() {
         return permissionUtils.isPermissionAlwaysDenied(requireActivity(), CAMERA)
     }
 
-    @RequiresApi(VERSION_CODES.TIRAMISU)
     private suspend fun isMediaPermissionAlwaysDenied(permissions: List<PermissionsRequested>): Boolean {
         return permissions.any { permission ->
             permissionUtils.isPermissionAlwaysDenied(requireActivity(), permission.toString())
@@ -585,7 +581,6 @@ internal class MediaPickerFragment : Fragment() {
         )
     }
 
-    @RequiresApi(VERSION_CODES.TIRAMISU)
     private suspend fun checkMediaPermissions(permissions: List<PermissionsRequested>) {
         if (!isAdded) {
             return
@@ -609,7 +604,6 @@ internal class MediaPickerFragment : Fragment() {
         cameraPermissionRequest.launch(permissions)
     }
 
-    @RequiresApi(VERSION_CODES.TIRAMISU)
     private fun requestMediaPermissions(permissions: List<PermissionsRequested>) {
         mediaPermissionRequest.launch(permissions.map { it.toString() }.toTypedArray())
     }

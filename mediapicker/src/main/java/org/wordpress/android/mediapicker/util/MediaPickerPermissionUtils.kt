@@ -71,25 +71,22 @@ internal class MediaPickerPermissionUtils @Inject constructor(
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    @RequiresApi(VERSION_CODES.TIRAMISU)
     fun hasImagesPermission(): Boolean {
-        return ContextCompat.checkSelfPermission(
+        return Build.VERSION.SDK_INT >= VERSION_CODES.TIRAMISU && ContextCompat.checkSelfPermission(
             context,
             permission.READ_MEDIA_IMAGES
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    @RequiresApi(VERSION_CODES.TIRAMISU)
     fun hasAudioPermission(): Boolean {
-        return ContextCompat.checkSelfPermission(
+        return Build.VERSION.SDK_INT >= VERSION_CODES.TIRAMISU && ContextCompat.checkSelfPermission(
             context,
             permission.READ_MEDIA_AUDIO
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    @RequiresApi(VERSION_CODES.TIRAMISU)
     fun hasVideoPermission(): Boolean {
-        return ContextCompat.checkSelfPermission(
+        return Build.VERSION.SDK_INT >= VERSION_CODES.TIRAMISU && ContextCompat.checkSelfPermission(
             context,
             permission.READ_MEDIA_VIDEO
         ) == PackageManager.PERMISSION_GRANTED

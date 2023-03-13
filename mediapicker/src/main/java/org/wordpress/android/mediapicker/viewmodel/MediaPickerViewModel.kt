@@ -348,7 +348,14 @@ internal class MediaPickerViewModel @Inject constructor(
     }
 
     private fun refreshData(forceReload: Boolean) {
-        if (!permissionsHandler.hasReadStoragePermission()) {
+        if ((mediaPickerSetup.isStoragePermissionRequired &&
+                !permissionsHandler.hasReadStoragePermission()) ||
+            (mediaPickerSetup.isImagesPermissionRequired &&
+                    !permissionsHandler.hasImagesPermission()) ||
+            (mediaPickerSetup.isVideoPermissionRequired &&
+                    !permissionsHandler.hasVideoPermission()) ||
+            (mediaPickerSetup.isAudioPermissionRequired &&
+                    !permissionsHandler.hasAudioPermission())) {
             return
         }
         viewModelScope.launch {
@@ -585,7 +592,6 @@ internal class MediaPickerViewModel @Inject constructor(
         }
     }
 
-    @RequiresApi(VERSION_CODES.TIRAMISU)
     fun checkMediaPermissions(permissions: List<PermissionsRequested>, isAlwaysDenied: Boolean) {
         if (!mediaPickerSetup.isImagesPermissionRequired &&
             !mediaPickerSetup.isVideoPermissionRequired &&
@@ -651,6 +657,7 @@ internal class MediaPickerViewModel @Inject constructor(
         }
     }
 
+    // Requests READ_EXTERNAL_STORAGE on devices running SDK < 33
     private fun buildOldSoftAskView(softAskRequest: SoftAskRequest?): SoftAskViewUiModel {
         if (softAskRequest != null && softAskRequest.show) {
             val type = softAskRequest.types.first()
@@ -710,6 +717,7 @@ internal class MediaPickerViewModel @Inject constructor(
         }
     }
 
+    // Requests granular media permissions on devices running SDK >= 33
     @RequiresApi(VERSION_CODES.TIRAMISU)
     private fun buildMediaSoftAskRequest(softAskRequest: SoftAskRequest?): SoftAskViewUiModel {
         if (softAskRequest != null && softAskRequest.show) {
