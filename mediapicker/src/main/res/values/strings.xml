@@ -18,9 +18,8 @@
     <string name="permission_files_and_media">Files and media</string>
     <string name="permission_camera">Camera</string>
     <string name="permission_microphone">Microphone</string>
-    <string name="permission_images">Images</string>
-    <string name="permission_video">Video</string>
-    <string name="permission_audio">Audio</string>
+    <string name="permission_photos_videos">Photos and videos</string>
+    <string name="permission_audio">Music and audio</string>
     <string name="unknown">Unknown</string>
     <string name="confirm">Add 0</string>
     <string name="retry">Retry</string>

@@ -183,8 +183,8 @@ internal class MediaPickerPermissionUtils @Inject constructor(
             )
             Manifest.permission.CAMERA -> context.getString(string.permission_camera)
             Manifest.permission.RECORD_AUDIO -> context.getString(string.permission_microphone)
-            Manifest.permission.READ_MEDIA_IMAGES -> context.getString(string.permission_images)
-            Manifest.permission.READ_MEDIA_VIDEO -> context.getString(string.permission_video)
+            Manifest.permission.READ_MEDIA_IMAGES -> context.getString(string.permission_photos_videos)
+            Manifest.permission.READ_MEDIA_VIDEO -> context.getString(string.permission_photos_videos)
             Manifest.permission.READ_MEDIA_AUDIO -> context.getString(string.permission_audio)
             else -> {
                 log.w("No name for requested permission")

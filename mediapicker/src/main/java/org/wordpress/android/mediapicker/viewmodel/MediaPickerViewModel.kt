@@ -731,8 +731,8 @@ internal class MediaPickerViewModel @Inject constructor(
             val video = permissionsHandler.getPermissionName(permission.READ_MEDIA_VIDEO)
             val audio = permissionsHandler.getPermissionName(permission.READ_MEDIA_AUDIO)
             val permissions =
-                "<strong>${
-                    softAskRequest.types.joinToString { type ->
+                softAskRequest.types.map { type ->
+                    "<strong>${
                         when (type) {
                             IMAGES -> images
                             PermissionsRequested.VIDEO -> video
@@ -742,8 +742,8 @@ internal class MediaPickerViewModel @Inject constructor(
                                 "Unknown permission type: $type"
                             )
                         }
-                    }
-                }</strong>"
+                    }</strong>"
+                }.distinct().joinToString(" & ")
             val label = if (softAskRequest.isAlwaysDenied) {
                 String.format(
                     resourceProvider.getString(string.media_picker_soft_ask_permissions_denied),
