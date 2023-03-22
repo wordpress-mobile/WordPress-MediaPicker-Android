@@ -35,7 +35,7 @@ steps:
   - label: "Publish :mediapicker:domain"
     key: "publish-mediapicker-domain"
     depends_on:
-      - "ktlint"
+      - "detekt"
       - "lint"
       - "unit-test"
     plugins: *common_plugins
