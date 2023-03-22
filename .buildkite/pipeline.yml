@@ -13,6 +13,7 @@ steps:
   - wait
 
   - label: "detekt"
+    key: "detekt"
     command: |
       ./gradlew detektAll
     plugins: *common_plugins
