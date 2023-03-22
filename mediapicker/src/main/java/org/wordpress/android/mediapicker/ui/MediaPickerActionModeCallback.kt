@@ -13,7 +13,8 @@ import androidx.lifecycle.Observer
 import org.wordpress.android.mediapicker.R
 import org.wordpress.android.mediapicker.R.id
 import org.wordpress.android.mediapicker.model.UiStateModels.ActionModeUiModel
-import org.wordpress.android.mediapicker.model.UiString
+import org.wordpress.android.mediapicker.model.UiString.UiStringRes
+import org.wordpress.android.mediapicker.model.UiString.UiStringText
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel
 
 internal class MediaPickerActionModeCallback(private val viewModel: MediaPickerViewModel) :
@@ -40,12 +41,13 @@ internal class MediaPickerActionModeCallback(private val viewModel: MediaPickerV
                     }
                     is ActionModeUiModel.Visible -> {
                         when (uiModel.actionModeTitle) {
-                            is UiString.UiStringText -> {
+                            is UiStringText -> {
                                 doneItem.title = uiModel.actionModeTitle.text
                             }
-                            is UiString.UiStringRes -> {
+                            is UiStringRes -> {
                                 doneItem.setTitle(uiModel.actionModeTitle.stringRes)
                             }
+                            else -> {}
                         }
                     }
                 }
