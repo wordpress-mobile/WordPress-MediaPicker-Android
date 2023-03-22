@@ -12,7 +12,7 @@ class MediaLibraryPickerSetup {
                 primaryDataSource = WP_MEDIA_LIBRARY,
                 availableDataSources = emptySet(),
                 isMultiSelectEnabled = canMultiSelect,
-                isStoragePermissionRequired = false,
+                needsAccessToStorage = false,
                 allowedTypes = mediaTypes.allowedTypes,
                 areResultsQueued = false,
                 searchMode = HIDDEN,
