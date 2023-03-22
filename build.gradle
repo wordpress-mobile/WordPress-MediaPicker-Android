@@ -10,6 +10,7 @@ plugins {
 allprojects {
     repositories {
         google()
+        jcenter()
         mavenCentral()
         maven { url "https://www.jitpack.io" }
         maven { url "https://a8c-libs.s3.amazonaws.com/android" }
@@ -81,6 +82,18 @@ def detektAutoCorrectPrompt = tasks.register("detektAutoCorrectPrompt") {
 
 detektAll.configure{
     finalizedBy detektAutoCorrectPrompt
+}
+
+tasks.register("detektGenerateBaseline", io.gitlab.arturbosch.detekt.DetektCreateBaselineTask) {
+    description = "Custom DETEKT build to build baseline for all modules"
+    parallel = true
+    ignoreFailures = false
+    buildUponDefaultConfig = true
+    setSource(file(projectDir))
+    baseline.set(file("$rootDir/config/detekt/baseline.xml"))
+    config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+    include("**/*.kt")
+    exclude("**/resources/**", "**/build/**")
 }
 
 dependencies {
