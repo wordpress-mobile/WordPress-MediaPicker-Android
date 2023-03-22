@@ -12,13 +12,13 @@ steps:
   # Wait for Gradle Wrapper to be validated before running any other jobs
   - wait
 
-  - label: "ktlint"
-    key: "ktlint"
-    plugins: *common_plugins
+  - label: "detekt"
     command: |
-      ./gradlew ciktlint
+      cp gradle.properties-example gradle.properties
+      ./gradlew detektAll
+    plugins: *common_plugins
     artifact_paths:
-      - "**/build/ktlint.xml"
+      - "**/build/reports/detekt/detekt.html"
   - label: "lint"
     key: "lint"
     plugins: *common_plugins

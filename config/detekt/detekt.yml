@@ -1,0 +1,38 @@
+build:
+  maxIssues: 0
+
+complexity:
+  LargeClass:
+    excludes: [ '**/test/**' ]
+  LongParameterList:
+    ignoreDefaultParameters: true
+    ignoreAnnotated: [ 'Inject', 'Composable' ]
+  TooManyFunctions:
+    active: false
+  LongMethod:
+    ignoreAnnotated: [ 'Composable' ]
+
+formatting:
+  active: true
+  autoCorrect: true
+  Indentation:
+    active: true
+    autoCorrect: true
+  MaximumLineLength:
+    active: true
+    ignoreBackTickedIdentifier: true
+
+style:
+  UnnecessaryAbstractClass:
+    active: true
+    ignoreAnnotated: [ 'Module' ]
+  MagicNumber:
+    ignoreAnnotated: [ 'Composable' ]
+  UnusedPrivateMember:
+    ignoreAnnotated: [ 'Preview' ]
+  MaxLineLength:
+    active: false
+
+naming:
+  FunctionNaming:
+    ignoreAnnotated: [ 'Composable' ]

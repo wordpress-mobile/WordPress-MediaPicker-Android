@@ -2,8 +2,10 @@ pluginManagement {
     gradle.ext.kotlinVersion = '1.6.10'
     gradle.ext.daggerVersion = '2.42'
     gradle.ext.agpVersion = '7.2.1'
+    gradle.ext.detektVersion = '1.19.0'
 
     plugins {
+        id 'io.gitlab.arturbosch.detekt' version gradle.ext.detektVersion
         id 'org.jetbrains.kotlin.android' version gradle.ext.kotlinVersion
         id 'org.jetbrains.kotlin.jvm' version gradle.ext.kotlinVersion
         id 'org.jetbrains.kotlin.plugin.parcelize' version gradle.ext.kotlinVersion
@@ -23,7 +25,6 @@ pluginManagement {
         }
         google()
         gradlePluginPortal()
-        jcenter()
     }
     resolutionStrategy {
         eachPlugin {
