@@ -15,7 +15,7 @@ steps:
   - label: "detekt"
     key: "detekt"
     command: |
-      ./gradlew detektAll
+      ./gradlew detekt
     plugins: *common_plugins
     artifact_paths:
       - "**/build/reports/detekt/detekt.html"
