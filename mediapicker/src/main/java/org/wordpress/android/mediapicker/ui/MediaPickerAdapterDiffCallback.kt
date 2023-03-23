@@ -38,14 +38,14 @@ internal class MediaPickerAdapterDiffCallback(
         return oldItems[oldItemPosition] == updatedItems[newItemPosition]
     }
 
+    @Suppress("ReturnCount")
     override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
         val oldItem = oldItems[oldItemPosition].toSelectableItem()
         val updatedItem = updatedItems[newItemPosition].toSelectableItem()
         if (oldItem != null && updatedItem != null) {
             if (oldItem.isSelected != updatedItem.isSelected) {
                 return SELECTION_CHANGE
-            }
-            if (oldItem.showOrderCounter == updatedItem.showOrderCounter &&
+            } else if (oldItem.showOrderCounter == updatedItem.showOrderCounter &&
                 oldItem.selectedOrder != updatedItem.selectedOrder
             ) {
                 return COUNT_CHANGE

@@ -194,6 +194,7 @@ internal class MediaPickerViewModel @Inject constructor(
     var lastTappedAction: MediaPickerActionEvent? = null
     private lateinit var mediaPickerSetup: MediaPickerSetup
 
+    @Suppress("LongMethod", "ComplexMethod")
     private fun buildUiModel(
         domainModel: DomainModel?,
         selectedIds: List<Identifier>?,
@@ -597,6 +598,7 @@ internal class MediaPickerViewModel @Inject constructor(
         triggerAction(SwitchSource(source))
     }
 
+    @Suppress("NestedBlockDepth")
     private fun buildSoftAskView(softAskRequest: SoftAskRequest?): SoftAskViewUiModel {
         if (softAskRequest != null && softAskRequest.show) {
             mediaPickerTracker.trackShowPermissionsScreen(

@@ -26,6 +26,7 @@ import javax.inject.Inject
 class DeviceMediaLoader @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
+    @Suppress("ComplexMethod")
     fun loadMedia(
         mediaType: MediaType,
         filter: String?,
