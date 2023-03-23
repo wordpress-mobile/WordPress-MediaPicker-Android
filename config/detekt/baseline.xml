@@ -5,19 +5,11 @@
     <ID>ComplexMethod:DeviceMediaLoader.kt$DeviceMediaLoader$fun loadMedia( mediaType: MediaType, filter: String?, pageSize: Int, limitDate: Long? = null ): DeviceMediaList</ID>
     <ID>ComplexMethod:MediaPickerFragment.kt$MediaPickerFragment$override fun onViewCreated(view: View, savedInstanceState: Bundle?)</ID>
     <ID>ComplexMethod:MediaPickerViewModel.kt$MediaPickerViewModel$private fun buildUiModel( domainModel: DomainModel?, selectedIds: List&lt;Identifier&gt;?, softAskRequest: SoftAskRequest?, isSearching: Boolean? ): PhotoListUiModel</ID>
-    <ID>ForbiddenComment:ImageUtils.kt$// TODO: Anitaa: we would need to find a way to decouple VideoLoader since it uses FluxC internally</ID>
-    <ID>ForbiddenComment:ImageUtils.kt$// TODO: we might need to make this customisable based on the needs</ID>
     <ID>LongMethod:MediaPickerFragment.kt$MediaPickerFragment$override fun onViewCreated(view: View, savedInstanceState: Bundle?)</ID>
     <ID>LongMethod:MediaPickerViewModel.kt$MediaPickerViewModel$private fun buildUiModel( domainModel: DomainModel?, selectedIds: List&lt;Identifier&gt;?, softAskRequest: SoftAskRequest?, isSearching: Boolean? ): PhotoListUiModel</ID>
     <ID>LongParameterList:LiveDataUtils.kt$( sourceA: LiveData&lt;S&gt;, sourceB: LiveData&lt;T&gt;, sourceC: LiveData&lt;U&gt;, sourceD: LiveData&lt;V&gt;, sourceE: LiveData&lt;W&gt;, distinct: Boolean = false, merger: (S?, T?, U?, V?, W?) -&gt; X? )</ID>
     <ID>LongParameterList:MediaLibrarySource.kt$MediaLibrarySource$( private val mediaStore: MediaStore, private val dispatcher: Dispatcher, private val bgDispatcher: CoroutineDispatcher, private val dateTimeUtilsWrapper: DateTimeUtilsWrapper, private val networkUtilsWrapper: NetworkUtilsWrapper, private val siteModel: SiteModel, private val mediaTypes: Set&lt;MediaType&gt; )</ID>
     <ID>LongParameterList:MediaThumbnailViewUtils.kt$MediaThumbnailViewUtils$( container: View, imgThumbnail: ImageView, fileName: String, isSelected: Boolean, longClickAction: LongClickAction, toggleAction: ToggleAction, animateSelection: Boolean )</ID>
-    <ID>MagicNumber:DateTimeUtilsWrapper.kt$DateTimeUtilsWrapper$1000</ID>
-    <ID>MagicNumber:DeviceMediaLoader.kt$DeviceMediaLoader$1000</ID>
-    <ID>MagicNumber:MediaPickerUtils.kt$MediaPickerUtils$4096</ID>
-    <ID>MagicNumber:MediaPickerViewModel.kt$MediaPickerViewModel$100</ID>
-    <ID>MagicNumber:MediaPickerViewModel.kt$MediaPickerViewModel$300</ID>
-    <ID>MaximumLineLength:org.wordpress.android.mediapicker.ui.viewholder.FileThumbnailViewHolder.kt:12</ID>
     <ID>NestedBlockDepth:MediaPickerUtils.kt$MediaPickerUtils$private fun getMediaStoreFilePath(uri: Uri): String?</ID>
     <ID>NestedBlockDepth:MediaPickerViewModel.kt$MediaPickerViewModel$private fun buildSoftAskView(softAskRequest: SoftAskRequest?): SoftAskViewUiModel</ID>
     <ID>ReturnCount:MediaPickerAdapterDiffCallback.kt$MediaPickerAdapterDiffCallback$override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any?</ID>
@@ -26,11 +18,5 @@
     <ID>TooGenericExceptionCaught:MediaPickerUtils.kt$MediaPickerUtils$e: Exception</ID>
     <ID>TooGenericExceptionCaught:MediaPickerUtils.kt$MediaPickerUtils$e: RuntimeException</ID>
     <ID>TooGenericExceptionThrown:ActionableEmptyView.kt$ActionableEmptyView$throw RuntimeException("$context: ActionableEmptyView must have a title (aevTitle)")</ID>
-    <ID>UnusedPrivateMember:ImageUtils.kt$coroutineScope: CoroutineScope</ID>
-    <ID>UnusedPrivateMember:ImageUtils.kt$videoUrl: String</ID>
-    <ID>UtilityClassWithPublicConstructor:DeviceMediaPickerSetup.kt$DeviceMediaPickerSetup</ID>
-    <ID>UtilityClassWithPublicConstructor:GifMediaPickerSetup.kt$GifMediaPickerSetup</ID>
-    <ID>UtilityClassWithPublicConstructor:MediaLibraryPickerSetup.kt$MediaLibraryPickerSetup</ID>
-    <ID>UtilityClassWithPublicConstructor:UiHelpers.kt$UiHelpers</ID>
   </CurrentIssues>
 </SmellBaseline>

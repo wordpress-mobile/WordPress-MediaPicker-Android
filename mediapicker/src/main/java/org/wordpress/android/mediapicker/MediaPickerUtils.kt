@@ -32,17 +32,11 @@ class MediaPickerUtils @Inject constructor(
     @ApplicationContext private val context: Context,
     private val log: Log
 ) {
-    val externalStorageDir: File?
-        get() {
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                context.getExternalFilesDir(Environment.DIRECTORY_DCIM)
-            } else {
-                @Suppress("Deprecation")
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
-            }
-        }
+    companion object {
+        private const val FOUR_KB = 4096
+    }
 
-    val isCameraAvailable: Boolean
+    private val isCameraAvailable: Boolean
         get() = context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
 
     fun createSystemPickerIntent(
@@ -187,7 +181,7 @@ class MediaPickerUtils @Inject constructor(
     ): ByteArray {
         val output = ByteArrayOutputStream()
         try {
-            val buffer = ByteArray(if (byteCount > 0) byteCount else 4096)
+            val buffer = ByteArray(if (byteCount > 0) byteCount else FOUR_KB)
             var read: Int
             while (stream.read(buffer).also { read = it } >= 0) {
                 output.write(buffer, 0, read)

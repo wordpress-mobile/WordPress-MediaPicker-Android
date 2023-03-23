@@ -148,7 +148,7 @@ class DeviceMediaLoader @Inject constructor(
         )
     }
 
-    private fun File.lastModifiedInSecs() = this.lastModified() / 1000
+    private fun File.lastModifiedInSecs() = this.lastModified() / MILLIS
 
     fun getMimeType(mediaUri: MediaUri): String? {
         val uri = mediaUri.asAndroidUri()
@@ -168,5 +168,6 @@ class DeviceMediaLoader @Inject constructor(
         private const val ID_COL = Images.Media._ID
         private const val ID_DATE_MODIFIED = MediaColumns.DATE_MODIFIED
         private const val ID_TITLE = MediaColumns.TITLE
+        private const val MILLIS = 1000L
     }
 }
