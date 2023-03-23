@@ -469,7 +469,7 @@ internal class MediaPickerFragment : Fragment() {
 
     private fun MediaPickerLibFragmentBinding.setupAdapter(items: List<MediaPickerUiItem>) {
         if (recycler.adapter == null) {
-            recycler.adapter = MediaPickerAdapter(lifecycleScope)
+            recycler.adapter = MediaPickerAdapter()
         }
         val adapter = recycler.adapter as MediaPickerAdapter
 
