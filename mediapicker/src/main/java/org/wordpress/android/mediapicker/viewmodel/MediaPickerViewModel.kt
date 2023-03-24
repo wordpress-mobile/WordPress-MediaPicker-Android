@@ -92,6 +92,7 @@ import org.wordpress.android.mediapicker.util.distinct
 import org.wordpress.android.mediapicker.util.merge
 import javax.inject.Inject
 
+@Suppress("LargeClass")
 @HiltViewModel
 internal class MediaPickerViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
@@ -350,6 +351,7 @@ internal class MediaPickerViewModel @Inject constructor(
         return ActionModeUiModel.Visible(title)
     }
 
+    @Suppress("ComplexCondition")
     private fun refreshData(forceReload: Boolean) {
         if ((mediaPickerSetup.isStoragePermissionRequired &&
                 !permissionsHandler.hasReadStoragePermission()) ||
@@ -662,6 +664,7 @@ internal class MediaPickerViewModel @Inject constructor(
     }
 
     // Requests READ_EXTERNAL_STORAGE on devices running SDK < 33
+    @Suppress("NestedBlockDepth")
     private fun buildOldSoftAskView(softAskRequest: SoftAskRequest?): SoftAskViewUiModel {
         if (softAskRequest != null && softAskRequest.show) {
             val type = softAskRequest.types.first()
@@ -723,6 +726,7 @@ internal class MediaPickerViewModel @Inject constructor(
 
     // Requests granular media permissions on devices running SDK >= 33
     @RequiresApi(VERSION_CODES.TIRAMISU)
+    @Suppress("LongMethod")
     private fun buildMediaSoftAskRequest(softAskRequest: SoftAskRequest?): SoftAskViewUiModel {
         if (softAskRequest != null && softAskRequest.show) {
             if (softAskRequest.types.size > 1) {

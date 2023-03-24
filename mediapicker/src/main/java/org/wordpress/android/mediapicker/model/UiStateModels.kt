@@ -101,6 +101,7 @@ internal class UiStateModels {
             }
         }
 
+        @Suppress("ExceptionRaisedInUnexpectedLocation")
         override fun toString(): String {
             return when (this) {
                 CAMERA -> Manifest.permission.CAMERA
