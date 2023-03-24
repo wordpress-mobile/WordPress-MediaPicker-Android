@@ -174,6 +174,7 @@ fun <S, T, U, V, W> merge(
  * @param sourceE fifth source
  * @return new data source
  */
+@Suppress("LongParameterList")
 fun <S, T, U, V, W, X> merge(
     sourceA: LiveData<S>,
     sourceB: LiveData<T>,

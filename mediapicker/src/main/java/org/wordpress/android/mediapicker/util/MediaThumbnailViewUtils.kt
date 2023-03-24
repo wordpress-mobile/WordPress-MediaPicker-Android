@@ -29,6 +29,7 @@ internal class MediaThumbnailViewUtils {
         displaySelection(animateSelection, isSelected, imgThumbnail)
     }
 
+    @Suppress("LongParameterList")
     fun setupFileImageView(
         container: View,
         imgThumbnail: ImageView,

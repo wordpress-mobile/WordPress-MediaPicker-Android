@@ -156,6 +156,7 @@ internal class MediaPickerFragment : Fragment() {
         }
     }
 
+    @Suppress("LongMethod", "ComplexMethod")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -469,7 +470,7 @@ internal class MediaPickerFragment : Fragment() {
 
     private fun MediaPickerLibFragmentBinding.setupAdapter(items: List<MediaPickerUiItem>) {
         if (recycler.adapter == null) {
-            recycler.adapter = MediaPickerAdapter(lifecycleScope)
+            recycler.adapter = MediaPickerAdapter()
         }
         val adapter = recycler.adapter as MediaPickerAdapter
 

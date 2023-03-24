@@ -19,9 +19,7 @@ import org.wordpress.android.mediapicker.ui.viewholder.ThumbnailViewHolder
 import org.wordpress.android.mediapicker.ui.viewholder.VideoThumbnailViewHolder
 import org.wordpress.android.mediapicker.util.MediaThumbnailViewUtils
 
-internal class MediaPickerAdapter internal constructor(
-    private val coroutineScope: CoroutineScope
-) : Adapter<ThumbnailViewHolder>() {
+internal class MediaPickerAdapter internal constructor() : Adapter<ThumbnailViewHolder>() {
     private val thumbnailViewUtils = MediaThumbnailViewUtils()
     private var mediaList = listOf<MediaPickerUiItem>()
 
@@ -40,7 +38,7 @@ internal class MediaPickerAdapter internal constructor(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ThumbnailViewHolder {
         return when (viewType) {
             Type.PHOTO.ordinal -> PhotoThumbnailViewHolder(parent, thumbnailViewUtils)
-            Type.VIDEO.ordinal -> VideoThumbnailViewHolder(parent, thumbnailViewUtils, coroutineScope)
+            Type.VIDEO.ordinal -> VideoThumbnailViewHolder(parent, thumbnailViewUtils)
             Type.FILE.ordinal -> FileThumbnailViewHolder(parent, thumbnailViewUtils)
             Type.NEXT_PAGE_LOADER.ordinal -> LoaderViewHolder(parent)
             else -> throw IllegalArgumentException("Unexpected view type")

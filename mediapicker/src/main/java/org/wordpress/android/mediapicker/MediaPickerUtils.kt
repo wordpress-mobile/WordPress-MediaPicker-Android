@@ -32,17 +32,11 @@ class MediaPickerUtils @Inject constructor(
     @ApplicationContext private val context: Context,
     private val log: Log
 ) {
-    val externalStorageDir: File?
-        get() {
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                context.getExternalFilesDir(Environment.DIRECTORY_DCIM)
-            } else {
-                @Suppress("Deprecation")
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
-            }
-        }
+    companion object {
+        private const val FOUR_KB = 4096
+    }
 
-    val isCameraAvailable: Boolean
+    private val isCameraAvailable: Boolean
         get() = context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
 
     fun createSystemPickerIntent(
@@ -71,7 +65,7 @@ class MediaPickerUtils @Inject constructor(
                 ".jpg",
                 storageDir
             )
-        } catch (e: RuntimeException) {
+        } catch (e: IOException) {
             log.e(e)
         }
         return file
@@ -83,25 +77,23 @@ class MediaPickerUtils @Inject constructor(
      * Create an intent for capturing a device photo
      */
     fun createCaptureImageIntent(tempFilePath: String): Intent? {
-        if (!isCameraAvailable) {
-            return null
-        }
-
-        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { intent ->
-            // Ensure that there's a camera activity to handle the intent
-            intent.resolveActivity(context.packageManager)?.also {
-                // capturedPhotoPath = file.absolutePath
-                val authority = context.applicationContext.packageName + ".provider"
-                val imageUri = FileProvider.getUriForFile(
-                    context,
-                    authority,
-                    File(tempFilePath)
-                )
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
-                return intent
+        return if (!isCameraAvailable) {
+            null
+        } else {
+            Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { intent ->
+                // Ensure that there's a camera activity to handle the intent
+                intent.resolveActivity(context.packageManager)?.also {
+                    // capturedPhotoPath = file.absolutePath
+                    val authority = context.applicationContext.packageName + ".provider"
+                    val imageUri = FileProvider.getUriForFile(
+                        context,
+                        authority,
+                        File(tempFilePath)
+                    )
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+                }
             }
         }
-        return null
     }
 
     fun getFilePath(uri: Uri): String? {
@@ -112,6 +104,7 @@ class MediaPickerUtils @Inject constructor(
         }
     }
 
+    @Suppress("NestedBlockDepth")
     private fun getMediaStoreFilePath(uri: Uri): String? {
         var path: String? = null
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -155,7 +148,7 @@ class MediaPickerUtils @Inject constructor(
         ) { path: String, _: Uri? -> log.d("Media scanner finished scanning $path") }
     }
 
-    @Suppress("Deprecation", "Recycle")
+    @Suppress("Deprecation", "Recycle", "TooGenericExceptionCaught")
     private fun getLegacyMediaStorePath(uri: Uri): String? {
         val filePathColumn = arrayOf(Media.DATA)
         try {
@@ -175,7 +168,7 @@ class MediaPickerUtils @Inject constructor(
     private fun createTempFile(): File? {
         return try {
             File.createTempFile("temp-${System.currentTimeMillis()}", ".jpg")
-        } catch (e: RuntimeException) {
+        } catch (e: IOException) {
             log.e(e)
             null
         }
@@ -187,7 +180,7 @@ class MediaPickerUtils @Inject constructor(
     ): ByteArray {
         val output = ByteArrayOutputStream()
         try {
-            val buffer = ByteArray(if (byteCount > 0) byteCount else 4096)
+            val buffer = ByteArray(if (byteCount > 0) byteCount else FOUR_KB)
             var read: Int
             while (stream.read(buffer).also { read = it } >= 0) {
                 output.write(buffer, 0, read)
@@ -215,7 +208,7 @@ class MediaPickerUtils @Inject constructor(
             } finally {
                 output?.close()
             }
-        } catch (e: Exception) {
+        } catch (e: IOException) {
             log.e(e)
             false
         }

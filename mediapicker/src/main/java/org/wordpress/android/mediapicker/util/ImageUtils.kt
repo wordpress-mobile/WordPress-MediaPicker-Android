@@ -45,39 +45,7 @@ fun ImageView.load(
         .load(imgUrl)
         .error(drawableResId)
         .placeholder(drawableResId)
-        .fitCenter() // TODO: we might need to make this customisable based on the needs
+        .fitCenter()
         .into(this)
         .clearOnDetach()
-}
-
-// TODO: Anitaa: we would need to find a way to decouple VideoLoader since it uses FluxC internally
-fun ImageView.loadThumbnailFromVideoUrl(
-    coroutineScope: CoroutineScope,
-    videoUrl: String
-) {
-//    val context = this.context
-//    val imageType = VIDEO
-//    if (!context.isAvailable()) return
-//    videoLoader?.runIfMediaNotTooBig(coroutineScope,
-//        videoUrl,
-//        loadAction = {
-//            Glide.with(context)
-//                .load(videoUrl)
-//                .addFallback(imageType)
-//                .addPlaceholder(imageType)
-//                .applyScaleType(scaleType)
-//                .attachRequestListener(requestListener)
-//                .apply(RequestOptions().frame(0))
-//                .into(imageView)
-//                .clearOnDetach()
-//        },
-//        fallbackAction = {
-//            if (!context.isAvailable()) return@runIfMediaNotTooBig
-//            GlideApp.with(context)
-//                .load(placeholderManager.getErrorResource(imageType))
-//                .addPlaceholder(imageType)
-//                .addFallback(imageType)
-//                .into(imageView)
-//                .clearOnDetach()
-//        }) ?: throw java.lang.IllegalArgumentException("Video loader has to be set")
 }

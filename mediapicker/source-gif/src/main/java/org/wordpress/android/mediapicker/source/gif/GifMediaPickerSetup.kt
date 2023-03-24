@@ -5,7 +5,7 @@ import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.GIF_LIB
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.SearchMode.VISIBLE_TOGGLED
 import org.wordpress.android.mediapicker.model.MediaType.IMAGE
 
-class GifMediaPickerSetup {
+class GifMediaPickerSetup private constructor() {
     companion object {
         fun build(canMultiSelect: Boolean): MediaPickerSetup {
             return MediaPickerSetup(

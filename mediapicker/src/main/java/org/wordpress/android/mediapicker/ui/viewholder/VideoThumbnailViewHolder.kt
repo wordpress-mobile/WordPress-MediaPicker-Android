@@ -3,21 +3,18 @@ package org.wordpress.android.mediapicker.ui.viewholder
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import kotlinx.coroutines.CoroutineScope
 import org.wordpress.android.mediapicker.R
 import org.wordpress.android.mediapicker.R.layout
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem
 import org.wordpress.android.mediapicker.util.MediaThumbnailViewUtils
 import org.wordpress.android.mediapicker.util.cancelRequestAndClearImageView
-import org.wordpress.android.mediapicker.util.loadThumbnailFromVideoUrl
 
 /*
  * ViewHolder containing a device thumbnail
  */
 internal class VideoThumbnailViewHolder(
     parent: ViewGroup,
-    private val mediaThumbnailViewUtils: MediaThumbnailViewUtils,
-    private val coroutineScope: CoroutineScope
+    private val mediaThumbnailViewUtils: MediaThumbnailViewUtils
 ) : ThumbnailViewHolder(
     parent,
     layout.media_picker_lib_thumbnail_item
@@ -40,10 +37,6 @@ internal class VideoThumbnailViewHolder(
             return
         }
         imgThumbnail.cancelRequestAndClearImageView()
-        imgThumbnail.loadThumbnailFromVideoUrl(
-            coroutineScope,
-            item.url
-        )
         mediaThumbnailViewUtils.setupListeners(
             imgThumbnail, item.isSelected,
             item.toggleAction,

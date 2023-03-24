@@ -10,7 +10,7 @@ import org.wordpress.android.mediapicker.api.MediaPickerSetup.SearchMode.VISIBLE
 import org.wordpress.android.mediapicker.model.MediaType.IMAGE
 import org.wordpress.android.mediapicker.model.MediaTypes
 
-class DeviceMediaPickerSetup {
+class DeviceMediaPickerSetup private constructor() {
     companion object {
         fun buildMediaPicker(mediaTypes: MediaTypes, canMultiSelect: Boolean): MediaPickerSetup {
             return MediaPickerSetup(
