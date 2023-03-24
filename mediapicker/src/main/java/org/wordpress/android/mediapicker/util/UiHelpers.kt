@@ -5,7 +5,7 @@ import org.wordpress.android.mediapicker.model.UiString
 import org.wordpress.android.mediapicker.model.UiString.UiStringRes
 import org.wordpress.android.mediapicker.model.UiString.UiStringText
 
-internal class UiHelpers {
+internal class UiHelpers private constructor() {
     companion object {
         fun getTextOfUiString(context: Context, uiString: UiString): String =
             when (uiString) {

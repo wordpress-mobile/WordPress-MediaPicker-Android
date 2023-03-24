@@ -95,9 +95,9 @@ internal class MediaPickerPermissionUtils @Inject constructor(
     /*
      * returns true if we know the app has asked for the passed permission
      */
+    @Suppress("ReturnCount")
     private suspend fun isPermissionAsked(context: Context, permission: String): Boolean {
-        val key: Key = getPermissionAskedKey(permission)
-            ?: return false
+        val key: Key = getPermissionAskedKey(permission) ?: return false
 
         // if the key exists, we've already stored whether this permission has been asked for
         if (perms.wasPermissionAsked(key)) {

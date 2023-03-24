@@ -1,7 +1,7 @@
 common_params:
   # Common plugin settings to use with the `plugins` key.
   - &common_plugins
-    - automattic/bash-cache#2.11.0
+    - automattic/a8c-ci-toolkit#2.15.0
 
 steps:
   - label: "Gradle Wrapper Validation"
@@ -12,13 +12,13 @@ steps:
   # Wait for Gradle Wrapper to be validated before running any other jobs
   - wait
 
-  - label: "ktlint"
-    key: "ktlint"
-    plugins: *common_plugins
+  - label: "detekt"
+    key: "detekt"
     command: |
-      ./gradlew ciktlint
+      ./gradlew detekt
+    plugins: *common_plugins
     artifact_paths:
-      - "**/build/ktlint.xml"
+      - "**/build/reports/detekt/detekt.html"
   - label: "lint"
     key: "lint"
     plugins: *common_plugins
@@ -36,7 +36,7 @@ steps:
   - label: "Publish :mediapicker:domain"
     key: "publish-mediapicker-domain"
     depends_on:
-      - "ktlint"
+      - "detekt"
       - "lint"
       - "unit-test"
     plugins: *common_plugins

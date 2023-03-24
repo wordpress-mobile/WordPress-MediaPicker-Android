@@ -106,6 +106,8 @@ internal class MediaPickerViewModel @Inject constructor(
 ) : ViewModel() {
     companion object {
         private const val CAPTURED_PHOTO_PATH = "CAPTURED_PHOTO_PATH"
+        private const val SEARCH_DELAY = 300L
+        private const val SELECTOR_DELAY = 100L
     }
     private lateinit var mediaLoader: MediaLoader
     private val loadActions = Channel<LoadAction>()
@@ -197,6 +199,7 @@ internal class MediaPickerViewModel @Inject constructor(
     var lastTappedAction: MediaPickerActionEvent? = null
     private lateinit var mediaPickerSetup: MediaPickerSetup
 
+    @Suppress("LongMethod", "ComplexMethod")
     private fun buildUiModel(
         domainModel: DomainModel?,
         selectedIds: List<Identifier>?,
@@ -641,6 +644,7 @@ internal class MediaPickerViewModel @Inject constructor(
         triggerAction(SwitchSource(source))
     }
 
+    @Suppress("NestedBlockDepth")
     private fun buildSoftAskView(softAskRequest: SoftAskRequest?): SoftAskViewUiModel {
         return if (softAskRequest?.types?.contains(IMAGES) == true ||
             softAskRequest?.types?.contains(PermissionsRequested.VIDEO) == true ||
@@ -784,7 +788,7 @@ internal class MediaPickerViewModel @Inject constructor(
     fun onSearch(query: String) {
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
-            delay(300)
+            delay(SEARCH_DELAY)
             mediaPickerTracker.trackSearch(mediaPickerSetup)
             loadActions.send(LoadAction.Filter(query))
         }
@@ -819,7 +823,7 @@ internal class MediaPickerViewModel @Inject constructor(
 
     fun onUrisSelectedFromSystemPicker(uris: List<MediaUri>) {
         viewModelScope.launch {
-            delay(100)
+            delay(SELECTOR_DELAY)
             insertIdentifiers(uris.map { LocalUri(it) })
         }
     }

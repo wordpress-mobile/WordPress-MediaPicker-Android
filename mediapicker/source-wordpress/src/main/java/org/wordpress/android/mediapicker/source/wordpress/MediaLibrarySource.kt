@@ -27,8 +27,8 @@ import org.wordpress.android.mediapicker.model.MediaType.IMAGE
 import org.wordpress.android.mediapicker.model.MediaType.VIDEO
 import org.wordpress.android.mediapicker.model.UiString.UiStringRes
 import org.wordpress.android.mediapicker.model.UiString.UiStringText
-import org.wordpress.android.mediapicker.source.wordpress.util.DateTimeUtilsWrapper
 import org.wordpress.android.mediapicker.source.wordpress.util.NetworkUtilsWrapper
+import org.wordpress.android.util.DateTimeUtils
 import javax.inject.Inject
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
@@ -38,7 +38,6 @@ class MediaLibrarySource(
     private val mediaStore: MediaStore,
     private val dispatcher: Dispatcher,
     private val bgDispatcher: CoroutineDispatcher,
-    private val dateTimeUtilsWrapper: DateTimeUtilsWrapper,
     private val networkUtilsWrapper: NetworkUtilsWrapper,
     private val siteModel: SiteModel,
     private val mediaTypes: Set<MediaType>
@@ -134,7 +133,7 @@ class MediaLibrarySource(
                 mediaModel.title,
                 mediaType,
                 mediaModel.mimeType,
-                dateTimeUtilsWrapper.dateFromIso8601(mediaModel.uploadDate).time
+                DateTimeUtils.dateFromIso8601(mediaModel.uploadDate).time
             )
         }
     }
@@ -194,7 +193,6 @@ class MediaLibrarySource(
         private val mediaStore: MediaStore,
         private val dispatcher: Dispatcher,
         private val bgDispatcher: CoroutineDispatcher,
-        private val dateTimeUtilsWrapper: DateTimeUtilsWrapper,
         private val networkUtilsWrapper: NetworkUtilsWrapper,
         private val siteModel: SiteModel
     ) {
@@ -203,7 +201,6 @@ class MediaLibrarySource(
                 mediaStore,
                 dispatcher,
                 bgDispatcher,
-                dateTimeUtilsWrapper,
                 networkUtilsWrapper,
                 siteModel,
                 mediaTypes
