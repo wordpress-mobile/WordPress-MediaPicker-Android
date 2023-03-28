@@ -6,6 +6,7 @@ import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.CAMERA
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.GIF_LIBRARY
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.SYSTEM_PICKER
+import org.wordpress.android.mediapicker.model.MediaTypes.EVERYTHING
 import org.wordpress.android.mediapicker.model.MediaTypes.IMAGES
 import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup
 import org.wordpress.android.mediapicker.source.gif.GifMediaPickerSetup
@@ -18,7 +19,7 @@ class MediaPickerSetupFactory @Inject constructor() : MediaPickerSetup.Factory {
             GIF_LIBRARY -> GifMediaPickerSetup.build(canMultiSelect = true)
             CAMERA -> DeviceMediaPickerSetup.buildCameraPicker()
             DEVICE -> DeviceMediaPickerSetup.buildMediaPicker(
-                mediaTypes = IMAGES,
+                mediaTypes = EVERYTHING,
                 canMultiSelect = true
             )
             SYSTEM_PICKER -> DeviceMediaPickerSetup.buildSystemPicker(
