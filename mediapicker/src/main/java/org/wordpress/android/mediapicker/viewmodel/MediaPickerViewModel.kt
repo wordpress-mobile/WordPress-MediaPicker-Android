@@ -598,18 +598,20 @@ internal class MediaPickerViewModel @Inject constructor(
     }
 
     fun checkMediaPermissions(permissions: List<PermissionsRequested>, isAlwaysDenied: Boolean) {
-        if (!mediaPickerSetup.isImagesPermissionRequired &&
-            !mediaPickerSetup.isVideoPermissionRequired &&
-            !mediaPickerSetup.isAudioPermissionRequired
-        ) {
-            return
-        }
-
         val haveAllPermissions = permissions.all {
             when (it) {
-                IMAGES -> permissionsHandler.hasImagesPermission()
-                PermissionsRequested.VIDEO -> permissionsHandler.hasVideoPermission()
-                PermissionsRequested.AUDIO -> permissionsHandler.hasAudioPermission()
+                IMAGES -> {
+                    mediaPickerSetup.isImagesPermissionRequired &&
+                            permissionsHandler.hasImagesPermission()
+                }
+                PermissionsRequested.VIDEO -> {
+                    mediaPickerSetup.isVideoPermissionRequired &&
+                            permissionsHandler.hasVideoPermission()
+                }
+                PermissionsRequested.AUDIO -> {
+                    mediaPickerSetup.isAudioPermissionRequired &&
+                            permissionsHandler.hasAudioPermission()
+                }
                 else -> throw UnsupportedOperationException("Unsupported permission: $it")
             }
         }
