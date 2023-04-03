@@ -548,7 +548,7 @@ internal class MediaPickerFragment : Fragment() {
         }
     }
 
-    private suspend fun arePermissionsAlwaysDenied(vararg permissions: PermissionsRequested): Boolean {
+    private suspend fun arePermissionsAlwaysDenied(permissions: List<PermissionsRequested>): Boolean {
         return permissions.any { permission ->
             permissionUtils.isPermissionAlwaysDenied(requireActivity(), permission.toString())
         }
@@ -562,7 +562,7 @@ internal class MediaPickerFragment : Fragment() {
         if (!isAdded) {
             return
         }
-        viewModel.checkStoragePermission(arePermissionsAlwaysDenied(READ_STORAGE))
+        viewModel.checkStoragePermission(arePermissionsAlwaysDenied(listOf(READ_STORAGE)))
     }
 
     private suspend fun checkCameraPermissions(permissions: List<PermissionsRequested>) {
@@ -571,7 +571,7 @@ internal class MediaPickerFragment : Fragment() {
         }
         viewModel.checkCameraPermission(
             permissions = permissions,
-            areAlwaysDenied = arePermissionsAlwaysDenied(*permissions.toTypedArray())
+            areAlwaysDenied = arePermissionsAlwaysDenied(permissions)
         )
     }
 
@@ -581,7 +581,7 @@ internal class MediaPickerFragment : Fragment() {
         }
         viewModel.checkMediaPermissions(
             permissions = permissions,
-            isAlwaysDenied = arePermissionsAlwaysDenied(*permissions.toTypedArray())
+            isAlwaysDenied = arePermissionsAlwaysDenied(permissions)
         )
     }
 
