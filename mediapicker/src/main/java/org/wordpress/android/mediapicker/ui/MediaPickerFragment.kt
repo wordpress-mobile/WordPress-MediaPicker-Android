@@ -1,8 +1,6 @@
 package org.wordpress.android.mediapicker.ui
 
-import android.Manifest.permission.CAMERA
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
-import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.app.Activity
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
@@ -18,7 +16,6 @@ import android.view.ViewGroup
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.text.HtmlCompat
@@ -58,7 +55,8 @@ import org.wordpress.android.mediapicker.model.MediaUri
 import org.wordpress.android.mediapicker.model.UiStateModels.ActionModeUiModel
 import org.wordpress.android.mediapicker.model.UiStateModels.FabUiModel
 import org.wordpress.android.mediapicker.model.UiStateModels.PermissionsRequested
-import org.wordpress.android.mediapicker.model.UiStateModels.PermissionsRequested.Companion
+import org.wordpress.android.mediapicker.model.UiStateModels.PermissionsRequested.READ_STORAGE
+import org.wordpress.android.mediapicker.model.UiStateModels.PermissionsRequested.WRITE_STORAGE
 import org.wordpress.android.mediapicker.model.UiStateModels.PhotoListUiModel
 import org.wordpress.android.mediapicker.model.UiStateModels.PhotoListUiModel.Data
 import org.wordpress.android.mediapicker.model.UiStateModels.PhotoListUiModel.Empty
@@ -66,8 +64,6 @@ import org.wordpress.android.mediapicker.model.UiStateModels.PhotoListUiModel.Hi
 import org.wordpress.android.mediapicker.model.UiStateModels.PhotoListUiModel.Loading
 import org.wordpress.android.mediapicker.model.UiStateModels.SearchUiModel
 import org.wordpress.android.mediapicker.model.UiStateModels.SoftAskViewUiModel
-import org.wordpress.android.mediapicker.util.AnimUtils
-import org.wordpress.android.mediapicker.util.AnimUtils.Duration.MEDIUM
 import org.wordpress.android.mediapicker.util.MediaPickerLinkMovementMethod
 import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils
 import org.wordpress.android.mediapicker.util.MediaUtils
@@ -95,6 +91,14 @@ internal class MediaPickerFragment : Fragment() {
     private var binding: MediaPickerLibFragmentBinding? = null
     private lateinit var mediaPickerSetup: MediaPickerSetup
 
+    private val cameraPermissions: List<PermissionsRequested> by lazy {
+        mutableListOf(PermissionsRequested.CAMERA).apply {
+            if (mediaPickerSetup.isReadStoragePermissionRequired) {
+                add(WRITE_STORAGE)
+            }
+        }
+    }
+
     private val systemPicker = registerForActivityResult(StartActivityForResult()) {
         handleSystemPickerResult(it)
     }
@@ -121,7 +125,7 @@ internal class MediaPickerFragment : Fragment() {
             if (allGranted) {
                 viewModel.onCameraPermissionsGranted()
             } else {
-                checkCameraPermissions()
+                checkCameraPermissions(cameraPermissions)
             }
         }
     }
@@ -184,10 +188,7 @@ internal class MediaPickerFragment : Fragment() {
         var selectedIds: List<Identifier> = emptyList()
         var lastTappedAction: MediaPickerActionEvent? = null
         if (savedInstanceState != null) {
-            lastTappedAction =
-                MediaPickerActionEvent.fromBundle(
-                    savedInstanceState
-                )
+            lastTappedAction = MediaPickerActionEvent.fromBundle(savedInstanceState)
             if (savedInstanceState.containsKey(KEY_SELECTED_IDS)) {
                 selectedIds = savedInstanceState.getParcelableArrayList<Identifier>(
                     KEY_SELECTED_IDS
@@ -271,7 +272,7 @@ internal class MediaPickerFragment : Fragment() {
                             finish()
                         }
                     }
-                    RequestCameraPermission -> requestCameraPermissions()
+                    is RequestCameraPermission -> requestCameraPermissions(navigationEvent.permissions)
                     RequestStoragePermission -> requestStoragePermission()
                     is RequestMediaPermissions -> requestMediaPermissions(navigationEvent.permissions)
                     ShowAppSettings -> permissionUtils.showAppSettings(requireActivity())
@@ -410,7 +411,7 @@ internal class MediaPickerFragment : Fragment() {
             softAskView.visibility = View.VISIBLE
         } else {
             if (softAskView.visibility == View.VISIBLE) {
-                AnimUtils.fadeOut(softAskView, MEDIUM)
+                softAskView.visibility = View.GONE
             }
         }
     }
@@ -532,7 +533,7 @@ internal class MediaPickerFragment : Fragment() {
     private fun checkPermissions() {
         lifecycleScope.launch {
             if (mediaPickerSetup.primaryDataSource == DataSource.CAMERA) {
-                checkCameraPermissions()
+                checkCameraPermissions(cameraPermissions)
             } else {
                 if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
                     checkMediaPermissions(
@@ -547,15 +548,7 @@ internal class MediaPickerFragment : Fragment() {
         }
     }
 
-    private suspend fun isStoragePermissionAlwaysDenied(): Boolean {
-        return permissionUtils.isPermissionAlwaysDenied(requireActivity(), READ_EXTERNAL_STORAGE)
-    }
-
-    private suspend fun isCameraPermissionAlwaysDenied(): Boolean {
-        return permissionUtils.isPermissionAlwaysDenied(requireActivity(), CAMERA)
-    }
-
-    private suspend fun isMediaPermissionAlwaysDenied(permissions: List<PermissionsRequested>): Boolean {
+    private suspend fun arePermissionsAlwaysDenied(vararg permissions: PermissionsRequested): Boolean {
         return permissions.any { permission ->
             permissionUtils.isPermissionAlwaysDenied(requireActivity(), permission.toString())
         }
@@ -569,16 +562,16 @@ internal class MediaPickerFragment : Fragment() {
         if (!isAdded) {
             return
         }
-        viewModel.checkStoragePermission(isStoragePermissionAlwaysDenied())
+        viewModel.checkStoragePermission(arePermissionsAlwaysDenied(READ_STORAGE))
     }
 
-    private suspend fun checkCameraPermissions() {
+    private suspend fun checkCameraPermissions(permissions: List<PermissionsRequested>) {
         if (!isAdded) {
             return
         }
         viewModel.checkCameraPermission(
-            isCameraPermissionAlwaysDenied() || mediaPickerSetup.isStoragePermissionRequired &&
-                isStoragePermissionAlwaysDenied()
+            permissions = permissions,
+            areAlwaysDenied = arePermissionsAlwaysDenied(*permissions.toTypedArray())
         )
     }
 
@@ -588,7 +581,7 @@ internal class MediaPickerFragment : Fragment() {
         }
         viewModel.checkMediaPermissions(
             permissions = permissions,
-            isAlwaysDenied = isMediaPermissionAlwaysDenied(permissions)
+            isAlwaysDenied = arePermissionsAlwaysDenied(*permissions.toTypedArray())
         )
     }
 
@@ -596,13 +589,8 @@ internal class MediaPickerFragment : Fragment() {
         storagePermissionRequest.launch(arrayOf(READ_EXTERNAL_STORAGE))
     }
 
-    private fun requestCameraPermissions() {
-        val permissions = if (mediaPickerSetup.isStoragePermissionRequired) {
-            arrayOf(CAMERA, WRITE_EXTERNAL_STORAGE)
-        } else {
-            arrayOf(CAMERA)
-        }
-        cameraPermissionRequest.launch(permissions)
+    private fun requestCameraPermissions(permissions: List<PermissionsRequested>) {
+        cameraPermissionRequest.launch(permissions.map { it.toString() }.toTypedArray())
     }
 
     private fun requestMediaPermissions(permissions: List<PermissionsRequested>) {

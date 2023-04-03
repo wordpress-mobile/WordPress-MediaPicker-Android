@@ -15,7 +15,9 @@ internal sealed class MediaNavigationEvent {
     object Exit : MediaNavigationEvent()
     object ShowAppSettings : MediaNavigationEvent()
     object RequestStoragePermission : MediaNavigationEvent()
-    object RequestCameraPermission : MediaNavigationEvent()
+    data class RequestCameraPermission(
+        val permissions: List<PermissionsRequested>
+    ) : MediaNavigationEvent()
     data class RequestMediaPermissions(
         val permissions: List<PermissionsRequested>
     ) : MediaNavigationEvent()
