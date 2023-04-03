@@ -8,15 +8,12 @@
     <string name="photo_picker_use_audio">Use this audio</string>
     <string name="photo_picker_use_media">Use this media</string>
     <string name="media_picker_soft_ask_permissions_denied">Denied access to your media files. To fix this, edit your permissions and enable %1$s.</string>
-    <string name="media_picker_soft_ask_label_media_files">We need permission to access your media files</string>
-    <string name="camera_soft_ask_label">We need permission to access your camera</string>
-    <string name="camera_and_files_soft_ask_label">We need permission to access your camera &amp; media files</string>
+    <string name="media_picker_soft_ask_permissions_request">We need permission to access your %1$s.</string>
     <string name="button_edit_permissions">Edit permissions</string>
     <string name="photo_picker_soft_ask_allow">Allow</string>
     <string name="permission_storage">Storage</string>
     <string name="permission_files_and_media">Files and media</string>
     <string name="permission_camera">Camera</string>
-    <string name="permission_microphone">Microphone</string>
     <string name="permission_photos_videos">Photos and videos</string>
     <string name="permission_audio">Music and audio</string>
     <string name="unknown">Unknown</string>
