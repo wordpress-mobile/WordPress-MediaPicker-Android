@@ -22,6 +22,7 @@ internal class Permissions @Inject constructor(
 ) {
     companion object {
         val PERMISSION_STORAGE_READ = booleanPreferencesKey("PERMISSION_STORAGE_READ")
+        val PERMISSION_STORAGE_WRITE = booleanPreferencesKey("PERMISSION_STORAGE_WRITE")
         val PERMISSION_CAMERA = booleanPreferencesKey("PERMISSION_CAMERA")
         val PERMISSION_IMAGES_READ = booleanPreferencesKey("PERMISSION_IMAGES_READ")
         val PERMISSION_VIDEO_READ = booleanPreferencesKey("PERMISSION_VIDEO_READ")
