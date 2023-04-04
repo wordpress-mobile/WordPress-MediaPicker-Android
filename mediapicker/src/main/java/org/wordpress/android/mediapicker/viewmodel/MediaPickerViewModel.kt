@@ -561,12 +561,9 @@ internal class MediaPickerViewModel @Inject constructor(
     }
 
     fun checkStoragePermission(isAlwaysDenied: Boolean) {
-        if (!mediaPickerSetup.isReadStoragePermissionRequired) {
-            return
-        }
-
-        if (permissionsHandler.hasReadStoragePermission()) {
+        if (hasAllRequiredPermissions()) {
             hideSoftRequest(shouldRefreshDataIfEmpty = true)
+            return
         } else {
             showSoftRequest(
                 permissions = listOf(READ_STORAGE),
@@ -599,25 +596,7 @@ internal class MediaPickerViewModel @Inject constructor(
     }
 
     fun checkMediaPermissions(permissions: List<PermissionsRequested>, isAlwaysDenied: Boolean) {
-        val haveAllPermissions = permissions.all {
-            when (it) {
-                IMAGES -> {
-                    mediaPickerSetup.isImagesPermissionRequired &&
-                            permissionsHandler.hasImagesPermission()
-                }
-                PermissionsRequested.VIDEOS -> {
-                    mediaPickerSetup.isVideoPermissionRequired &&
-                            permissionsHandler.hasVideoPermission()
-                }
-                PermissionsRequested.MUSIC -> {
-                    mediaPickerSetup.isAudioPermissionRequired &&
-                            permissionsHandler.hasAudioPermission()
-                }
-                else -> throw UnsupportedOperationException("Unsupported permission: $it")
-            }
-        }
-
-        if (haveAllPermissions) {
+        if (hasAllRequiredPermissions()) {
             hideSoftRequest(shouldRefreshDataIfEmpty = true)
             return
         } else {
