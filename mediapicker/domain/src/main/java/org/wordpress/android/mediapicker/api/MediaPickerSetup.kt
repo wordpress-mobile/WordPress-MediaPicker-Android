@@ -35,13 +35,13 @@ data class MediaPickerSetup(
     }
 
     val isImagesPermissionRequired = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            allowedTypes.contains(IMAGE)
+            allowedTypes.contains(IMAGE) && primaryDataSource == DEVICE
 
     val isVideoPermissionRequired = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            allowedTypes.contains(VIDEO)
+            allowedTypes.contains(VIDEO) && primaryDataSource == DEVICE
 
     val isAudioPermissionRequired = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            allowedTypes.contains(AUDIO)
+            allowedTypes.contains(AUDIO) && primaryDataSource == DEVICE
 
     val areMediaPermissionsRequired = isImagesPermissionRequired || isVideoPermissionRequired || isAudioPermissionRequired
 
