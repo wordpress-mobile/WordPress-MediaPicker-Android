@@ -66,7 +66,6 @@ import org.wordpress.android.mediapicker.model.UiStateModels.FabUiModel
 import org.wordpress.android.mediapicker.model.UiStateModels.MediaPickerUiState
 import org.wordpress.android.mediapicker.model.UiStateModels.PermissionsRequested
 import org.wordpress.android.mediapicker.model.UiStateModels.PermissionsRequested.CAMERA
-import org.wordpress.android.mediapicker.model.UiStateModels.PermissionsRequested.IMAGES
 import org.wordpress.android.mediapicker.model.UiStateModels.PermissionsRequested.READ_STORAGE
 import org.wordpress.android.mediapicker.model.UiStateModels.PhotoListUiModel
 import org.wordpress.android.mediapicker.model.UiStateModels.PhotoListUiModel.Data
@@ -94,7 +93,7 @@ internal class MediaPickerViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val mediaSourceFactory: MediaLoaderFactory,
     private val mediaPickerTracker: MediaPickerTracker,
-    private val permissionsHandler: MediaPickerPermissionUtils,
+    private val permissionUtils: MediaPickerPermissionUtils,
     private val resourceProvider: ResourceProvider,
     private val mimeTypeProvider: MimeTypeProvider,
     private val mediaPickerUtils: MediaPickerUtils,
@@ -420,12 +419,12 @@ internal class MediaPickerViewModel @Inject constructor(
 
     private fun hasAllRequiredPermissions(): Boolean {
         return if (mediaPickerSetup.areMediaPermissionsRequired) {
-            val images = !mediaPickerSetup.isImagesPermissionRequired || permissionsHandler.hasImagesPermission()
-            val videos = !mediaPickerSetup.isVideoPermissionRequired || permissionsHandler.hasVideoPermission()
-            val music = !mediaPickerSetup.isAudioPermissionRequired || permissionsHandler.hasAudioPermission()
+            val images = !mediaPickerSetup.isImagesPermissionRequired || permissionUtils.hasImagesPermission()
+            val videos = !mediaPickerSetup.isVideoPermissionRequired || permissionUtils.hasVideoPermission()
+            val music = !mediaPickerSetup.isAudioPermissionRequired || permissionUtils.hasAudioPermission()
             images && videos && music
         } else if (mediaPickerSetup.isReadStoragePermissionRequired) {
-            permissionsHandler.hasReadStoragePermission()
+            permissionUtils.hasReadStoragePermission()
         } else {
             true
         }
@@ -482,10 +481,7 @@ internal class MediaPickerViewModel @Inject constructor(
     }
 
     private fun startCamera() {
-        if (!permissionsHandler.hasPermissionsToTakePhotos(
-                mediaPickerSetup.isReadStoragePermissionRequired
-            )
-        ) {
+        if (!permissionUtils.hasPermissionsToTakePhotos()) {
             lastTappedAction = CapturePhoto
             return
         }
@@ -572,13 +568,10 @@ internal class MediaPickerViewModel @Inject constructor(
         }
     }
 
-    fun checkCameraPermission(permissions: List<PermissionsRequested>, areAlwaysDenied: Boolean) {
-        if (!permissionsHandler.hasPermissionsToTakePhotos(
-                mediaPickerSetup.isReadStoragePermissionRequired
-            )
-        ) {
+    fun checkCameraPermission(areAlwaysDenied: Boolean) {
+        if (!permissionUtils.hasPermissionsToTakePhotos()) {
             showSoftRequest(
-                permissions = permissions,
+                permissions = permissionUtils.permissionsForTakingPhotos,
                 isAlwaysDenied = areAlwaysDenied
             )
         } else {
@@ -638,7 +631,7 @@ internal class MediaPickerViewModel @Inject constructor(
             val permissionNames =
                 softAskRequest.permissions.map { permission ->
                     "<strong>${
-                        permissionsHandler.getPermissionName(permission)
+                        permissionUtils.getPermissionName(permission)
                     }</strong>"
                 }.distinct().joinToString(" & ")
 
