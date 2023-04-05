@@ -28,20 +28,20 @@ data class MediaPickerSetup(
         HIDDEN, VISIBLE_TOGGLED, VISIBLE_UNTOGGLED
     }
 
-    val isReadStoragePermissionRequired = when {
-        primaryDataSource == DEVICE && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU -> true
-        primaryDataSource == CAMERA && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q -> true
-        else -> false
-    }
+    val isReadStoragePermissionRequired = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU &&
+            primaryDataSource == DEVICE
 
     val isImagesPermissionRequired = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            allowedTypes.contains(IMAGE) && primaryDataSource == DEVICE
+            primaryDataSource == DEVICE && allowedTypes.contains(IMAGE)
 
     val isVideoPermissionRequired = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            allowedTypes.contains(VIDEO) && primaryDataSource == DEVICE
+            primaryDataSource == DEVICE && allowedTypes.contains(VIDEO)
 
     val isAudioPermissionRequired = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            allowedTypes.contains(AUDIO) && primaryDataSource == DEVICE
+            primaryDataSource == DEVICE && allowedTypes.contains(AUDIO)
+
+    val isWritePermissionRequired = Build.VERSION.SDK_INT <= Build.VERSION_CODES.P &&
+            primaryDataSource == CAMERA
 
     val areMediaPermissionsRequired = isImagesPermissionRequired || isVideoPermissionRequired || isAudioPermissionRequired
 
