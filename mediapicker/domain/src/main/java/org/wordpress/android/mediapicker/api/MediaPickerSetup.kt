@@ -40,9 +40,6 @@ data class MediaPickerSetup(
     val isAudioPermissionRequired = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             primaryDataSource == DEVICE && allowedTypes.contains(AUDIO)
 
-    val isWritePermissionRequired = Build.VERSION.SDK_INT <= Build.VERSION_CODES.P &&
-            primaryDataSource == CAMERA
-
     val areMediaPermissionsRequired = isImagesPermissionRequired || isVideoPermissionRequired || isAudioPermissionRequired
 
     fun toBundle(bundle: Bundle) {
