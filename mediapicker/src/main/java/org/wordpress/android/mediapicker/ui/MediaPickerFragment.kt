@@ -91,14 +91,6 @@ internal class MediaPickerFragment : Fragment() {
     private var binding: MediaPickerLibFragmentBinding? = null
     private lateinit var mediaPickerSetup: MediaPickerSetup
 
-    private val cameraPermissions: List<PermissionsRequested> by lazy {
-        mutableListOf(PermissionsRequested.CAMERA).apply {
-            if (mediaPickerSetup.isReadStoragePermissionRequired) {
-                add(WRITE_STORAGE)
-            }
-        }
-    }
-
     private val systemPicker = registerForActivityResult(StartActivityForResult()) {
         handleSystemPickerResult(it)
     }
@@ -125,7 +117,7 @@ internal class MediaPickerFragment : Fragment() {
             if (allGranted) {
                 viewModel.onCameraPermissionsGranted()
             } else {
-                checkCameraPermissions(cameraPermissions)
+                checkCameraPermissions()
             }
         }
     }
@@ -533,7 +525,7 @@ internal class MediaPickerFragment : Fragment() {
     private fun checkPermissions() {
         lifecycleScope.launch {
             if (mediaPickerSetup.primaryDataSource == DataSource.CAMERA) {
-                checkCameraPermissions(cameraPermissions)
+                checkCameraPermissions()
             } else {
                 if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
                     checkMediaPermissions(
@@ -565,13 +557,12 @@ internal class MediaPickerFragment : Fragment() {
         viewModel.checkStoragePermission(arePermissionsAlwaysDenied(listOf(READ_STORAGE)))
     }
 
-    private suspend fun checkCameraPermissions(permissions: List<PermissionsRequested>) {
+    private suspend fun checkCameraPermissions() {
         if (!isAdded) {
             return
         }
         viewModel.checkCameraPermission(
-            permissions = permissions,
-            areAlwaysDenied = arePermissionsAlwaysDenied(permissions)
+            areAlwaysDenied = arePermissionsAlwaysDenied(permissionUtils.permissionsForTakingPhotos)
         )
     }
 

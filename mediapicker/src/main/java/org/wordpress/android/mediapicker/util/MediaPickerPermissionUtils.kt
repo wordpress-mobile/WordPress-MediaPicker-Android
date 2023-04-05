@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
@@ -55,9 +54,16 @@ internal class MediaPickerPermissionUtils @Inject constructor(
         }
     }
 
-    fun hasPermissionsToTakePhotos(isStorageAccessRequired: Boolean): Boolean {
-        return hasCameraPermission() && (!isStorageAccessRequired || hasWriteStoragePermission())
+    fun hasPermissionsToTakePhotos(): Boolean {
+        return hasCameraPermission() && (VERSION.SDK_INT > VERSION_CODES.P || hasWriteStoragePermission())
     }
+
+    val permissionsForTakingPhotos: List<PermissionsRequested>
+        get() = if (VERSION.SDK_INT > VERSION_CODES.P) {
+            listOf(CAMERA)
+        } else {
+            listOf(CAMERA, WRITE_STORAGE)
+        }
 
     fun hasReadStoragePermission(): Boolean {
         return ContextCompat.checkSelfPermission(
