@@ -32,27 +32,24 @@ internal class MediaPickerActionModeCallback(private val viewModel: MediaPickerV
         val doneItem = menu.findItem(id.mnu_confirm_selection)
 
         actionMode.setTitle(viewModel.title)
-        viewModel.uiState.observe(
-            this,
-            Observer { uiState ->
-                when (val uiModel = uiState.actionModeUiModel) {
-                    is ActionModeUiModel.Hidden -> {
-                        actionMode.finish()
-                    }
-                    is ActionModeUiModel.Visible -> {
-                        when (uiModel.actionModeTitle) {
-                            is UiStringText -> {
-                                doneItem.title = uiModel.actionModeTitle.text
-                            }
-                            is UiStringRes -> {
-                                doneItem.setTitle(uiModel.actionModeTitle.stringRes)
-                            }
-                            else -> {}
+        viewModel.uiState.observe(this) { uiState ->
+            when (val uiModel = uiState.actionModeUiModel) {
+                is ActionModeUiModel.Hidden -> {
+                    actionMode.finish()
+                }
+                is ActionModeUiModel.Visible -> {
+                    when (uiModel.actionModeTitle) {
+                        is UiStringText -> {
+                            doneItem.title = uiModel.actionModeTitle.text
                         }
+                        is UiStringRes -> {
+                            doneItem.setTitle(uiModel.actionModeTitle.stringRes)
+                        }
+                        else -> {}
                     }
                 }
             }
-        )
+        }
         return true
     }
 

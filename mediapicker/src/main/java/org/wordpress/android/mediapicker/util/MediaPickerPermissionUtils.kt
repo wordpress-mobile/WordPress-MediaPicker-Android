@@ -7,7 +7,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
+import android.os.Build.VERSION
+import android.os.Build.VERSION_CODES
 import android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -18,6 +19,13 @@ import org.wordpress.android.mediapicker.R.string
 import org.wordpress.android.mediapicker.api.Log
 import org.wordpress.android.mediapicker.api.Tracker
 import org.wordpress.android.mediapicker.api.Tracker.Event
+import org.wordpress.android.mediapicker.model.UiStateModels.PermissionsRequested
+import org.wordpress.android.mediapicker.model.UiStateModels.PermissionsRequested.CAMERA
+import org.wordpress.android.mediapicker.model.UiStateModels.PermissionsRequested.IMAGES
+import org.wordpress.android.mediapicker.model.UiStateModels.PermissionsRequested.MUSIC
+import org.wordpress.android.mediapicker.model.UiStateModels.PermissionsRequested.READ_STORAGE
+import org.wordpress.android.mediapicker.model.UiStateModels.PermissionsRequested.VIDEOS
+import org.wordpress.android.mediapicker.model.UiStateModels.PermissionsRequested.WRITE_STORAGE
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -46,9 +54,16 @@ internal class MediaPickerPermissionUtils @Inject constructor(
         }
     }
 
-    fun hasPermissionsToTakePhotos(isStorageAccessRequired: Boolean): Boolean {
-        return hasCameraPermission() && (!isStorageAccessRequired || hasWriteStoragePermission())
+    fun hasPermissionsToTakePhotos(): Boolean {
+        return hasCameraPermission() && (VERSION.SDK_INT > VERSION_CODES.P || hasWriteStoragePermission())
     }
+
+    val permissionsForTakingPhotos: List<PermissionsRequested>
+        get() = if (VERSION.SDK_INT > VERSION_CODES.P) {
+            listOf(CAMERA)
+        } else {
+            listOf(CAMERA, WRITE_STORAGE)
+        }
 
     fun hasReadStoragePermission(): Boolean {
         return ContextCompat.checkSelfPermission(
@@ -66,6 +81,27 @@ internal class MediaPickerPermissionUtils @Inject constructor(
         return ContextCompat.checkSelfPermission(
             context,
             permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    fun hasImagesPermission(): Boolean {
+        return VERSION.SDK_INT >= VERSION_CODES.TIRAMISU && ContextCompat.checkSelfPermission(
+            context,
+            permission.READ_MEDIA_IMAGES
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    fun hasAudioPermission(): Boolean {
+        return VERSION.SDK_INT >= VERSION_CODES.TIRAMISU && ContextCompat.checkSelfPermission(
+            context,
+            permission.READ_MEDIA_AUDIO
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    fun hasVideoPermission(): Boolean {
+        return VERSION.SDK_INT >= VERSION_CODES.TIRAMISU && ContextCompat.checkSelfPermission(
+            context,
+            permission.READ_MEDIA_VIDEO
         ) == PackageManager.PERMISSION_GRANTED
     }
 
@@ -132,7 +168,11 @@ internal class MediaPickerPermissionUtils @Inject constructor(
     private fun getPermissionAskedKey(permission: String): Key? {
         return when (permission) {
             Manifest.permission.READ_EXTERNAL_STORAGE -> Permissions.PERMISSION_STORAGE_READ
+            Manifest.permission.WRITE_EXTERNAL_STORAGE -> Permissions.PERMISSION_STORAGE_WRITE
             Manifest.permission.CAMERA -> Permissions.PERMISSION_CAMERA
+            Manifest.permission.READ_MEDIA_IMAGES -> Permissions.PERMISSION_IMAGES_READ
+            Manifest.permission.READ_MEDIA_VIDEO -> Permissions.PERMISSION_VIDEO_READ
+            Manifest.permission.READ_MEDIA_AUDIO -> Permissions.PERMISSION_AUDIO_READ
             else -> {
                 log.w("No key for requested permission")
                 null
@@ -143,22 +183,20 @@ internal class MediaPickerPermissionUtils @Inject constructor(
     /*
      * returns the name to display for a permission, ex: "permission.WRITE_EXTERNAL_STORAGE" > "Storage"
      */
-    fun getPermissionName(permission: String): String {
-        return when (permission) {
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE -> context.getString(
-                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q)
+    fun getPermissionName(permission: PermissionsRequested): String {
+        val resource = when (permission) {
+            WRITE_STORAGE,
+            READ_STORAGE ->
+                if (VERSION.SDK_INT > VERSION_CODES.Q)
                     string.permission_files_and_media
                 else
                     string.permission_storage
-            )
-            Manifest.permission.CAMERA -> context.getString(string.permission_camera)
-            Manifest.permission.RECORD_AUDIO -> context.getString(string.permission_microphone)
-            else -> {
-                log.w("No name for requested permission")
-                context.getString(string.unknown)
-            }
+            CAMERA -> string.permission_camera
+            IMAGES -> string.permission_photos_videos
+            VIDEOS -> string.permission_photos_videos
+            MUSIC -> string.permission_audio
         }
+        return context.getString(resource)
     }
 
     /*

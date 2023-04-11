@@ -1,6 +1,5 @@
 package org.wordpress.android.mediapicker.viewmodel
 
-import android.Manifest.permission
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -37,6 +36,7 @@ import org.wordpress.android.mediapicker.model.MediaNavigationEvent.ChooseMediaP
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.Exit
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.PreviewUrl
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.RequestCameraPermission
+import org.wordpress.android.mediapicker.model.MediaNavigationEvent.RequestMediaPermissions
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.RequestStoragePermission
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.ReturnCapturedImage
 import org.wordpress.android.mediapicker.model.MediaNavigationEvent.ReturnSelectedMedia
@@ -66,7 +66,7 @@ import org.wordpress.android.mediapicker.model.UiStateModels.FabUiModel
 import org.wordpress.android.mediapicker.model.UiStateModels.MediaPickerUiState
 import org.wordpress.android.mediapicker.model.UiStateModels.PermissionsRequested
 import org.wordpress.android.mediapicker.model.UiStateModels.PermissionsRequested.CAMERA
-import org.wordpress.android.mediapicker.model.UiStateModels.PermissionsRequested.STORAGE
+import org.wordpress.android.mediapicker.model.UiStateModels.PermissionsRequested.READ_STORAGE
 import org.wordpress.android.mediapicker.model.UiStateModels.PhotoListUiModel
 import org.wordpress.android.mediapicker.model.UiStateModels.PhotoListUiModel.Data
 import org.wordpress.android.mediapicker.model.UiStateModels.PhotoListUiModel.Empty
@@ -87,12 +87,13 @@ import org.wordpress.android.mediapicker.util.distinct
 import org.wordpress.android.mediapicker.util.merge
 import javax.inject.Inject
 
+@Suppress("LargeClass")
 @HiltViewModel
 internal class MediaPickerViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val mediaSourceFactory: MediaLoaderFactory,
     private val mediaPickerTracker: MediaPickerTracker,
-    private val permissionsHandler: MediaPickerPermissionUtils,
+    private val permissionUtils: MediaPickerPermissionUtils,
     private val resourceProvider: ResourceProvider,
     private val mimeTypeProvider: MimeTypeProvider,
     private val mediaPickerUtils: MediaPickerUtils,
@@ -345,12 +346,12 @@ internal class MediaPickerViewModel @Inject constructor(
         return ActionModeUiModel.Visible(title)
     }
 
+    @Suppress("ComplexCondition")
     private fun refreshData(forceReload: Boolean) {
-        if (!permissionsHandler.hasReadStoragePermission()) {
-            return
-        }
-        viewModelScope.launch {
-            loadActions.send(LoadAction.Refresh(forceReload))
+        if (hasAllRequiredPermissions()) {
+            viewModelScope.launch {
+                loadActions.send(LoadAction.Refresh(forceReload))
+            }
         }
     }
 
@@ -405,7 +406,7 @@ internal class MediaPickerViewModel @Inject constructor(
                 }
             }
 
-            if (!mediaPickerSetup.isStoragePermissionRequired || permissionsHandler.hasReadStoragePermission()) {
+            if (hasAllRequiredPermissions()) {
                 viewModelScope.launch {
                     loadActions.send(LoadAction.Start())
                 }
@@ -413,6 +414,19 @@ internal class MediaPickerViewModel @Inject constructor(
         }
         if (mediaPickerSetup.searchMode == VISIBLE_TOGGLED) {
             _searchExpanded.postValue(true)
+        }
+    }
+
+    private fun hasAllRequiredPermissions(): Boolean {
+        return if (mediaPickerSetup.areMediaPermissionsRequired) {
+            val images = !mediaPickerSetup.isImagesPermissionRequired || permissionUtils.hasImagesPermission()
+            val videos = !mediaPickerSetup.isVideoPermissionRequired || permissionUtils.hasVideoPermission()
+            val music = !mediaPickerSetup.isAudioPermissionRequired || permissionUtils.hasAudioPermission()
+            images && videos && music
+        } else if (mediaPickerSetup.isReadStoragePermissionRequired) {
+            permissionUtils.hasReadStoragePermission()
+        } else {
+            true
         }
     }
 
@@ -467,10 +481,7 @@ internal class MediaPickerViewModel @Inject constructor(
     }
 
     private fun startCamera() {
-        if (!permissionsHandler.hasPermissionsToTakePhotos(
-                mediaPickerSetup.isStoragePermissionRequired
-            )
-        ) {
+        if (!permissionUtils.hasPermissionsToTakePhotos()) {
             lastTappedAction = CapturePhoto
             return
         }
@@ -546,30 +557,30 @@ internal class MediaPickerViewModel @Inject constructor(
     }
 
     fun checkStoragePermission(isAlwaysDenied: Boolean) {
-        if (!mediaPickerSetup.isStoragePermissionRequired) {
+        if (hasAllRequiredPermissions()) {
+            hideSoftRequest(shouldRefreshDataIfEmpty = true)
             return
-        }
-
-        if (permissionsHandler.hasReadStoragePermission()) {
-            hideSoftRequest(STORAGE)
         } else {
-            showSoftRequest(permission = STORAGE, isAlwaysDenied = isAlwaysDenied)
+            showSoftRequest(
+                permissions = listOf(READ_STORAGE),
+                isAlwaysDenied = isAlwaysDenied
+            )
         }
     }
 
-    fun checkCameraPermission(isCameraPermissionAlwaysDenied: Boolean) {
-        if (!permissionsHandler.hasPermissionsToTakePhotos(
-                mediaPickerSetup.isStoragePermissionRequired
+    fun checkCameraPermission(areAlwaysDenied: Boolean) {
+        if (!permissionUtils.hasPermissionsToTakePhotos()) {
+            showSoftRequest(
+                permissions = permissionUtils.permissionsForTakingPhotos,
+                isAlwaysDenied = areAlwaysDenied
             )
-        ) {
-            showSoftRequest(permission = CAMERA, isAlwaysDenied = isCameraPermissionAlwaysDenied)
         } else {
             _domainModel.value = _domainModel.value?.copy(
                 domainItems = emptyList(),
                 isLoading = true,
                 emptyState = null
             )
-            hideSoftRequest(CAMERA)
+            hideSoftRequest(shouldRefreshDataIfEmpty = false)
 
             if (lastTappedAction == CapturePhoto) {
                 startCamera()
@@ -577,18 +588,30 @@ internal class MediaPickerViewModel @Inject constructor(
         }
     }
 
-    private fun hideSoftRequest(permission: PermissionsRequested) {
+    fun checkMediaPermissions(permissions: List<PermissionsRequested>, isAlwaysDenied: Boolean) {
+        if (hasAllRequiredPermissions()) {
+            hideSoftRequest(shouldRefreshDataIfEmpty = true)
+            return
+        } else {
+            showSoftRequest(
+                permissions = permissions.toList(),
+                isAlwaysDenied = isAlwaysDenied
+            )
+        }
+    }
+
+    private fun hideSoftRequest(shouldRefreshDataIfEmpty: Boolean) {
         _softAskRequest.value = SoftAskRequest(show = false)
 
-        if (permission == STORAGE && _domainModel.value?.domainItems.isNullOrEmpty()) {
+        if (shouldRefreshDataIfEmpty && _domainModel.value?.domainItems.isNullOrEmpty()) {
             refreshData(false)
         }
     }
 
-    private fun showSoftRequest(permission: PermissionsRequested, isAlwaysDenied: Boolean) {
+    private fun showSoftRequest(permissions: List<PermissionsRequested>, isAlwaysDenied: Boolean) {
         _softAskRequest.value = SoftAskRequest(
             show = true,
-            type = permission,
+            permissions = permissions,
             isAlwaysDenied = isAlwaysDenied
         )
         _domainModel.value = _domainModel.value?.copy(isLoading = false, emptyState = null)
@@ -598,52 +621,40 @@ internal class MediaPickerViewModel @Inject constructor(
         triggerAction(SwitchSource(source))
     }
 
-    @Suppress("NestedBlockDepth")
     private fun buildSoftAskView(softAskRequest: SoftAskRequest?): SoftAskViewUiModel {
         if (softAskRequest != null && softAskRequest.show) {
             mediaPickerTracker.trackShowPermissionsScreen(
                 mediaPickerSetup,
-                softAskRequest.type,
+                softAskRequest.permissions,
                 softAskRequest.isAlwaysDenied
             )
-            val alsoStorageAccess = mediaPickerSetup.isStoragePermissionRequired
-            val label = if (softAskRequest.isAlwaysDenied) {
-                val storage = permissionsHandler.getPermissionName(permission.READ_EXTERNAL_STORAGE)
-                val camera = permissionsHandler.getPermissionName(permission.CAMERA)
-                val permission = (
+            val permissionNames =
+                softAskRequest.permissions.map { permission ->
                     "<strong>${
-                    when (softAskRequest.type) {
-                        STORAGE -> storage
-                        CAMERA -> camera + if (alsoStorageAccess) " & $storage" else ""
-                    }
+                        permissionUtils.getPermissionName(permission)
                     }</strong>"
-                    )
-                String.format(
-                    resourceProvider.getString(string.media_picker_soft_ask_permissions_denied),
-                    permission
-                )
-            } else {
-                when (softAskRequest.type) {
-                    STORAGE -> resourceProvider.getString(string.photo_picker_soft_ask_label)
-                    CAMERA ->
-                        if (alsoStorageAccess) {
-                            resourceProvider.getString(string.camera_and_files_soft_ask_label)
-                        } else {
-                            resourceProvider.getString(string.camera_soft_ask_label)
-                        }
-                }
-            }
-            val allowId = if (softAskRequest.isAlwaysDenied) {
+                }.distinct().joinToString(" & ")
+
+            val labelStringResource = if (softAskRequest.isAlwaysDenied)
+                string.media_picker_soft_ask_permissions_denied
+            else
+                string.media_picker_soft_ask_permissions_request
+            val label = resourceProvider.getString(labelStringResource, permissionNames)
+            val buttonStringResource = if (softAskRequest.isAlwaysDenied) {
                 string.button_edit_permissions
             } else {
                 string.photo_picker_soft_ask_allow
             }
+
             return SoftAskViewUiModel.Visible(
                 label,
-                UiStringRes(allowId),
+                UiStringRes(buttonStringResource),
                 softAskRequest.isAlwaysDenied,
                 onClick = {
-                    onPermissionRequested(softAskRequest.type, softAskRequest.isAlwaysDenied)
+                    onPermissionsRequested(
+                        permissions = softAskRequest.permissions,
+                        isAlwaysDenied = softAskRequest.isAlwaysDenied
+                    )
                 }
             )
         } else {
@@ -713,13 +724,14 @@ internal class MediaPickerViewModel @Inject constructor(
         _onNavigate.value = Event(Exit)
     }
 
-    private fun onPermissionRequested(
-        permission: PermissionsRequested,
+    private fun onPermissionsRequested(
+        permissions: List<PermissionsRequested>,
         isAlwaysDenied: Boolean
     ) {
-        val navigationEvent = when (permission) {
-            CAMERA -> RequestCameraPermission
-            STORAGE -> RequestStoragePermission
+        val navigationEvent = when {
+            permissions.contains(CAMERA) -> RequestCameraPermission(permissions)
+            permissions.contains(READ_STORAGE) -> RequestStoragePermission
+            else -> RequestMediaPermissions(permissions)
         }
         if (isAlwaysDenied) {
             _onNavigate.postValue(Event(ShowAppSettings))

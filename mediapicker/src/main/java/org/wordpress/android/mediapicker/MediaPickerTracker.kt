@@ -115,12 +115,12 @@ internal class MediaPickerTracker @Inject constructor(
 
     fun trackShowPermissionsScreen(
         mediaPickerSetup: MediaPickerSetup,
-        permission: PermissionsRequested,
+        permissions: List<PermissionsRequested>,
         isAlwaysDenied: Boolean
     ) {
         val properties = mediaPickerSetup.toProperties()
         properties["always_denied"] = isAlwaysDenied
-        properties["permission_requested"] = permission.name
+        properties["permission_requested"] = permissions.joinToString { it.name }
         tracker.track(MEDIA_PICKER_SHOW_PERMISSIONS_SCREEN, properties)
     }
 

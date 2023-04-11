@@ -10,9 +10,7 @@ class GifMediaPickerSetup private constructor() {
         fun build(canMultiSelect: Boolean): MediaPickerSetup {
             return MediaPickerSetup(
                 primaryDataSource = GIF_LIBRARY,
-                availableDataSources = emptySet(),
                 isMultiSelectEnabled = canMultiSelect,
-                isStoragePermissionRequired = false,
                 allowedTypes = setOf(IMAGE),
                 areResultsQueued = false,
                 searchMode = VISIBLE_TOGGLED,
