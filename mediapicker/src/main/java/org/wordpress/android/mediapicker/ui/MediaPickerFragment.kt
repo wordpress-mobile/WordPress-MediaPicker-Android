@@ -182,6 +182,7 @@ internal class MediaPickerFragment : Fragment() {
         if (savedInstanceState != null) {
             lastTappedAction = MediaPickerActionEvent.fromBundle(savedInstanceState)
             if (savedInstanceState.containsKey(KEY_SELECTED_IDS)) {
+                @Suppress("DEPRECATION")
                 selectedIds = savedInstanceState.getParcelableArrayList<Identifier>(
                     KEY_SELECTED_IDS
                 )?.map { it } ?: emptyList()
@@ -193,6 +194,7 @@ internal class MediaPickerFragment : Fragment() {
             NUM_COLUMNS
         )
 
+        @Suppress("DEPRECATION")
         savedInstanceState?.getParcelable<Parcelable>(KEY_LIST_STATE)?.let {
             layoutManager.onRestoreInstanceState(it)
         }

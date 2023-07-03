@@ -71,6 +71,7 @@ internal class MediaViewerFragment :
         _binding = MediaPickerLibViewerFragmentBinding.bind(view)
 
         binding.iconBack.setOnClickListener {
+            @Suppress("DEPRECATION")
             activity?.onBackPressed()
         }
         loadImage()
