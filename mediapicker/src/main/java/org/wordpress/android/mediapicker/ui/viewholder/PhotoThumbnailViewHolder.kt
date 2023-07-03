@@ -33,7 +33,7 @@ internal class PhotoThumbnailViewHolder(
             return
         }
         imgThumbnail.cancelRequestAndClearImageView()
-        imgThumbnail.load(item.url, R.color.placeholder)
+        imgThumbnail.load(item.url, org.wordpress.android.mediapicker.api.R.color.placeholder)
         mediaThumbnailViewUtils.setupListeners(
             imgThumbnail, item.isSelected,
             item.toggleAction,

@@ -287,7 +287,7 @@ internal class MediaPickerViewModel @Inject constructor(
                 Empty(
                     title,
                     htmlSubtitle,
-                    image ?: R.drawable.media_picker_lib_empty_search_image,
+                    image ?: org.wordpress.android.mediapicker.api.R.drawable.media_picker_lib_empty_search_image,
                     bottomImage,
                     bottomImageDescription,
                     isSearching == true,
@@ -303,7 +303,7 @@ internal class MediaPickerViewModel @Inject constructor(
         } else {
             Empty(
                 UiStringRes(R.string.media_empty_list),
-                image = R.drawable.media_picker_lib_empty_gallery_image,
+                image = org.wordpress.android.mediapicker.api.R.drawable.media_picker_lib_empty_gallery_image,
                 isSearching = isSearching == true
             )
         }

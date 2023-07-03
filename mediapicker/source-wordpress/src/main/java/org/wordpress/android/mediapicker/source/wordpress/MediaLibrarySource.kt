@@ -55,9 +55,9 @@ class MediaLibrarySource(
     ): MediaLoadingResult {
         if (!networkUtilsWrapper.isNetworkAvailable()) {
             return Failure(
-                UiStringRes(R.string.no_network_title),
+                UiStringRes(org.wordpress.android.mediapicker.api.R.string.no_network_title),
                 htmlSubtitle = UiStringRes(R.string.no_network_message),
-                image = R.drawable.img_illustration_cloud_off_152dp,
+                image = org.wordpress.android.mediapicker.api.R.drawable.img_illustration_cloud_off_152dp,
                 data = if (loadMore) get(mediaTypes, filter) else listOf()
             )
         }
@@ -86,7 +86,7 @@ class MediaLibrarySource(
                 Failure(
                     UiStringRes(R.string.media_loading_failed),
                     htmlSubtitle = UiStringText(error),
-                    image = R.drawable.img_illustration_cloud_off_152dp,
+                    image = org.wordpress.android.mediapicker.api.R.drawable.img_illustration_cloud_off_152dp,
                     data = if (loadMore) get(mediaTypes, filter) else listOf()
                 )
             } else {
@@ -95,8 +95,8 @@ class MediaLibrarySource(
                     MediaLoadingResult.Success(data, hasMore)
                 } else {
                     Empty(
-                        UiStringRes(R.string.media_empty_search_list),
-                        image = R.drawable.img_illustration_empty_results_216dp
+                        UiStringRes(org.wordpress.android.mediapicker.api.R.string.media_empty_search_list),
+                        image = org.wordpress.android.mediapicker.api.R.drawable.img_illustration_empty_results_216dp
                     )
                 }
             }

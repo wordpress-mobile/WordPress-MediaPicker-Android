@@ -36,8 +36,8 @@ class GifMediaDataSource
 
         if (!networkUtilsWrapper.isNetworkAvailable()) {
             return Failure(
-                UiStringRes(R.string.no_network_title),
-                htmlSubtitle = UiStringRes(R.string.no_network_message),
+                UiStringRes(org.wordpress.android.mediapicker.api.R.string.no_network_title),
+                htmlSubtitle = UiStringRes(org.wordpress.android.mediapicker.api.R.string.no_network_message),
                 image = org.wordpress.android.mediapicker.api.R.drawable.media_picker_lib_load_error_image,
                 data = items
             )
@@ -70,7 +70,7 @@ class GifMediaDataSource
                             Failure(
                                 UiStringRes(R.string.media_loading_failed),
                                 htmlSubtitle = UiStringText(errorMessage),
-                                image = R.drawable.media_picker_lib_load_error_image,
+                                image = org.wordpress.android.mediapicker.api.R.drawable.media_picker_lib_load_error_image,
                                 data = items
                             )
                         )
@@ -87,7 +87,7 @@ class GifMediaDataSource
         return Empty(
             title,
             null,
-            R.drawable.media_picker_lib_empty_gallery_image,
+            org.wordpress.android.mediapicker.api.R.drawable.media_picker_lib_empty_gallery_image,
             R.drawable.img_tenor_100dp,
             UiStringRes(R.string.gif_powered_by_tenor)
         )

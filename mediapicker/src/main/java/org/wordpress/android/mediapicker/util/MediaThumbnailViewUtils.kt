@@ -43,7 +43,7 @@ internal class MediaThumbnailViewUtils {
 
         // not an image or video, so show file name and file type
         val placeholderResId = MediaUtils.getPlaceholder(fileName)
-        imgThumbnail.setImageResourceWithTint(placeholderResId, R.color.neutral_30)
+        imgThumbnail.setImageResourceWithTint(placeholderResId, org.wordpress.android.mediapicker.api.R.color.neutral_30)
 
         container.setOnClickListener {
             toggleAction.toggle()
