@@ -16,7 +16,6 @@ import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.GIF_LIBRARY
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.SYSTEM_PICKER
 import org.wordpress.android.mediapicker.ui.MediaPickerActivity
-import org.wordpress.android.sampleapp.R.id
 import org.wordpress.android.sampleapp.databinding.ActivityMainBinding
 import javax.inject.Inject
 
@@ -90,7 +89,7 @@ class MainActivity : AppCompatActivity() {
                     ?.map { mediaPickerUtils.getFilePath(Uri.parse(it)) }
                     ?.joinToString("\n") ?: ""
 
-                Snackbar.make(findViewById<Button>(id.content), files, Snackbar.LENGTH_LONG).show()
+                Snackbar.make(findViewById<Button>(R.id.content), files, Snackbar.LENGTH_LONG).show()
             }
         }
     }
