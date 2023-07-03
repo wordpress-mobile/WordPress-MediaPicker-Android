@@ -25,8 +25,8 @@ dependencies {
     implementation mediaPickerDomainDependency
 
     implementation (name:'tenor-android-core-jetified', ext:'aar') // Jetified Tenor Gif library
-    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
-    implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
+    implementation "com.squareup.retrofit2:retrofit:$squareupRetrofitVersion"
+    implementation "com.squareup.retrofit2:converter-gson:$squareupRetrofitVersion"
 
     implementation "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"
     implementation "com.google.dagger:hilt-android-compiler:$gradle.ext.daggerVersion"

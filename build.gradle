@@ -63,8 +63,8 @@ ext {
     glideVersion = '4.12.0'
     googleMaterialVersion = '1.5.0'
     kotlinxCoroutinesVersion = '1.5.2'
+    squareupRetrofitVersion = "2.9.0"
     wordpressUtilsVersion = "2.4.0"
-    retrofitVersion = "2.9.0"
     fluxCVersion = 'develop-fa819801570505a0e9b4f7f226bb704b88ccc1d2'
     mediaPickerDomainDependency = project.hasProperty("mediaPickerDomainVersion") ? "org.wordpress.mediapicker:domain:${project.getProperty("mediaPickerDomainVersion")}" : project(":mediapicker:domain")
 }
