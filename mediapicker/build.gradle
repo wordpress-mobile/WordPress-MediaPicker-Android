@@ -52,9 +52,9 @@ android {
 
         implementation "com.github.bumptech.glide:glide:$glideVersion"
 
-        implementation "com.google.dagger:hilt-android:$daggerVersion"
-        implementation "com.google.dagger:hilt-android-compiler:$daggerVersion"
-        kapt "com.google.dagger:hilt-compiler:$daggerVersion"
+        implementation "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"
+        implementation "com.google.dagger:hilt-android-compiler:$gradle.ext.daggerVersion"
+        kapt "com.google.dagger:hilt-compiler:$gradle.ext.daggerVersion"
 
         implementation "com.github.chrisbanes:PhotoView:$photoViewVersion"
 

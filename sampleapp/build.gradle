@@ -64,7 +64,7 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$appcompatVersion"
     implementation "com.google.android.material:material:$materialVersion"
 
-    implementation "com.google.dagger:hilt-android:$daggerVersion"
-    implementation "com.google.dagger:hilt-android-compiler:$daggerVersion"
-    kapt "com.google.dagger:hilt-compiler:$daggerVersion"
+    implementation "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"
+    implementation "com.google.dagger:hilt-android-compiler:$gradle.ext.daggerVersion"
+    kapt "com.google.dagger:hilt-compiler:$gradle.ext.daggerVersion"
 }
