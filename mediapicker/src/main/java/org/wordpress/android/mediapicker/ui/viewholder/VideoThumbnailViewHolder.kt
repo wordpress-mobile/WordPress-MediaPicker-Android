@@ -4,7 +4,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import org.wordpress.android.mediapicker.R
-import org.wordpress.android.mediapicker.R.layout
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem
 import org.wordpress.android.mediapicker.util.MediaThumbnailViewUtils
 import org.wordpress.android.mediapicker.util.cancelRequestAndClearImageView
@@ -17,7 +16,7 @@ internal class VideoThumbnailViewHolder(
     private val mediaThumbnailViewUtils: MediaThumbnailViewUtils
 ) : ThumbnailViewHolder(
     parent,
-    layout.media_picker_lib_thumbnail_item
+    R.layout.media_picker_lib_thumbnail_item
 ) {
     private val imgThumbnail: ImageView = itemView.findViewById(R.id.image_thumbnail)
     private val txtSelectionCount: TextView = itemView.findViewById(R.id.text_selection_count)
