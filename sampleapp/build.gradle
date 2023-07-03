@@ -62,7 +62,7 @@ dependencies {
 
     implementation "androidx.core:core-ktx:$androidxCoreVersion"
     implementation "androidx.appcompat:appcompat:$androidxAppcompatVersion"
-    implementation "com.google.android.material:material:$materialVersion"
+    implementation "com.google.android.material:material:$googleMaterialVersion"
 
     implementation "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"
     implementation "com.google.dagger:hilt-android-compiler:$gradle.ext.daggerVersion"

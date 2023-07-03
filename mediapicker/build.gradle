@@ -38,7 +38,7 @@ android {
     dependencies {
         api mediaPickerDomainDependency
 
-        implementation "com.google.android.material:material:$materialVersion"
+        implementation "com.google.android.material:material:$googleMaterialVersion"
 
         implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinxCoroutinesVersion"
 
