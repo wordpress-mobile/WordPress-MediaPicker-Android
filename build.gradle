@@ -52,8 +52,6 @@ ext {
 }
 
 ext {
-    buildToolsVersion = "30.0.3"
-
     daggerVersion = gradle.ext.daggerVersion
     glideVersion = '4.12.0'
     hiltVersion = '1.0.0'
