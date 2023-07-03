@@ -47,7 +47,7 @@ android {
         implementation "androidx.appcompat:appcompat:$appcompatVersion"
         implementation "androidx.constraintlayout:constraintlayout:$constraintlayoutVersion"
         implementation "androidx.swiperefreshlayout:swiperefreshlayout:$swiperefreshlayoutVersion"
-        implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
+        implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$androidxLifecycleVersion"
         implementation "androidx.datastore:datastore-preferences:$datastoreVersion"
 
         implementation "com.github.bumptech.glide:glide:$glideVersion"
