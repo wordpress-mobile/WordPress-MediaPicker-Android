@@ -3,6 +3,7 @@ pluginManagement {
     gradle.ext.daggerVersion = '2.42'
     gradle.ext.agpVersion = '7.2.1'
     gradle.ext.detektVersion = '1.19.0'
+    gradle.ext.automatticPublishToS3Version = '0.7.0'
 
     plugins {
         id 'io.gitlab.arturbosch.detekt' version gradle.ext.detektVersion
@@ -13,7 +14,7 @@ pluginManagement {
         id "com.android.application" version gradle.ext.agpVersion
         id "com.android.library" version gradle.ext.agpVersion
         id 'dagger.hilt.android.plugin'
-        id "com.automattic.android.publish-to-s3" version "0.7.0"
+        id "com.automattic.android.publish-to-s3" version gradle.ext.automatticPublishToS3Version
     }
     repositories {
         maven {
