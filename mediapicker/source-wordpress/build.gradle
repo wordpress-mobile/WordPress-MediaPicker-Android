@@ -32,7 +32,7 @@ dependencies {
 
     implementation "org.wordpress:utils:$wordpressUtilsVersion"
 
-    implementation("org.wordpress:fluxc:$fluxCVersion") {
+    implementation("org.wordpress:fluxc:$wordPressFluxCVersion") {
         exclude group: "com.android.support"
         exclude group: "org.wordpress", module: "utils"
     }
