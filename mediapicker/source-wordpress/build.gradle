@@ -24,7 +24,7 @@ android {
 dependencies {
     implementation mediaPickerDomainDependency
 
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinxCoroutinesVersion"
 
     implementation "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"
     implementation "com.google.dagger:hilt-android-compiler:$gradle.ext.daggerVersion"

@@ -59,7 +59,7 @@ ext {
     androidxLifecycleVersion = '2.4.0'
     androidxSwipeToRefreshVersion = '1.1.0'
     glideVersion = '4.12.0'
-    coroutinesVersion = '1.5.2'
+    kotlinxCoroutinesVersion = '1.5.2'
     materialVersion = '1.5.0'
     photoViewVersion = '2.3.0'
     navigationFragmentVersion = '2.3.5'
