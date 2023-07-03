@@ -7,7 +7,6 @@ import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult
 import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult.Empty
 import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult.Failure
 import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult.Success
-import org.wordpress.android.mediapicker.api.R.drawable
 import org.wordpress.android.mediapicker.model.MediaItem
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier.GifMedia
 import org.wordpress.android.mediapicker.model.MediaType.IMAGE
@@ -39,7 +38,7 @@ class GifMediaDataSource
             return Failure(
                 UiStringRes(R.string.no_network_title),
                 htmlSubtitle = UiStringRes(R.string.no_network_message),
-                image = drawable.media_picker_lib_load_error_image,
+                image = org.wordpress.android.mediapicker.api.R.drawable.media_picker_lib_load_error_image,
                 data = items
             )
         }
