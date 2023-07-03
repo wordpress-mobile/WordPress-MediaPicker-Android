@@ -52,9 +52,9 @@ ext {
 }
 
 ext {
+    androidxDatastoreVersion = '1.0.0'
     androidxLifecycleVersion = '2.4.0'
     glideVersion = '4.12.0'
-    datastoreVersion = '1.0.0'
     swiperefreshlayoutVersion = '1.1.0'
     constraintlayoutVersion = '2.1.1'
     appcompatVersion = '1.4.1'
