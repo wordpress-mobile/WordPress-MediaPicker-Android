@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     id 'io.gitlab.arturbosch.detekt' apply false
     id 'com.android.application' apply false
@@ -26,6 +28,12 @@ allprojects {
         ignoreFailures = false
         parallel = true
         debug = false
+    }
+
+    tasks.withType(KotlinCompile).all {
+        kotlinOptions {
+            allWarningsAsErrors = true
+        }
     }
 }
 
