@@ -58,10 +58,10 @@ ext {
     androidxConstraintlayoutVersion = '2.1.1'
     androidxLifecycleVersion = '2.4.0'
     androidxSwipeToRefreshVersion = '1.1.0'
+    chrisbanesPhotoviewVersion = '2.3.0'
     glideVersion = '4.12.0'
     googleMaterialVersion = '1.5.0'
     kotlinxCoroutinesVersion = '1.5.2'
-    photoViewVersion = '2.3.0'
     navigationFragmentVersion = '2.3.5'
     wordpressUtilsVersion = "2.4.0"
     retrofitVersion = "2.9.0"
