@@ -33,6 +33,7 @@ import javax.inject.Inject
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
+import org.wordpress.android.mediapicker.api.R as MPApiR
 
 class MediaLibrarySource(
     private val mediaStore: MediaStore,
@@ -55,9 +56,9 @@ class MediaLibrarySource(
     ): MediaLoadingResult {
         if (!networkUtilsWrapper.isNetworkAvailable()) {
             return Failure(
-                UiStringRes(org.wordpress.android.mediapicker.api.R.string.no_network_title),
+                UiStringRes(MPApiR.string.no_network_title),
                 htmlSubtitle = UiStringRes(R.string.no_network_message),
-                image = org.wordpress.android.mediapicker.api.R.drawable.img_illustration_cloud_off_152dp,
+                image = MPApiR.drawable.img_illustration_cloud_off_152dp,
                 data = if (loadMore) get(mediaTypes, filter) else listOf()
             )
         }
@@ -86,7 +87,7 @@ class MediaLibrarySource(
                 Failure(
                     UiStringRes(R.string.media_loading_failed),
                     htmlSubtitle = UiStringText(error),
-                    image = org.wordpress.android.mediapicker.api.R.drawable.img_illustration_cloud_off_152dp,
+                    image = MPApiR.drawable.img_illustration_cloud_off_152dp,
                     data = if (loadMore) get(mediaTypes, filter) else listOf()
                 )
             } else {
@@ -95,8 +96,8 @@ class MediaLibrarySource(
                     MediaLoadingResult.Success(data, hasMore)
                 } else {
                     Empty(
-                        UiStringRes(org.wordpress.android.mediapicker.api.R.string.media_empty_search_list),
-                        image = org.wordpress.android.mediapicker.api.R.drawable.img_illustration_empty_results_216dp
+                        UiStringRes(MPApiR.string.media_empty_search_list),
+                        image = MPApiR.drawable.img_illustration_empty_results_216dp
                     )
                 }
             }

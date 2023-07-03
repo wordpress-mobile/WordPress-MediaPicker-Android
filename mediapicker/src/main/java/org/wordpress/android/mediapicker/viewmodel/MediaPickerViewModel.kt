@@ -85,6 +85,7 @@ import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils
 import org.wordpress.android.mediapicker.util.distinct
 import org.wordpress.android.mediapicker.util.merge
 import javax.inject.Inject
+import org.wordpress.android.mediapicker.api.R as MPApiR
 
 @Suppress("LargeClass")
 @HiltViewModel
@@ -287,7 +288,7 @@ internal class MediaPickerViewModel @Inject constructor(
                 Empty(
                     title,
                     htmlSubtitle,
-                    image ?: org.wordpress.android.mediapicker.api.R.drawable.media_picker_lib_empty_search_image,
+                    image ?: MPApiR.drawable.media_picker_lib_empty_search_image,
                     bottomImage,
                     bottomImageDescription,
                     isSearching == true,
@@ -303,7 +304,7 @@ internal class MediaPickerViewModel @Inject constructor(
         } else {
             Empty(
                 UiStringRes(R.string.media_empty_list),
-                image = org.wordpress.android.mediapicker.api.R.drawable.media_picker_lib_empty_gallery_image,
+                image = MPApiR.drawable.media_picker_lib_empty_gallery_image,
                 isSearching = isSearching == true
             )
         }

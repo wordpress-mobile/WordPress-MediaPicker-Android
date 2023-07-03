@@ -7,7 +7,8 @@ import org.wordpress.android.mediapicker.R
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem.LongClickAction
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem.ToggleAction
 import org.wordpress.android.util.ViewUtils
-import java.util.Locale
+import java.util.*
+import org.wordpress.android.mediapicker.api.R as MPApiR
 
 internal class MediaThumbnailViewUtils {
     fun setupListeners(
@@ -43,7 +44,7 @@ internal class MediaThumbnailViewUtils {
 
         // not an image or video, so show file name and file type
         val placeholderResId = MediaUtils.getPlaceholder(fileName)
-        imgThumbnail.setImageResourceWithTint(placeholderResId, org.wordpress.android.mediapicker.api.R.color.neutral_30)
+        imgThumbnail.setImageResourceWithTint(placeholderResId, MPApiR.color.neutral_30)
 
         container.setOnClickListener {
             toggleAction.toggle()

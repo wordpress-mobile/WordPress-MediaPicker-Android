@@ -8,6 +8,7 @@ import org.wordpress.android.mediapicker.model.MediaPickerUiItem
 import org.wordpress.android.mediapicker.util.MediaThumbnailViewUtils
 import org.wordpress.android.mediapicker.util.cancelRequestAndClearImageView
 import org.wordpress.android.mediapicker.util.load
+import org.wordpress.android.mediapicker.api.R as MPApiR
 
 /*
  * ViewHolder containing a device thumbnail
@@ -33,7 +34,7 @@ internal class PhotoThumbnailViewHolder(
             return
         }
         imgThumbnail.cancelRequestAndClearImageView()
-        imgThumbnail.load(item.url, org.wordpress.android.mediapicker.api.R.color.placeholder)
+        imgThumbnail.load(item.url, MPApiR.color.placeholder)
         mediaThumbnailViewUtils.setupListeners(
             imgThumbnail, item.isSelected,
             item.toggleAction,
