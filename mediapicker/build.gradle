@@ -16,9 +16,6 @@ android {
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-
-        versionCode 1
-        versionName "0.1"
     }
 
     buildFeatures {
