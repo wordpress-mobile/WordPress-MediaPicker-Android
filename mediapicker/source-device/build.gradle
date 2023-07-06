@@ -9,6 +9,8 @@ plugins {
 }
 
 android {
+    namespace "org.wordpress.android.mediapicker.source.device"
+
     compileSdkVersion rootProject.compileSdkVersion
 
     defaultConfig {

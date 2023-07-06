@@ -9,6 +9,8 @@ plugins {
 }
 
 android {
+    namespace "org.wordpress.android.mediapicker.source.gif"
+
     compileSdkVersion rootProject.compileSdkVersion
 
     defaultConfig {
