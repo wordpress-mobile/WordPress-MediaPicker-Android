@@ -13,7 +13,6 @@ repositories {
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
-    buildToolsVersion rootProject.buildToolsVersion
 
     defaultConfig {
         applicationId "org.wordpress.android.sampleapp"
@@ -59,13 +58,13 @@ dependencies {
     implementation project(':mediapicker:source-gif')
     implementation project(':mediapicker:source-wordpress')
 
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinxCoroutinesVersion"
 
-    implementation "androidx.core:core-ktx:$coreVersion"
-    implementation "androidx.appcompat:appcompat:$appcompatVersion"
-    implementation "com.google.android.material:material:$materialVersion"
+    implementation "androidx.core:core-ktx:$androidxCoreVersion"
+    implementation "androidx.appcompat:appcompat:$androidxAppcompatVersion"
+    implementation "com.google.android.material:material:$googleMaterialVersion"
 
-    implementation "com.google.dagger:hilt-android:$daggerVersion"
-    implementation "com.google.dagger:hilt-android-compiler:$daggerVersion"
-    kapt "com.google.dagger:hilt-compiler:$daggerVersion"
+    implementation "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"
+    implementation "com.google.dagger:hilt-android-compiler:$gradle.ext.daggerVersion"
+    kapt "com.google.dagger:hilt-compiler:$gradle.ext.daggerVersion"
 }

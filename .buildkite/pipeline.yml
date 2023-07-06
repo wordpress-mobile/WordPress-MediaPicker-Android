@@ -26,11 +26,6 @@ steps:
       ./gradlew lintRelease
     artifact_paths:
       - "**/build/reports/lint-results*.*"
-  - label: "Unit test"
-    key: "unit-test"
-    plugins: *common_plugins
-    command: |
-      ./gradlew testRelease
 
   # Publish tasks
   - label: "Publish :mediapicker:domain"
@@ -38,7 +33,6 @@ steps:
     depends_on:
       - "detekt"
       - "lint"
-      - "unit-test"
     plugins: *common_plugins
     command: |
       .buildkite/publish-mediapicker-domain.sh

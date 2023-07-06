@@ -15,7 +15,7 @@ import androidx.core.content.ContextCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.wordpress.android.mediapicker.Key
 import org.wordpress.android.mediapicker.Permissions
-import org.wordpress.android.mediapicker.R.string
+import org.wordpress.android.mediapicker.R
 import org.wordpress.android.mediapicker.api.Log
 import org.wordpress.android.mediapicker.api.Tracker
 import org.wordpress.android.mediapicker.api.Tracker.Event
@@ -188,13 +188,13 @@ internal class MediaPickerPermissionUtils @Inject constructor(
             WRITE_STORAGE,
             READ_STORAGE ->
                 if (VERSION.SDK_INT > VERSION_CODES.Q)
-                    string.permission_files_and_media
+                    R.string.permission_files_and_media
                 else
-                    string.permission_storage
-            CAMERA -> string.permission_camera
-            IMAGES -> string.permission_photos_videos
-            VIDEOS -> string.permission_photos_videos
-            MUSIC -> string.permission_audio
+                    R.string.permission_storage
+            CAMERA -> R.string.permission_camera
+            IMAGES -> R.string.permission_photos_videos
+            VIDEOS -> R.string.permission_photos_videos
+            MUSIC -> R.string.permission_audio
         }
         return context.getString(resource)
     }

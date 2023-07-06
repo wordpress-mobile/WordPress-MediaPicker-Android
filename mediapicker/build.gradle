@@ -10,7 +10,6 @@ plugins {
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
-    buildToolsVersion rootProject.buildToolsVersion
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
@@ -39,25 +38,25 @@ android {
     dependencies {
         api mediaPickerDomainDependency
 
-        implementation "com.google.android.material:material:$materialVersion"
+        implementation "com.google.android.material:material:$googleMaterialVersion"
 
-        implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+        implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinxCoroutinesVersion"
 
-        implementation "androidx.navigation:navigation-fragment-ktx:$navigationFragmentVersion"
-        implementation "androidx.core:core-ktx:$coreVersion"
-        implementation "androidx.appcompat:appcompat:$appcompatVersion"
-        implementation "androidx.constraintlayout:constraintlayout:$constraintlayoutVersion"
-        implementation "androidx.swiperefreshlayout:swiperefreshlayout:$swiperefreshlayoutVersion"
-        implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
-        implementation "androidx.datastore:datastore-preferences:$datastoreVersion"
+        implementation "androidx.navigation:navigation-fragment-ktx:$androidxNavigationVersion"
+        implementation "androidx.core:core-ktx:$androidxCoreVersion"
+        implementation "androidx.appcompat:appcompat:$androidxAppcompatVersion"
+        implementation "androidx.constraintlayout:constraintlayout:$androidxConstraintlayoutVersion"
+        implementation "androidx.swiperefreshlayout:swiperefreshlayout:$androidxSwipeToRefreshVersion"
+        implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$androidxLifecycleVersion"
+        implementation "androidx.datastore:datastore-preferences:$androidxDatastoreVersion"
 
         implementation "com.github.bumptech.glide:glide:$glideVersion"
 
-        implementation "com.google.dagger:hilt-android:$daggerVersion"
-        implementation "com.google.dagger:hilt-android-compiler:$daggerVersion"
-        kapt "com.google.dagger:hilt-compiler:$daggerVersion"
+        implementation "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"
+        implementation "com.google.dagger:hilt-android-compiler:$gradle.ext.daggerVersion"
+        kapt "com.google.dagger:hilt-compiler:$gradle.ext.daggerVersion"
 
-        implementation "com.github.chrisbanes:PhotoView:$photoViewVersion"
+        implementation "com.github.chrisbanes:PhotoView:$chrisbanesPhotoviewVersion"
 
         implementation "org.wordpress:utils:$wordpressUtilsVersion"
     }

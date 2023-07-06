@@ -14,8 +14,7 @@ import kotlinx.coroutines.launch
 import org.wordpress.android.mediapicker.MediaManager
 import org.wordpress.android.mediapicker.MediaPickerTracker
 import org.wordpress.android.mediapicker.MediaPickerUtils
-import org.wordpress.android.mediapicker.R.drawable
-import org.wordpress.android.mediapicker.R.string
+import org.wordpress.android.mediapicker.R
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.SYSTEM_PICKER
@@ -86,6 +85,7 @@ import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils
 import org.wordpress.android.mediapicker.util.distinct
 import org.wordpress.android.mediapicker.util.merge
 import javax.inject.Inject
+import org.wordpress.android.mediapicker.api.R as MPApiR
 
 @Suppress("LargeClass")
 @HiltViewModel
@@ -288,7 +288,7 @@ internal class MediaPickerViewModel @Inject constructor(
                 Empty(
                     title,
                     htmlSubtitle,
-                    image ?: drawable.media_picker_lib_empty_search_image,
+                    image ?: MPApiR.drawable.media_picker_lib_empty_search_image,
                     bottomImage,
                     bottomImageDescription,
                     isSearching == true,
@@ -303,8 +303,8 @@ internal class MediaPickerViewModel @Inject constructor(
             Loading
         } else {
             Empty(
-                UiStringRes(string.media_empty_list),
-                image = drawable.media_picker_lib_empty_gallery_image,
+                UiStringRes(R.string.media_empty_list),
+                image = MPApiR.drawable.media_picker_lib_empty_gallery_image,
                 isSearching = isSearching == true
             )
         }
@@ -322,7 +322,7 @@ internal class MediaPickerViewModel @Inject constructor(
             mediaPickerSetup.isMultiSelectEnabled -> {
                 UiString.UiStringText(
                     String.format(
-                        resourceProvider.getString(string.add_count),
+                        resourceProvider.getString(R.string.add_count),
                         numSelected
                     )
                 )
@@ -332,13 +332,13 @@ internal class MediaPickerViewModel @Inject constructor(
                 val isVideoPicker = mediaPickerSetup.allowedTypes.contains(VIDEO)
                 val isAudioPicker = mediaPickerSetup.allowedTypes.contains(AUDIO)
                 if (isImagePicker && isVideoPicker) {
-                    UiStringRes(string.photo_picker_use_media)
+                    UiStringRes(R.string.photo_picker_use_media)
                 } else if (isVideoPicker) {
-                    UiStringRes(string.photo_picker_use_video)
+                    UiStringRes(R.string.photo_picker_use_video)
                 } else if (isAudioPicker) {
-                    UiStringRes(string.photo_picker_use_audio)
+                    UiStringRes(R.string.photo_picker_use_audio)
                 } else {
-                    UiStringRes(string.photo_picker_use_photo)
+                    UiStringRes(R.string.photo_picker_use_photo)
                 }
             }
         }
@@ -636,14 +636,14 @@ internal class MediaPickerViewModel @Inject constructor(
                 }.distinct().joinToString(" & ")
 
             val labelStringResource = if (softAskRequest.isAlwaysDenied)
-                string.media_picker_soft_ask_permissions_denied
+                R.string.media_picker_soft_ask_permissions_denied
             else
-                string.media_picker_soft_ask_permissions_request
+                R.string.media_picker_soft_ask_permissions_request
             val label = resourceProvider.getString(labelStringResource, permissionNames)
             val buttonStringResource = if (softAskRequest.isAlwaysDenied) {
-                string.button_edit_permissions
+                R.string.button_edit_permissions
             } else {
-                string.photo_picker_soft_ask_allow
+                R.string.photo_picker_soft_ask_allow
             }
 
             return SoftAskViewUiModel.Visible(

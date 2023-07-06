@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.mediapicker.R.drawable
+import org.wordpress.android.mediapicker.R
 import org.wordpress.android.mediapicker.api.Log
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.databinding.MediaPickerLibActivityBinding
@@ -21,7 +21,7 @@ class MediaPickerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val binding = MediaPickerLibActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.toolbarMain.setNavigationIcon(drawable.ic_close_white_24dp)
+        binding.toolbarMain.setNavigationIcon(R.drawable.ic_close_white_24dp)
         setSupportActionBar(binding.toolbarMain)
         supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)

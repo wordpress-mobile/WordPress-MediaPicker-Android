@@ -10,7 +10,6 @@ plugins {
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
-    buildToolsVersion rootProject.buildToolsVersion
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
@@ -25,11 +24,11 @@ android {
 dependencies {
     implementation mediaPickerDomainDependency
 
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinxCoroutinesVersion"
 
-    implementation "com.google.dagger:hilt-android:$daggerVersion"
-    implementation "com.google.dagger:hilt-android-compiler:$daggerVersion"
-    kapt "com.google.dagger:hilt-compiler:$daggerVersion"
+    implementation "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"
+    implementation "com.google.dagger:hilt-android-compiler:$gradle.ext.daggerVersion"
+    kapt "com.google.dagger:hilt-compiler:$gradle.ext.daggerVersion"
 }
 
 project.afterEvaluate {

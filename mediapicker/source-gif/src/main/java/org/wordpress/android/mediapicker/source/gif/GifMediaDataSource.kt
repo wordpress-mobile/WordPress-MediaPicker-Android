@@ -7,7 +7,6 @@ import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult
 import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult.Empty
 import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult.Failure
 import org.wordpress.android.mediapicker.api.MediaSource.MediaLoadingResult.Success
-import org.wordpress.android.mediapicker.api.R.drawable
 import org.wordpress.android.mediapicker.model.MediaItem
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier.GifMedia
 import org.wordpress.android.mediapicker.model.MediaType.IMAGE
@@ -18,6 +17,7 @@ import org.wordpress.android.mediapicker.source.gif.util.NetworkUtilsWrapper
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
+import org.wordpress.android.mediapicker.api.R as MPApiR
 
 class GifMediaDataSource
 @Inject constructor(
@@ -37,9 +37,9 @@ class GifMediaDataSource
 
         if (!networkUtilsWrapper.isNetworkAvailable()) {
             return Failure(
-                UiStringRes(R.string.no_network_title),
-                htmlSubtitle = UiStringRes(R.string.no_network_message),
-                image = drawable.media_picker_lib_load_error_image,
+                UiStringRes(MPApiR.string.no_network_title),
+                htmlSubtitle = UiStringRes(MPApiR.string.no_network_message),
+                image = MPApiR.drawable.media_picker_lib_load_error_image,
                 data = items
             )
         }
@@ -71,7 +71,7 @@ class GifMediaDataSource
                             Failure(
                                 UiStringRes(R.string.media_loading_failed),
                                 htmlSubtitle = UiStringText(errorMessage),
-                                image = R.drawable.media_picker_lib_load_error_image,
+                                image = MPApiR.drawable.media_picker_lib_load_error_image,
                                 data = items
                             )
                         )
@@ -88,7 +88,7 @@ class GifMediaDataSource
         return Empty(
             title,
             null,
-            R.drawable.media_picker_lib_empty_gallery_image,
+            MPApiR.drawable.media_picker_lib_empty_gallery_image,
             R.drawable.img_tenor_100dp,
             UiStringRes(R.string.gif_powered_by_tenor)
         )

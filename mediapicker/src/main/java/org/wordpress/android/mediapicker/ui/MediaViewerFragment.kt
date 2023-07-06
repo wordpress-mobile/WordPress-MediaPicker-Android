@@ -15,8 +15,7 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.mediapicker.R.id
-import org.wordpress.android.mediapicker.R.layout
+import org.wordpress.android.mediapicker.R
 import org.wordpress.android.mediapicker.databinding.MediaPickerLibViewerFragmentBinding
 
 /**
@@ -24,7 +23,7 @@ import org.wordpress.android.mediapicker.databinding.MediaPickerLibViewerFragmen
  */
 @AndroidEntryPoint
 internal class MediaViewerFragment :
-    Fragment(layout.media_picker_lib_viewer_fragment),
+    Fragment(R.layout.media_picker_lib_viewer_fragment),
     RequestListener<Drawable> {
     companion object {
         const val IMAGE_URL_KEY = "image_url_key"
@@ -36,7 +35,7 @@ internal class MediaViewerFragment :
             fragment.arguments = Bundle().apply { putString(IMAGE_URL_KEY, url) }
             activity.supportFragmentManager.beginTransaction()
                 .add(
-                    id.fragment_container,
+                    R.id.fragment_container,
                     fragment,
                     VIEWER_FRAGMENT_TAG
                 )
@@ -71,6 +70,7 @@ internal class MediaViewerFragment :
         _binding = MediaPickerLibViewerFragmentBinding.bind(view)
 
         binding.iconBack.setOnClickListener {
+            @Suppress("DEPRECATION")
             activity?.onBackPressed()
         }
         loadImage()
