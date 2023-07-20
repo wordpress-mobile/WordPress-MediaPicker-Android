@@ -43,7 +43,6 @@ project.afterEvaluate {
 
                 groupId "org.wordpress.mediapicker"
                 artifactId "source-gif"
-                artifact tasks.named("androidSourcesJar") // This task is added by 'publish-to-s3' plugin
                 // version is set by 'publish-to-s3' plugin
             }
         }

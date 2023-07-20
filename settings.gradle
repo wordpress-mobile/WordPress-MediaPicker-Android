@@ -3,7 +3,7 @@ pluginManagement {
     gradle.ext.daggerVersion = '2.42'
     gradle.ext.agpVersion = '7.2.1'
     gradle.ext.detektVersion = '1.19.0'
-    gradle.ext.automatticPublishToS3Version = '0.7.0'
+    gradle.ext.automatticPublishToS3Version = '0.8.0-rc-5'
 
     plugins {
         id 'io.gitlab.arturbosch.detekt' version gradle.ext.detektVersion
