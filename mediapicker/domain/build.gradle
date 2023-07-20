@@ -18,6 +18,12 @@ android {
     lintOptions {
         warningsAsErrors true
     }
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
 }
 
 dependencies {

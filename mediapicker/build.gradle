@@ -60,6 +60,12 @@ android {
 
         implementation "org.wordpress:utils:$wordpressUtilsVersion"
     }
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
 }
 
 project.afterEvaluate {
