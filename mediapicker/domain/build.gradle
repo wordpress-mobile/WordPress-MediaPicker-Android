@@ -36,7 +36,6 @@ project.afterEvaluate {
 
                 groupId "org.wordpress.mediapicker"
                 artifactId "domain"
-                artifact tasks.named("androidSourcesJar") // This task is added by 'publish-to-s3' plugin
                 // version is set by 'publish-to-s3' plugin
             }
         }
