@@ -8,6 +8,8 @@ plugins {
 }
 
 android {
+    namespace "org.wordpress.android.mediapicker.api"
+
     compileSdkVersion rootProject.compileSdkVersion
 
     defaultConfig {
@@ -15,7 +17,7 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
     }
 
-    lintOptions {
+    lint {
         warningsAsErrors true
     }
 }
@@ -34,7 +36,6 @@ project.afterEvaluate {
 
                 groupId "org.wordpress.mediapicker"
                 artifactId "domain"
-                artifact tasks.named("androidSourcesJar") // This task is added by 'publish-to-s3' plugin
                 // version is set by 'publish-to-s3' plugin
             }
         }

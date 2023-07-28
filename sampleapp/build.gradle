@@ -12,6 +12,8 @@ repositories {
 }
 
 android {
+    namespace "org.wordpress.android.sampleapp"
+
     compileSdkVersion rootProject.compileSdkVersion
 
     defaultConfig {
@@ -33,7 +35,7 @@ android {
         jvmTarget = '1.8'
     }
 
-    lintOptions {
+    lint {
         warningsAsErrors true
         checkReleaseBuilds false
         disable 'GradleDependency'
@@ -48,6 +50,7 @@ android {
     }
 
     buildFeatures {
+        buildConfig true
         viewBinding true
     }
 }
