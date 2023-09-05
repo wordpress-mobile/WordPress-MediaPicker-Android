@@ -45,8 +45,6 @@ import org.wordpress.android.mediapicker.model.MediaPickerAction.OpenCameraForPh
 import org.wordpress.android.mediapicker.model.MediaPickerAction.OpenSystemPicker
 import org.wordpress.android.mediapicker.model.MediaPickerAction.SwitchMediaPicker
 import org.wordpress.android.mediapicker.model.MediaPickerContext
-import org.wordpress.android.mediapicker.model.MediaPickerContext.MEDIA_FILE
-import org.wordpress.android.mediapicker.model.MediaPickerContext.PHOTO_OR_VIDEO
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem.FileItem
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem.LongClickAction
 import org.wordpress.android.mediapicker.model.MediaPickerUiItem.NextPageLoader
@@ -58,6 +56,7 @@ import org.wordpress.android.mediapicker.model.MediaType.AUDIO
 import org.wordpress.android.mediapicker.model.MediaType.DOCUMENT
 import org.wordpress.android.mediapicker.model.MediaType.IMAGE
 import org.wordpress.android.mediapicker.model.MediaType.VIDEO
+import org.wordpress.android.mediapicker.model.MediaTypes
 import org.wordpress.android.mediapicker.model.MediaUri
 import org.wordpress.android.mediapicker.model.UiStateModels.ActionModeUiModel
 import org.wordpress.android.mediapicker.model.UiStateModels.BrowseMenuUiModel
@@ -105,6 +104,7 @@ internal class MediaPickerViewModel @Inject constructor(
         private const val SEARCH_DELAY = 300L
         private const val SELECTOR_DELAY = 100L
     }
+
     private lateinit var mediaLoader: MediaLoader
     private val loadActions = Channel<LoadAction>()
     private var searchJob: Job? = null
@@ -137,7 +137,7 @@ internal class MediaPickerViewModel @Inject constructor(
             softAskViewUiModel = buildSoftAskView(softAskRequest),
             fabUiModel = FabUiModel(
                 show = mediaPickerSetup.availableDataSources.contains(DataSource.CAMERA) &&
-                    selectedIds.isNullOrEmpty(),
+                        selectedIds.isNullOrEmpty(),
                 action = this::onCameraClicked
             ),
             actionModeUiModel = buildActionModeUiModel(selectedIds),
@@ -147,7 +147,7 @@ internal class MediaPickerViewModel @Inject constructor(
                 searchExpanded = searchExpanded
             ),
             isRefreshing = !domainModel?.domainItems.isNullOrEmpty() &&
-                domainModel?.isLoading == true,
+                    domainModel?.isLoading == true,
             browseMenuUiModel = buildBrowseMenuUiModel(softAskRequest, searchExpanded)
         )
     }
@@ -171,6 +171,7 @@ internal class MediaPickerViewModel @Inject constructor(
                 filter ?: "",
                 mediaPickerSetup.searchMode != VISIBLE_TOGGLED
             )
+
             isVisible -> Collapsed
             else -> SearchUiModel.Hidden
         }
@@ -242,6 +243,7 @@ internal class MediaPickerViewModel @Inject constructor(
                         toggleAction = toggleAction,
                         longClickAction = longClickAction
                     )
+
                     VIDEO -> VideoItem(
                         url = it.url,
                         identifier = it.identifier,
@@ -251,6 +253,7 @@ internal class MediaPickerViewModel @Inject constructor(
                         toggleAction = toggleAction,
                         longClickAction = longClickAction
                     )
+
                     AUDIO, DOCUMENT -> FileItem(
                         fileName = it.name ?: "",
                         fileExtension = fileExtension,
@@ -327,6 +330,7 @@ internal class MediaPickerViewModel @Inject constructor(
                     )
                 )
             }
+
             else -> {
                 val isImagePicker = mediaPickerSetup.allowedTypes.contains(IMAGE)
                 val isVideoPicker = mediaPickerSetup.allowedTypes.contains(VIDEO)
@@ -419,9 +423,12 @@ internal class MediaPickerViewModel @Inject constructor(
 
     private fun hasAllRequiredPermissions(): Boolean {
         return if (mediaPickerSetup.areMediaPermissionsRequired) {
-            val images = !mediaPickerSetup.isImagesPermissionRequired || permissionUtils.hasImagesPermission()
-            val videos = !mediaPickerSetup.isVideoPermissionRequired || permissionUtils.hasVideoPermission()
-            val music = !mediaPickerSetup.isAudioPermissionRequired || permissionUtils.hasAudioPermission()
+            val images =
+                !mediaPickerSetup.isImagesPermissionRequired || permissionUtils.hasImagesPermission()
+            val videos =
+                !mediaPickerSetup.isVideoPermissionRequired || permissionUtils.hasVideoPermission()
+            val music =
+                !mediaPickerSetup.isAudioPermissionRequired || permissionUtils.hasAudioPermission()
             images && videos && music
         } else if (mediaPickerSetup.isReadStoragePermissionRequired) {
             permissionUtils.hasReadStoragePermission()
@@ -453,12 +460,15 @@ internal class MediaPickerViewModel @Inject constructor(
             is LocalUri -> {
                 _onNavigate.postValue(Event(PreviewUrl(identifier.uri.toString())))
             }
+
             is RemoteMedia -> {
                 _onNavigate.postValue(Event(PreviewUrl(identifier.url)))
             }
+
             is GifMedia -> {
                 _onNavigate.postValue(Event(PreviewUrl(identifier.uri.uri)))
             }
+
             else -> {
                 // not relevant
             }
@@ -514,12 +524,20 @@ internal class MediaPickerViewModel @Inject constructor(
             is ChooseFromAndroidDevice -> {
                 getSystemPickerAction(action.allowedTypes, canMultiselect)
             }
+
             is CapturePhoto -> {
                 capturedPhotoPath = mediaPickerUtils.generateCapturedImagePath()
                 OpenCameraForPhotos(capturedPhotoPath)
             }
+
             is SwitchSource -> {
-                SwitchMediaPicker(mediaPickerSetupFactory.build(action.dataSource, canMultiselect))
+                SwitchMediaPicker(
+                    mediaPickerSetupFactory.build(
+                        action.dataSource,
+                        MediaTypes.fromAllowedTypes(mediaPickerSetup.allowedTypes),
+                        canMultiselect
+                    )
+                )
             }
         }
 
@@ -531,26 +549,42 @@ internal class MediaPickerViewModel @Inject constructor(
         canMultiselect: Boolean
     ): OpenSystemPicker {
         val (context, types) = when {
-            listOf(IMAGE).containsAll(allowedTypes) -> {
+            MediaTypes.IMAGES.allowedTypes == allowedTypes -> {
                 Pair(MediaPickerContext.PHOTO, mimeTypeProvider.imageTypes)
             }
-            listOf(VIDEO).containsAll(allowedTypes) -> {
+
+            MediaTypes.VIDEOS.allowedTypes == allowedTypes -> {
                 Pair(MediaPickerContext.VIDEO, mimeTypeProvider.videoTypes)
             }
-            listOf(IMAGE, VIDEO).containsAll(allowedTypes) -> {
+
+            MediaTypes.AUDIOS.allowedTypes == allowedTypes -> {
+                Pair(MediaPickerContext.AUDIO, mimeTypeProvider.audioTypes)
+            }
+
+            MediaTypes.DOCUMENTS.allowedTypes == allowedTypes -> {
+                Pair(MediaPickerContext.FILE, mimeTypeProvider.documentTypes)
+            }
+
+            MediaTypes.IMAGES_AND_VIDEOS.allowedTypes == allowedTypes -> {
                 Pair(
-                    PHOTO_OR_VIDEO,
+                    MediaPickerContext.PHOTO_OR_VIDEO,
                     mimeTypeProvider.imageTypes + mimeTypeProvider.videoTypes
                 )
             }
-            listOf(AUDIO).containsAll(allowedTypes) -> {
-                Pair(MediaPickerContext.AUDIO, mimeTypeProvider.audioTypes)
-            }
-            else -> {
+
+
+            MediaTypes.MEDIA.allowedTypes == allowedTypes -> {
                 val allTypes = with(mimeTypeProvider) {
                     imageTypes + videoTypes + audioTypes
                 }
-                Pair(MEDIA_FILE, allTypes)
+                Pair(MediaPickerContext.FILE, allTypes)
+            }
+
+            else -> {
+                val allTypes = with(mimeTypeProvider) {
+                    imageTypes + videoTypes + audioTypes + documentTypes
+                }
+                Pair(MediaPickerContext.FILE, allTypes)
             }
         }
         return OpenSystemPicker(context, types.toList(), canMultiselect)
