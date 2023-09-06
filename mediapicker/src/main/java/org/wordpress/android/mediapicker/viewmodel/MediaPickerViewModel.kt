@@ -257,6 +257,7 @@ internal class MediaPickerViewModel @Inject constructor(
                     AUDIO, DOCUMENT -> FileItem(
                         fileName = it.name ?: "",
                         fileExtension = fileExtension,
+                        mimeType = it.mimeType,
                         identifier = it.identifier,
                         isSelected = isSelected,
                         selectedOrder = selectedOrder,

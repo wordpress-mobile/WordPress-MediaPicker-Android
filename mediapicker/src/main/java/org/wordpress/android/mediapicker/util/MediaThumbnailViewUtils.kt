@@ -34,7 +34,7 @@ internal class MediaThumbnailViewUtils {
     fun setupFileImageView(
         container: View,
         imgThumbnail: ImageView,
-        fileName: String,
+        mimeType: String?,
         isSelected: Boolean,
         longClickAction: LongClickAction,
         toggleAction: ToggleAction,
@@ -43,8 +43,8 @@ internal class MediaThumbnailViewUtils {
         imgThumbnail.cancelRequestAndClearImageView()
 
         // not an image or video, so show file name and file type
-        val placeholderResId = MediaUtils.getPlaceholder(fileName)
-        imgThumbnail.setImageResourceWithTint(placeholderResId, MPApiR.color.neutral_30)
+        val placeholderIcon = MediaUtils.getPlaceholder(container.context, mimeType.orEmpty())
+        imgThumbnail.setImageResourceWithTint(placeholderIcon, MPApiR.color.neutral_30)
 
         container.setOnClickListener {
             toggleAction.toggle()
