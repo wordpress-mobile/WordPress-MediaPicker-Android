@@ -5,7 +5,6 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore.Audio
 import android.provider.MediaStore.Files.FileColumns
 import android.provider.MediaStore.Images
@@ -20,7 +19,6 @@ import org.wordpress.android.mediapicker.model.MediaType.IMAGE
 import org.wordpress.android.mediapicker.model.MediaType.VIDEO
 import org.wordpress.android.mediapicker.model.MediaUri
 import org.wordpress.android.mediapicker.model.asMediaUri
-import java.io.File
 import javax.inject.Inject
 
 class DeviceMediaLoader @Inject constructor(
@@ -95,29 +93,6 @@ class DeviceMediaLoader @Inject constructor(
         return DeviceMediaList(result.take(pageSize), nextItem)
     }
 
-    fun loadDocuments(filter: String?, pageSize: Int, limitDate: Long? = null): DeviceMediaList {
-        val storagePublicDirectory = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
-        val nextPage = (storagePublicDirectory?.listFiles() ?: arrayOf()).filter {
-            (limitDate == null || it.lastModifiedInSecs() <= limitDate) &&
-                (filter == null || it.name.lowercase().contains(filter))
-        }.sortedByDescending { it.lastModified() }.take(pageSize + 1)
-
-        val nextItem = if (nextPage.size > pageSize) {
-            nextPage.last().lastModifiedInSecs()
-        } else {
-            null
-        }
-        val result = nextPage.take(pageSize).map { file ->
-            val uri = Uri.parse(file.toURI().toString())
-            DeviceMediaItem(
-                uri.asMediaUri(),
-                file.name,
-                file.lastModifiedInSecs()
-            )
-        }
-        return DeviceMediaList(result, nextItem)
-    }
-
     private fun getCursor(
         condition: String?,
         pageSize: Int,
@@ -149,8 +124,6 @@ class DeviceMediaLoader @Inject constructor(
         )
     }
 
-    private fun File.lastModifiedInSecs() = this.lastModified() / MILLIS
-
     fun getMimeType(mediaUri: MediaUri): String? {
         val uri = mediaUri.asAndroidUri()
         return if (uri.scheme == ContentResolver.SCHEME_CONTENT) {
@@ -169,6 +142,5 @@ class DeviceMediaLoader @Inject constructor(
         private const val ID_COL = Images.Media._ID
         private const val ID_DATE_MODIFIED = MediaColumns.DATE_MODIFIED
         private const val ID_TITLE = MediaColumns.TITLE
-        private const val MILLIS = 1000L
     }
 }

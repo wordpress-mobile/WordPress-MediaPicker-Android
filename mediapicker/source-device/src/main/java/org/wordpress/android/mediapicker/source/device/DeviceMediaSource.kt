@@ -1,5 +1,6 @@
 package org.wordpress.android.mediapicker.source.device
 
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
@@ -11,7 +12,6 @@ import org.wordpress.android.mediapicker.model.MediaItem
 import org.wordpress.android.mediapicker.model.MediaItem.Identifier.LocalUri
 import org.wordpress.android.mediapicker.model.MediaType
 import org.wordpress.android.mediapicker.model.MediaType.AUDIO
-import org.wordpress.android.mediapicker.model.MediaType.DOCUMENT
 import org.wordpress.android.mediapicker.model.MediaType.IMAGE
 import org.wordpress.android.mediapicker.model.MediaType.VIDEO
 import org.wordpress.android.mediapicker.model.UiString.UiStringText
@@ -45,7 +45,10 @@ class DeviceMediaSource(
                             lowerCaseFilter
                         )
                     }
-                    DOCUMENT -> async { mediaType to loadDownloads(lowerCaseFilter) }
+                    else -> {
+                        // For not supported types, just return an empty list
+                        CompletableDeferred(mediaType to Result(emptyList()))
+                    }
                 }
             }
             val results = deferredJobs.map { it.await() }
@@ -108,38 +111,6 @@ class DeviceMediaSource(
         }
         addPage(mediaType, result, deviceMediaList.next)
         return cache[mediaType]
-    }
-
-    private suspend fun loadDownloads(filter: String?): Result? = withContext(bgDispatcher) {
-        if (!cache[DOCUMENT].shouldLoadMoreData()) {
-            return@withContext cache[DOCUMENT]
-        }
-        val lastDateModified = cache[DOCUMENT]?.nextTimestamp
-        val documentsList = deviceMediaLoader.loadDocuments(filter, pageSize, lastDateModified)
-
-        val filteredPage = documentsList.items.mapNotNull { document ->
-            val mimeType = deviceMediaLoader.getMimeType(document.mediaUri)
-            val isMimeTypeSupported = mimeType != null &&
-                mimeTypeProvider.isMimeTypeSupported(mimeType)
-
-            val isSupportedApplicationType = mimeType != null &&
-                mimeTypeProvider.isApplicationTypeSupported(mimeType)
-
-            if (isSupportedApplicationType && isMimeTypeSupported) {
-                MediaItem(
-                    LocalUri(document.mediaUri),
-                    document.mediaUri.toString(),
-                    document.title,
-                    DOCUMENT,
-                    mimeType,
-                    document.dateModified
-                )
-            } else {
-                null
-            }
-        }
-        addPage(DOCUMENT, filteredPage, documentsList.next)
-        return@withContext cache[DOCUMENT]
     }
 
     private fun addPage(mediaType: MediaType, page: List<MediaItem>, nextTimestamp: Long?) {
