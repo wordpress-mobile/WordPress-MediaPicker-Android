@@ -92,12 +92,12 @@ internal class UiStateModels {
                 }
             }
 
-            fun fromMediaType(type: MediaType): PermissionsRequested {
+            fun fromMediaType(type: MediaType): PermissionsRequested? {
                 return when (type) {
                     IMAGE -> IMAGES
                     VIDEO -> VIDEOS
                     AUDIO -> MUSIC
-                    else -> throw UnsupportedOperationException("Unsupported media type: $type")
+                    else -> null
                 }
             }
         }
