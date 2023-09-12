@@ -49,6 +49,9 @@ class MediaPickerUtils @Inject constructor(
         if (openSystemPicker.allowMultipleSelection) {
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
         }
+        if (openSystemPicker.pickerContext.intentAction == Intent.ACTION_OPEN_DOCUMENT) {
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
         return Intent.createChooser(intent, context.getString(chooserContext.title))
     }
 

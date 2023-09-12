@@ -25,6 +25,10 @@ enum class MediaPickerContext(
         R.string.pick_audio, "*/*"
     ),
     MEDIA_FILE(
+        Intent.ACTION_GET_CONTENT,
+        R.string.pick_audio, "*/*"
+    ),
+    FILE(
         Intent.ACTION_OPEN_DOCUMENT,
         R.string.pick_file, "*/*"
     );

@@ -32,13 +32,13 @@ internal class FileThumbnailViewHolder(parent: ViewGroup, private val mediaThumb
         mediaThumbnailViewUtils.setupFileImageView(
             container,
             imgThumbnail,
-            item.fileName,
+            item.mimeType,
             item.isSelected,
             item.longClickAction,
             item.toggleAction,
             animateSelection
         )
-        fileType.text = item.fileExtension
+        fileType.text = item.fileExtension.orEmpty()
         fileName.text = item.fileName
     }
 }

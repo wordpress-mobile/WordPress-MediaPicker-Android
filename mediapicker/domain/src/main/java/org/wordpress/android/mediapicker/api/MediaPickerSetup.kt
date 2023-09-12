@@ -4,12 +4,12 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.annotation.StringRes
-import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.CAMERA
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.model.MediaType
 import org.wordpress.android.mediapicker.model.MediaType.AUDIO
 import org.wordpress.android.mediapicker.model.MediaType.IMAGE
 import org.wordpress.android.mediapicker.model.MediaType.VIDEO
+import org.wordpress.android.mediapicker.model.MediaTypes
 
 data class MediaPickerSetup(
     val primaryDataSource: DataSource,
@@ -40,11 +40,15 @@ data class MediaPickerSetup(
     val isAudioPermissionRequired = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             primaryDataSource == DEVICE && allowedTypes.contains(AUDIO)
 
-    val areMediaPermissionsRequired = isImagesPermissionRequired || isVideoPermissionRequired || isAudioPermissionRequired
+    val areMediaPermissionsRequired =
+        isImagesPermissionRequired || isVideoPermissionRequired || isAudioPermissionRequired
 
     fun toBundle(bundle: Bundle) {
         bundle.putInt(KEY_PRIMARY_DATA_SOURCE, primaryDataSource.ordinal)
-        bundle.putIntegerArrayList(KEY_AVAILABLE_DATA_SOURCES, ArrayList(availableDataSources.map { it.ordinal }))
+        bundle.putIntegerArrayList(
+            KEY_AVAILABLE_DATA_SOURCES,
+            ArrayList(availableDataSources.map { it.ordinal })
+        )
         bundle.putIntegerArrayList(KEY_ALLOWED_TYPES, ArrayList(allowedTypes.map { it.ordinal }))
         bundle.putBoolean(KEY_CAN_MULTISELECT, isMultiSelectEnabled)
         bundle.putBoolean(KEY_QUEUE_RESULTS, areResultsQueued)
@@ -54,8 +58,14 @@ data class MediaPickerSetup(
 
     fun toIntent(intent: Intent) {
         intent.putExtra(KEY_PRIMARY_DATA_SOURCE, primaryDataSource.ordinal)
-        intent.putIntegerArrayListExtra(KEY_AVAILABLE_DATA_SOURCES, ArrayList(availableDataSources.map { it.ordinal }))
-        intent.putIntegerArrayListExtra(KEY_ALLOWED_TYPES, ArrayList(allowedTypes.map { it.ordinal }))
+        intent.putIntegerArrayListExtra(
+            KEY_AVAILABLE_DATA_SOURCES,
+            ArrayList(availableDataSources.map { it.ordinal })
+        )
+        intent.putIntegerArrayListExtra(
+            KEY_ALLOWED_TYPES,
+            ArrayList(allowedTypes.map { it.ordinal })
+        )
         intent.putExtra(KEY_CAN_MULTISELECT, isMultiSelectEnabled)
         intent.putExtra(KEY_QUEUE_RESULTS, areResultsQueued)
         intent.putExtra(KEY_SEARCH_MODE, searchMode.ordinal)
@@ -73,12 +83,14 @@ data class MediaPickerSetup(
 
         fun fromBundle(bundle: Bundle): MediaPickerSetup {
             val dataSource = DataSource.values()[bundle.getInt(KEY_PRIMARY_DATA_SOURCE)]
-            val availableDataSources = (bundle.getIntegerArrayList(KEY_AVAILABLE_DATA_SOURCES) ?: listOf<Int>()).map {
-                DataSource.values()[it]
-            }.toSet()
-            val allowedTypes = (bundle.getIntegerArrayList(KEY_ALLOWED_TYPES) ?: listOf<Int>()).map {
-                MediaType.values()[it]
-            }.toSet()
+            val availableDataSources =
+                (bundle.getIntegerArrayList(KEY_AVAILABLE_DATA_SOURCES) ?: listOf<Int>()).map {
+                    DataSource.values()[it]
+                }.toSet()
+            val allowedTypes =
+                (bundle.getIntegerArrayList(KEY_ALLOWED_TYPES) ?: listOf<Int>()).map {
+                    MediaType.values()[it]
+                }.toSet()
             val multipleSelectionAllowed = bundle.getBoolean(KEY_CAN_MULTISELECT)
             val queueResults = bundle.getBoolean(KEY_QUEUE_RESULTS)
             val searchMode = SearchMode.values()[bundle.getInt(KEY_SEARCH_MODE)]
@@ -97,14 +109,15 @@ data class MediaPickerSetup(
         fun fromIntent(intent: Intent): MediaPickerSetup {
             val dataSource = DataSource.values()[intent.getIntExtra(KEY_PRIMARY_DATA_SOURCE, -1)]
             val availableDataSources = (
-                intent.getIntegerArrayListExtra(KEY_AVAILABLE_DATA_SOURCES)
-                    ?: listOf<Int>()
-                ).map {
-                DataSource.values()[it]
-            }.toSet()
-            val allowedTypes = (intent.getIntegerArrayListExtra(KEY_ALLOWED_TYPES) ?: listOf<Int>()).map {
-                MediaType.values()[it]
-            }.toSet()
+                    intent.getIntegerArrayListExtra(KEY_AVAILABLE_DATA_SOURCES)
+                        ?: listOf<Int>()
+                    ).map {
+                    DataSource.values()[it]
+                }.toSet()
+            val allowedTypes =
+                (intent.getIntegerArrayListExtra(KEY_ALLOWED_TYPES) ?: listOf<Int>()).map {
+                    MediaType.values()[it]
+                }.toSet()
             val multipleSelectionAllowed = intent.getBooleanExtra(KEY_CAN_MULTISELECT, false)
             val queueResults = intent.getBooleanExtra(KEY_QUEUE_RESULTS, false)
             val searchMode = SearchMode.values()[intent.getIntExtra(KEY_SEARCH_MODE, 0)]
@@ -122,6 +135,10 @@ data class MediaPickerSetup(
     }
 
     interface Factory {
-        fun build(source: DataSource, isMultiSelectAllowed: Boolean = false): MediaPickerSetup
+        fun build(
+            source: DataSource,
+            mediaTypes: MediaTypes = MediaTypes.EVERYTHING,
+            isMultiSelectAllowed: Boolean = false
+        ): MediaPickerSetup
     }
 }

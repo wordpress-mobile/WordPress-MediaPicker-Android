@@ -1,20 +1,19 @@
 package org.wordpress.android.mediapicker.util
 
+import android.graphics.drawable.Icon
 import android.widget.ImageView
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
 import com.bumptech.glide.Glide
-import kotlinx.coroutines.CoroutineScope
 import org.wordpress.android.mediapicker.R
 
 fun ImageView.setImageResourceWithTint(
-    @DrawableRes drawableResId: Int,
+    icon: Icon,
     @ColorRes colorResId: Int
 ) {
-    setImageDrawable(ContextCompat.getDrawable(context, drawableResId))
+    setImageIcon(icon)
     ImageViewCompat.setImageTintList(
         this,
         AppCompatResources.getColorStateList(context, colorResId)
