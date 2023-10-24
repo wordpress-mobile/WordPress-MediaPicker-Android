@@ -70,6 +70,9 @@ ext {
     kotlinxCoroutinesVersion = '1.5.2'
     squareupRetrofitVersion = "2.9.0"
 
+    // other
+    wordpressLintVersion = "2.0.0"
+
     // project
     mediaPickerDomainDependency = project.hasProperty("mediaPickerDomainVersion") ? "org.wordpress.mediapicker:domain:${project.getProperty("mediaPickerDomainVersion")}" : project(":mediapicker:domain")
 }
