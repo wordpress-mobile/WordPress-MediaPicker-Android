@@ -6,7 +6,7 @@ import org.wordpress.android.mediapicker.api.MediaPickerSetup.SearchMode.HIDDEN
 
 class CameraMediaPickerSetup private constructor() {
     companion object {
-        fun buildCameraPicker(): MediaPickerSetup {
+        fun build(): MediaPickerSetup {
             return MediaPickerSetup(
                 primaryDataSource = CAMERA,
                 isMultiSelectEnabled = false,
