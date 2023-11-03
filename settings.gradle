@@ -40,6 +40,7 @@ rootProject.name = "Media Picker"
 include ':mediapicker',
         ':mediapicker:domain',
         ':mediapicker:source-device',
+        ':mediapicker:source-camera',
         ':mediapicker:source-gif',
         ':mediapicker:source-wordpress',
         ':sampleapp'
