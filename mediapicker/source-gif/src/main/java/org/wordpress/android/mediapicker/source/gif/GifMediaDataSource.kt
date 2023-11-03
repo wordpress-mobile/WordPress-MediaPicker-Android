@@ -19,8 +19,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 import org.wordpress.android.mediapicker.api.R as MPApiR
 
-class GifMediaDataSource
-@Inject constructor(
+class GifMediaDataSource @Inject constructor(
     private val tenorClient: TenorGifClient,
     private val networkUtilsWrapper: NetworkUtilsWrapper
 ) : MediaSource {
