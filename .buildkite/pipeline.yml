@@ -42,6 +42,12 @@ steps:
     plugins: *common_plugins
     command: |
       .buildkite/publish-mediapicker-source-device.sh
+  - label: "Publish :mediapicker:source-camera"
+    depends_on:
+      - "publish-mediapicker-domain"
+    plugins: *common_plugins
+    command: |
+      .buildkite/publish-mediapicker-source-camera.sh
   - label: "Publish :mediapicker:source-gif"
     depends_on:
       - "publish-mediapicker-domain"
