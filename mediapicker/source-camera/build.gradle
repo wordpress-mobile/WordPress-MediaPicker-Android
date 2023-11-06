@@ -27,7 +27,7 @@ dependencies {
 project.afterEvaluate {
     publishing {
         publications {
-            SourceDevicePublication(MavenPublication) {
+            SourceCameraPublication(MavenPublication) {
                 from components.release
 
                 groupId "org.wordpress.mediapicker"
