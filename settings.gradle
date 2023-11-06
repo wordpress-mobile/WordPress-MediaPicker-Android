@@ -1,5 +1,5 @@
 pluginManagement {
-    gradle.ext.kotlinVersion = '1.6.10'
+    gradle.ext.kotlinVersion = '1.8.21'
     gradle.ext.daggerVersion = '2.42'
     gradle.ext.agpVersion = '8.1.0'
     gradle.ext.detektVersion = '1.19.0'
@@ -41,6 +41,7 @@ include ':mediapicker',
         ':mediapicker:domain',
         ':mediapicker:source-device',
         ':mediapicker:source-camera',
+        ':mediapicker:source-photo-picker',
         ':mediapicker:source-gif',
         ':mediapicker:source-wordpress',
         ':sampleapp'
