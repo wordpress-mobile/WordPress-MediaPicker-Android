@@ -388,7 +388,6 @@ internal class MediaPickerViewModel @Inject constructor(
 
         this.mediaPickerSetup = mediaPickerSetup
         this.lastTappedAction = lastTappedAction
-        this.mediaLoader = mediaSourceFactory.build(mediaPickerSetup)
 
         if (_domainModel.value == null || reload) {
             if (mediaPickerSetup.primaryDataSource == DataSource.CAMERA) {
@@ -404,6 +403,7 @@ internal class MediaPickerViewModel @Inject constructor(
             ) {
                 _domainModel.value = DomainModel(domainItems = emptyList(), isLoading = true)
             } else {
+                mediaLoader = mediaSourceFactory.build(mediaPickerSetup)
                 loadJob = viewModelScope.launch {
                     mediaLoader.loadMedia(loadActions).collect { domainModel ->
                         _domainModel.value = domainModel

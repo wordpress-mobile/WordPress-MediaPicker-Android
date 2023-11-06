@@ -1,0 +1,41 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'maven-publish'
+    id "com.automattic.android.publish-to-s3"
+}
+
+android {
+    namespace "org.wordpress.android.mediapicker.source.camera"
+
+    compileSdkVersion rootProject.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+    }
+
+    lint {
+        warningsAsErrors true
+    }
+}
+
+dependencies {
+    implementation mediaPickerDomainDependency
+
+    implementation "androidx.core:core-ktx:$androidxCoreVersion"
+}
+
+project.afterEvaluate {
+    publishing {
+        publications {
+            SourceCameraPublication(MavenPublication) {
+                from components.release
+
+                groupId "org.wordpress.mediapicker"
+                artifactId "source-camera"
+                // version is set by 'publish-to-s3' plugin
+            }
+        }
+   }
+}

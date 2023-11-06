@@ -7,7 +7,7 @@ import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.GIF_LIBRARY
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.SYSTEM_PICKER
 import org.wordpress.android.mediapicker.model.MediaTypes
-import org.wordpress.android.mediapicker.model.MediaTypes.EVERYTHING
+import org.wordpress.android.mediapicker.source.camera.CameraMediaPickerSetup
 import org.wordpress.android.mediapicker.source.device.DeviceMediaPickerSetup
 import org.wordpress.android.mediapicker.source.gif.GifMediaPickerSetup
 import java.security.InvalidParameterException
@@ -17,7 +17,7 @@ class MediaPickerSetupFactory @Inject constructor() : MediaPickerSetup.Factory {
     override fun build(source: DataSource, mediaTypes: MediaTypes, isMultiSelectAllowed: Boolean): MediaPickerSetup {
         return when (source) {
             GIF_LIBRARY -> GifMediaPickerSetup.build(canMultiSelect = true)
-            CAMERA -> DeviceMediaPickerSetup.buildCameraPicker()
+            CAMERA -> CameraMediaPickerSetup.build()
             DEVICE -> DeviceMediaPickerSetup.buildMediaPicker(
                 mediaTypes = mediaTypes,
                 canMultiSelect = true

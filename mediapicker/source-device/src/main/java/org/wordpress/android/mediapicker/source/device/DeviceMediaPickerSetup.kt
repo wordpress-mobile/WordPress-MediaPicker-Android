@@ -16,7 +16,7 @@ class DeviceMediaPickerSetup private constructor() {
                 isMultiSelectEnabled = canMultiSelect,
                 areResultsQueued = false,
                 searchMode = VISIBLE_UNTOGGLED,
-                availableDataSources = setOf(CAMERA, SYSTEM_PICKER),
+                availableDataSources = setOf(SYSTEM_PICKER),
                 allowedTypes = mediaTypes.allowedTypes,
                 title = R.string.photo_picker_title
             )
@@ -29,15 +29,6 @@ class DeviceMediaPickerSetup private constructor() {
                 areResultsQueued = false,
                 searchMode = HIDDEN,
                 allowedTypes = mediaTypes.allowedTypes
-            )
-        }
-
-        fun buildCameraPicker(): MediaPickerSetup {
-            return MediaPickerSetup(
-                primaryDataSource = CAMERA,
-                isMultiSelectEnabled = false,
-                areResultsQueued = false,
-                searchMode = HIDDEN
             )
         }
     }

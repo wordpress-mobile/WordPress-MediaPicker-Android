@@ -1,5 +1,6 @@
 package org.wordpress.android.mediapicker
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -77,8 +78,12 @@ class MediaPickerUtils @Inject constructor(
     fun generateCapturedImagePath(): String? = generateCapturedImageFile()?.path
 
     /**
-     * Create an intent for capturing a device photo
+     * Create an intent for capturing a device photo.
+     *
+     * The permission is requested in the source-camera module's AndroidManifest.xml.
+     *
      */
+    @SuppressLint("QueryPermissionsNeeded")
     fun createCaptureImageIntent(tempFilePath: String): Intent? {
         return if (!isCameraAvailable) {
             null

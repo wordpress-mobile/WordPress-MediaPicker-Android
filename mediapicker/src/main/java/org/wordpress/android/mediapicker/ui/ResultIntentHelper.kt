@@ -76,18 +76,18 @@ internal object ResultIntentHelper {
         val chosenLocalIds = identifiers.mapNotNull { (it as? LocalMedia)?.id }
 
         val intent = Intent()
-        if (!chosenUris.isNullOrEmpty()) {
+        if (chosenUris.isNotEmpty()) {
             intent.putUris(chosenUris)
-        } else if (!chosenGifUris.isNullOrEmpty()) {
+        } else if (chosenGifUris.isNotEmpty()) {
             intent.putUris(chosenGifUris.map { it.uri })
         }
-        if (!queuedUris.isNullOrEmpty()) {
+        if (queuedUris.isNotEmpty()) {
             intent.putQueuedUris(queuedUris)
         }
-        if (!chosenRemoteMedia.isNullOrEmpty()) {
+        if (chosenRemoteMedia.isNotEmpty()) {
             intent.putRemoteMedia(chosenRemoteMedia)
         }
-        if (!chosenLocalIds.isNullOrEmpty()) {
+        if (chosenLocalIds.isNotEmpty()) {
             intent.putLocalIds(chosenLocalIds)
         }
         intent.putExtra(
