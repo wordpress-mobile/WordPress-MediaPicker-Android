@@ -7,6 +7,7 @@ import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.CAMERA
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.GIF_LIBRARY
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.PHOTO_PICKER
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.SYSTEM_PICKER
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.WP_MEDIA_LIBRARY
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.SearchMode.VISIBLE_TOGGLED
@@ -17,6 +18,7 @@ import org.wordpress.android.mediapicker.api.Tracker.Event.MEDIA_PICKER_ITEM_UNS
 import org.wordpress.android.mediapicker.api.Tracker.Event.MEDIA_PICKER_OPENED
 import org.wordpress.android.mediapicker.api.Tracker.Event.MEDIA_PICKER_OPEN_DEVICE_LIBRARY
 import org.wordpress.android.mediapicker.api.Tracker.Event.MEDIA_PICKER_OPEN_GIF_LIBRARY
+import org.wordpress.android.mediapicker.api.Tracker.Event.MEDIA_PICKER_OPEN_PHOTO_PICKER
 import org.wordpress.android.mediapicker.api.Tracker.Event.MEDIA_PICKER_OPEN_SYSTEM_PICKER
 import org.wordpress.android.mediapicker.api.Tracker.Event.MEDIA_PICKER_OPEN_WORDPRESS_MEDIA_LIBRARY_PICKER
 import org.wordpress.android.mediapicker.api.Tracker.Event.MEDIA_PICKER_PREVIEW_OPENED
@@ -89,6 +91,7 @@ internal class MediaPickerTracker @Inject constructor(
                     CAMERA -> MEDIA_PICKER_CAPTURE_PHOTO
                     SYSTEM_PICKER -> MEDIA_PICKER_OPEN_SYSTEM_PICKER
                     WP_MEDIA_LIBRARY -> MEDIA_PICKER_OPEN_WORDPRESS_MEDIA_LIBRARY_PICKER
+                    PHOTO_PICKER -> MEDIA_PICKER_OPEN_PHOTO_PICKER
                 }
                 tracker.track(event, mediaPickerSetup.toProperties())
             }
@@ -149,6 +152,7 @@ internal class MediaPickerTracker @Inject constructor(
             SYSTEM_PICKER -> "system_picker"
             CAMERA -> "camera"
             WP_MEDIA_LIBRARY -> "wordpress_media_library"
+            PHOTO_PICKER -> "photo_picker"
         }
         this["can_multiselect"] = mediaPickerSetup.isMultiSelectEnabled
         this["default_search_view"] = mediaPickerSetup.searchMode == VISIBLE_TOGGLED
