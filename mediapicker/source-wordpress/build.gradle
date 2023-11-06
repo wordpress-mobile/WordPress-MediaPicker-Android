@@ -43,7 +43,7 @@ dependencies {
 project.afterEvaluate {
     publishing {
         publications {
-            SourceGifPublication(MavenPublication) {
+            SourceWordPressPublication(MavenPublication) {
                 from components.release
 
                 groupId "org.wordpress.mediapicker"
