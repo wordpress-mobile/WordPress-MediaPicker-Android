@@ -14,7 +14,7 @@ repositories {
 android {
     namespace "org.wordpress.android.sampleapp"
 
-    compileSdkVersion rootProject.compileSdkVersion
+    compileSdk rootProject.compileSdkVersion
 
     defaultConfig {
         applicationId "org.wordpress.android.sampleapp"

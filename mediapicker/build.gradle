@@ -11,7 +11,7 @@ plugins {
 android {
     namespace "org.wordpress.android.mediapicker"
 
-    compileSdkVersion rootProject.compileSdkVersion
+    compileSdk  rootProject.compileSdkVersion
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
