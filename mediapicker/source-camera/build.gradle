@@ -1,9 +1,6 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
-    id 'org.jetbrains.kotlin.plugin.parcelize'
-    id 'org.jetbrains.kotlin.kapt'
-    id 'dagger.hilt.android.plugin'
     id 'maven-publish'
     id "com.automattic.android.publish-to-s3"
 }
@@ -25,12 +22,6 @@ android {
 
 dependencies {
     implementation mediaPickerDomainDependency
-
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinxCoroutinesVersion"
-
-    implementation "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"
-    implementation "com.google.dagger:hilt-android-compiler:$gradle.ext.daggerVersion"
-    kapt "com.google.dagger:hilt-compiler:$gradle.ext.daggerVersion"
 }
 
 project.afterEvaluate {
