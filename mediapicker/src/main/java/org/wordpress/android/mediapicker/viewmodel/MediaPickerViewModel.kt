@@ -403,7 +403,7 @@ internal class MediaPickerViewModel @Inject constructor(
             ) {
                 _domainModel.value = DomainModel(domainItems = emptyList(), isLoading = true)
             } else {
-                this.mediaLoader = mediaSourceFactory.build(mediaPickerSetup)
+                mediaLoader = mediaSourceFactory.build(mediaPickerSetup)
                 loadJob = viewModelScope.launch {
                     mediaLoader.loadMedia(loadActions).collect { domainModel ->
                         _domainModel.value = domainModel
