@@ -32,7 +32,12 @@ allprojects {
 
     tasks.withType(KotlinCompile).all {
         kotlinOptions {
+            jvmTarget = JavaVersion.VERSION_1_8
             allWarningsAsErrors = true
+            freeCompilerArgs += [
+                    "-opt-in=kotlin.RequiresOptIn",
+                    "-Xjvm-default=all-compatibility",
+            ]
         }
     }
 }
