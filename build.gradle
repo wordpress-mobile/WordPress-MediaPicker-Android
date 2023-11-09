@@ -72,7 +72,7 @@ ext {
     chrisbanesPhotoviewVersion = '2.3.0'
     glideVersion = '4.16.0'
     googleMaterialVersion = '1.5.0'
-    kotlinxCoroutinesVersion = '1.5.2'
+    kotlinxCoroutinesVersion = '1.6.4'
     squareupRetrofitVersion = "2.9.0"
 
     // other
