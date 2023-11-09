@@ -58,7 +58,7 @@ ext {
 
 ext {
     // libs
-    wordPressFluxCVersion = 'develop-fa819801570505a0e9b4f7f226bb704b88ccc1d2'
+    wordPressFluxCVersion = 'trunk-7ea7465680431fa4df5f0433d4c8b8395055b997'
     wordpressUtilsVersion = "2.4.0"
 
     // main

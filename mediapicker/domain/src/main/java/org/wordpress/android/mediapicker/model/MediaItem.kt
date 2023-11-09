@@ -30,9 +30,9 @@ data class MediaItem(
         @Parcelize
         data class RemoteMedia(
             val id: Long,
-            val name: String,
+            val name: String?,
             val url: String,
-            val date: String
+            val date: String?
         ) : Identifier(REMOTE_MEDIA)
 
         @Parcelize
