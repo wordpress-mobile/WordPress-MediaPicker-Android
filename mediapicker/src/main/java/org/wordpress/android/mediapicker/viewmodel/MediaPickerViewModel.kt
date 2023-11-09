@@ -205,7 +205,7 @@ internal class MediaPickerViewModel @Inject constructor(
         val data = domainModel?.domainItems
         return if (softAskRequest?.show == true) {
             PhotoListUiModel.Hidden
-        } else if (data != null && data.isNotEmpty()) {
+        } else if (!data.isNullOrEmpty()) {
             val uiItems = data.map {
                 val showOrderCounter = mediaPickerSetup.isMultiSelectEnabled
                 val toggleAction = ToggleAction(it.identifier, showOrderCounter, ::onItemToggled)
