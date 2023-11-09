@@ -10,7 +10,7 @@ class PhotoPickerSetup private constructor() {
         fun build(isMultiSelectAllowed: Boolean): MediaPickerSetup {
             return MediaPickerSetup(
                 primaryDataSource = PHOTO_PICKER,
-                isMultiSelectEnabled = false,
+                isMultiSelectEnabled = isMultiSelectAllowed,
                 areResultsQueued = false,
                 searchMode = HIDDEN
             )
