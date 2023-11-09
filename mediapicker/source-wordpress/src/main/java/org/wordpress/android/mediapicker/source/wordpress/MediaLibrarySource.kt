@@ -122,7 +122,7 @@ class MediaLibrarySource(
     }
 
     private fun List<MediaModel>.toMediaItems(mediaType: MediaType): List<MediaItem> {
-        return this.filter { it.url != null }.map { mediaModel ->
+        return this.map { mediaModel ->
             MediaItem(
                 RemoteMedia(
                     mediaModel.mediaId,
