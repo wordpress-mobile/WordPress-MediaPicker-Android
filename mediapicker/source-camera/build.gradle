@@ -26,9 +26,9 @@ android {
 }
 
 dependencies {
-    implementation mediaPickerDomainDependency
+    api mediaPickerDomainDependency
 
-    implementation "androidx.core:core-ktx:$androidxCoreVersion"
+    api "androidx.core:core-ktx:$androidxCoreVersion"
 }
 
 project.afterEvaluate {
