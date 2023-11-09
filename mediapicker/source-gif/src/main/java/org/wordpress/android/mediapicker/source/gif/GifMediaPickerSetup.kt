@@ -5,17 +5,15 @@ import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.GIF_LIB
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.SearchMode.VISIBLE_TOGGLED
 import org.wordpress.android.mediapicker.model.MediaType.IMAGE
 
-class GifMediaPickerSetup private constructor() {
-    companion object {
-        fun build(canMultiSelect: Boolean): MediaPickerSetup {
-            return MediaPickerSetup(
-                primaryDataSource = GIF_LIBRARY,
-                isMultiSelectEnabled = canMultiSelect,
-                allowedTypes = setOf(IMAGE),
-                areResultsQueued = false,
-                searchMode = VISIBLE_TOGGLED,
-                title = R.string.photo_picker_gif
-            )
-        }
+object GifMediaPickerSetup {
+    fun build(canMultiSelect: Boolean): MediaPickerSetup {
+        return MediaPickerSetup(
+            primaryDataSource = GIF_LIBRARY,
+            isMultiSelectEnabled = canMultiSelect,
+            allowedTypes = setOf(IMAGE),
+            areResultsQueued = false,
+            searchMode = VISIBLE_TOGGLED,
+            title = R.string.photo_picker_gif
+        )
     }
 }
