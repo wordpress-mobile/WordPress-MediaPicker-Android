@@ -20,6 +20,8 @@ dependencies {
     // implementation 'org.wordpress:mediapicker:domain:{version}'
     // implementation 'org.wordpress:mediapicker:source-device:{version}'
     // implementation 'org.wordpress:mediapicker:source-gif:{version}'
+    // implementation 'org.wordpress:mediapicker:source-camera:{version}'
+    // implementation 'org.wordpress:mediapicker:source-wordpress:{version}'
 }
 ```
 
