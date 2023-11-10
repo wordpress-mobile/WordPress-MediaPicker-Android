@@ -28,9 +28,9 @@ android {
 }
 
 dependencies {
-    api "androidx.core:core-ktx:$androidxCoreVersion"
+    implementation "androidx.core:core-ktx:$androidxCoreVersion"
 
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinxCoroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinxCoroutinesVersion"
 }
 
 project.afterEvaluate {

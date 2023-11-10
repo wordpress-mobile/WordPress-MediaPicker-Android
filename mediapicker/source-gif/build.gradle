@@ -29,17 +29,17 @@ android {
 }
 
 dependencies {
-    api mediaPickerDomainDependency
+    implementation mediaPickerDomainDependency
 
-    api (name:'tenor-android-core-jetified', ext:'aar') // Jetified Tenor Gif library
-    api "com.squareup.retrofit2:retrofit:$squareupRetrofitVersion"
-    api "com.squareup.retrofit2:converter-gson:$squareupRetrofitVersion"
+    implementation (name:'tenor-android-core-jetified', ext:'aar') // Jetified Tenor Gif library
+    implementation "com.squareup.retrofit2:retrofit:$squareupRetrofitVersion"
+    implementation "com.squareup.retrofit2:converter-gson:$squareupRetrofitVersion"
 
-    api "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"
-    api "com.google.dagger:hilt-android-compiler:$gradle.ext.daggerVersion"
+    implementation "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"
+    implementation "com.google.dagger:hilt-android-compiler:$gradle.ext.daggerVersion"
     kapt "com.google.dagger:hilt-compiler:$gradle.ext.daggerVersion"
 
-    api "org.wordpress:utils:$wordpressUtilsVersion"
+    implementation "org.wordpress:utils:$wordpressUtilsVersion"
 }
 
 project.afterEvaluate {

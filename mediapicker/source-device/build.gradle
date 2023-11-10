@@ -29,12 +29,12 @@ android {
 }
 
 dependencies {
-    api mediaPickerDomainDependency
+    implementation mediaPickerDomainDependency
 
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinxCoroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinxCoroutinesVersion"
 
-    api "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"
-    api "com.google.dagger:hilt-android-compiler:$gradle.ext.daggerVersion"
+    implementation "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"
+    implementation "com.google.dagger:hilt-android-compiler:$gradle.ext.daggerVersion"
     kapt "com.google.dagger:hilt-compiler:$gradle.ext.daggerVersion"
 }
 
