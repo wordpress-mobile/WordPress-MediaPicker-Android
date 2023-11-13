@@ -62,16 +62,16 @@ ext {
     wordpressUtilsVersion = "2.4.0"
 
     // main
-    androidxAppcompatVersion = '1.6.1'
+    androidxAppcompatVersion = '1.4.2'
     androidxCoreVersion = '1.12.0'
     androidxDatastoreVersion = '1.0.0'
     androidxConstraintlayoutVersion = '2.1.4'
-    androidxLifecycleVersion = '2.6.2'
-    androidxNavigationVersion = '2.7.5'
+    androidxLifecycleVersion = '2.4.1'
+    androidxNavigationVersion = '2.5.3'
     androidxSwipeToRefreshVersion = '1.1.0'
     chrisbanesPhotoviewVersion = '2.3.0'
-    glideVersion = '4.16.0'
     googleMaterialVersion = '1.5.0'
+    glideVersion = '4.13.2'
     kotlinxCoroutinesVersion = '1.6.4'
     squareupRetrofitVersion = "2.9.0"
 
