@@ -59,7 +59,7 @@ ext {
 ext {
     // libs
     wordPressFluxCVersion = 'trunk-7ea7465680431fa4df5f0433d4c8b8395055b997'
-    wordpressUtilsVersion = "2.4.0"
+    wordpressUtilsVersion = "2.6.0"
 
     // main
     androidxAppcompatVersion = '1.4.2'
@@ -70,8 +70,8 @@ ext {
     androidxNavigationVersion = '2.5.3'
     androidxSwipeToRefreshVersion = '1.1.0'
     chrisbanesPhotoviewVersion = '2.3.0'
-    googleMaterialVersion = '1.5.0'
     glideVersion = '4.13.2'
+    googleMaterialVersion = '1.6.1'
     kotlinxCoroutinesVersion = '1.6.4'
     squareupRetrofitVersion = "2.9.0"
 
