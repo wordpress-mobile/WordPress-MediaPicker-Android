@@ -8,28 +8,16 @@ import org.wordpress.android.mediapicker.api.MediaPickerSetup.SearchMode.HIDDEN
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.SearchMode.VISIBLE_UNTOGGLED
 import org.wordpress.android.mediapicker.model.MediaTypes
 
-class DeviceMediaPickerSetup private constructor() {
-    companion object {
-        fun buildMediaPicker(mediaTypes: MediaTypes, canMultiSelect: Boolean): MediaPickerSetup {
-            return MediaPickerSetup(
-                primaryDataSource = DEVICE,
-                isMultiSelectEnabled = canMultiSelect,
-                areResultsQueued = false,
-                searchMode = VISIBLE_UNTOGGLED,
-                availableDataSources = setOf(SYSTEM_PICKER),
-                allowedTypes = mediaTypes.allowedTypes,
-                title = R.string.photo_picker_title
-            )
-        }
-
-        fun buildSystemPicker(mediaTypes: MediaTypes, canMultiSelect: Boolean): MediaPickerSetup {
-            return MediaPickerSetup(
-                primaryDataSource = SYSTEM_PICKER,
-                isMultiSelectEnabled = canMultiSelect,
-                areResultsQueued = false,
-                searchMode = HIDDEN,
-                allowedTypes = mediaTypes.allowedTypes
-            )
-        }
+object DeviceMediaPickerSetup {
+    fun build(mediaTypes: MediaTypes, canMultiSelect: Boolean): MediaPickerSetup {
+        return MediaPickerSetup(
+            primaryDataSource = DEVICE,
+            isMultiSelectEnabled = canMultiSelect,
+            areResultsQueued = false,
+            searchMode = VISIBLE_UNTOGGLED,
+            availableDataSources = setOf(SYSTEM_PICKER),
+            allowedTypes = mediaTypes.allowedTypes,
+            title = R.string.photo_picker_title
+        )
     }
 }

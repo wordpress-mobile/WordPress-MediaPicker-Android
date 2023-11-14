@@ -37,7 +37,3 @@ fun Context.getColorStateListFromAttribute(@AttrRes attribute: Int): ColorStateL
     getColorResIdFromAttribute(attribute).let {
         AppCompatResources.getColorStateList(this, it)
     }
-
-// https://developer.android.com/reference/android/content/res/Configuration.html#locale
-val Context.currentLocale: Locale
-    get() = ConfigurationCompat.getLocales(resources.configuration)[0]

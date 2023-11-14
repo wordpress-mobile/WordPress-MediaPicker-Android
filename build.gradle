@@ -32,7 +32,11 @@ allprojects {
 
     tasks.withType(KotlinCompile).all {
         kotlinOptions {
+            jvmTarget = JavaVersion.VERSION_1_8
             allWarningsAsErrors = true
+            freeCompilerArgs += [
+                    "-opt-in=kotlin.RequiresOptIn"
+            ]
         }
     }
 }
@@ -47,27 +51,27 @@ subprojects {
 
 ext {
     minSdkVersion = 24
-    compileSdkVersion = 33
-    targetSdkVersion = 33
+    compileSdkVersion = 34
+    targetSdkVersion = 34
 }
 
 ext {
     // libs
-    wordPressFluxCVersion = 'develop-fa819801570505a0e9b4f7f226bb704b88ccc1d2'
-    wordpressUtilsVersion = "2.4.0"
+    wordPressFluxCVersion = 'trunk-7ea7465680431fa4df5f0433d4c8b8395055b997'
+    wordpressUtilsVersion = "2.6.0"
 
     // main
-    androidxAppcompatVersion = '1.4.1'
-    androidxCoreVersion = '1.7.0'
+    androidxAppcompatVersion = '1.4.2'
+    androidxCoreVersion = '1.12.0'
     androidxDatastoreVersion = '1.0.0'
-    androidxConstraintlayoutVersion = '2.1.1'
-    androidxLifecycleVersion = '2.4.0'
-    androidxNavigationVersion = '2.3.5'
+    androidxConstraintlayoutVersion = '2.1.4'
+    androidxLifecycleVersion = '2.6.2'
+    androidxNavigationVersion = '2.5.3'
     androidxSwipeToRefreshVersion = '1.1.0'
     chrisbanesPhotoviewVersion = '2.3.0'
-    glideVersion = '4.12.0'
-    googleMaterialVersion = '1.5.0'
-    kotlinxCoroutinesVersion = '1.5.2'
+    glideVersion = '4.13.2'
+    googleMaterialVersion = '1.6.1'
+    kotlinxCoroutinesVersion = '1.6.4'
     squareupRetrofitVersion = "2.9.0"
 
     // other

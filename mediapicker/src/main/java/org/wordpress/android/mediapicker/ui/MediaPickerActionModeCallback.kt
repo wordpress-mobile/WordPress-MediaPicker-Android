@@ -74,5 +74,6 @@ internal class MediaPickerActionModeCallback(private val viewModel: MediaPickerV
         lifecycleRegistry.handleLifecycleEvent(ON_STOP)
     }
 
-    override fun getLifecycle(): Lifecycle = lifecycleRegistry
+    override val lifecycle: Lifecycle
+        get() = lifecycleRegistry
 }

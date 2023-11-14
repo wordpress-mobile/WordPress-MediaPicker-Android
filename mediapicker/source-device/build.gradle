@@ -11,7 +11,7 @@ plugins {
 android {
     namespace "org.wordpress.android.mediapicker.source.device"
 
-    compileSdkVersion rootProject.compileSdkVersion
+    compileSdk  rootProject.compileSdkVersion
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
@@ -20,6 +20,11 @@ android {
 
     lint {
         warningsAsErrors true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 

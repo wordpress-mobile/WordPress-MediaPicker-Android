@@ -14,7 +14,7 @@ repositories {
 android {
     namespace "org.wordpress.android.sampleapp"
 
-    compileSdkVersion rootProject.compileSdkVersion
+    compileSdk rootProject.compileSdkVersion
 
     defaultConfig {
         applicationId "org.wordpress.android.sampleapp"
@@ -31,9 +31,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
 
     lint {
         warningsAsErrors true
@@ -42,7 +39,7 @@ android {
     }
 
     packagingOptions {
-        exclude 'META-INF/gradle/incremental.annotation.processors'
+        exclude("META-INF/gradle/incremental.annotation.processors")
     }
 
     kapt {
@@ -69,6 +66,5 @@ dependencies {
     implementation "com.google.android.material:material:$googleMaterialVersion"
 
     implementation "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"
-    implementation "com.google.dagger:hilt-android-compiler:$gradle.ext.daggerVersion"
     kapt "com.google.dagger:hilt-compiler:$gradle.ext.daggerVersion"
 }

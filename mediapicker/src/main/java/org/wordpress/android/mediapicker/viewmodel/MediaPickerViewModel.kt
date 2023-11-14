@@ -9,7 +9,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.wordpress.android.mediapicker.MediaManager
 import org.wordpress.android.mediapicker.MediaPickerTracker
@@ -206,7 +205,7 @@ internal class MediaPickerViewModel @Inject constructor(
         val data = domainModel?.domainItems
         return if (softAskRequest?.show == true) {
             PhotoListUiModel.Hidden
-        } else if (data != null && data.isNotEmpty()) {
+        } else if (!data.isNullOrEmpty()) {
             val uiItems = data.map {
                 val showOrderCounter = mediaPickerSetup.isMultiSelectEnabled
                 val toggleAction = ToggleAction(it.identifier, showOrderCounter, ::onItemToggled)
