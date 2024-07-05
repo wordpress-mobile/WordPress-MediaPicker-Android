@@ -4,6 +4,7 @@ pluginManagement {
     gradle.ext.agpVersion = '8.1.0'
     gradle.ext.detektVersion = '1.19.0'
     gradle.ext.automatticPublishToS3Version = '0.8.0'
+    gradle.ext.dependencyAnalysisVersion = '1.28.0'
 
     plugins {
         id 'io.gitlab.arturbosch.detekt' version gradle.ext.detektVersion
@@ -15,6 +16,7 @@ pluginManagement {
         id "com.android.library" version gradle.ext.agpVersion
         id 'dagger.hilt.android.plugin'
         id "com.automattic.android.publish-to-s3" version gradle.ext.automatticPublishToS3Version
+        id "com.autonomousapps.dependency-analysis" version gradle.ext.dependencyAnalysisVersion
     }
     repositories {
         maven {
