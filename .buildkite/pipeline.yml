@@ -1,11 +1,6 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/buildkite/pipeline-schema/main/schema.json
 ---
 
-common_params:
-  # Common plugin settings to use with the `plugins` key.
-  - &common_plugins
-    - automattic/a8c-ci-toolkit#2.15.0
-
 agents:
   queue: "android"
 
@@ -13,7 +8,7 @@ steps:
   - label: "Gradle Wrapper Validation"
     command: |
       validate_gradle_wrapper
-    plugins: *common_plugins
+    plugins: [$CI_TOOLKIT]
 
   # Wait for Gradle Wrapper to be validated before running any other jobs
   - wait
@@ -22,12 +17,12 @@ steps:
     key: "detekt"
     command: |
       ./gradlew detekt
-    plugins: *common_plugins
+    plugins: [$CI_TOOLKIT]
     artifact_paths:
       - "**/build/reports/detekt/detekt.html"
   - label: "lint"
     key: "lint"
-    plugins: *common_plugins
+    plugins: [$CI_TOOLKIT]
     command: |
       ./gradlew lintRelease
     artifact_paths:
@@ -39,36 +34,36 @@ steps:
     depends_on:
       - "detekt"
       - "lint"
-    plugins: *common_plugins
+    plugins: [$CI_TOOLKIT]
     command: |
       .buildkite/publish-mediapicker-domain.sh
   - label: "Publish :mediapicker:source-device"
     depends_on:
       - "publish-mediapicker-domain"
-    plugins: *common_plugins
+    plugins: [$CI_TOOLKIT]
     command: |
       .buildkite/publish-mediapicker-source-device.sh
   - label: "Publish :mediapicker:source-camera"
     depends_on:
       - "publish-mediapicker-domain"
-    plugins: *common_plugins
+    plugins: [$CI_TOOLKIT]
     command: |
       .buildkite/publish-mediapicker-source-camera.sh
   - label: "Publish :mediapicker:source-gif"
     depends_on:
       - "publish-mediapicker-domain"
-    plugins: *common_plugins
+    plugins: [$CI_TOOLKIT]
     command: |
       .buildkite/publish-mediapicker-source-gif.sh
   - label: "Publish :mediapicker:source-wordpress"
     depends_on:
       - "publish-mediapicker-domain"
-    plugins: *common_plugins
+    plugins: [$CI_TOOLKIT]
     command: |
       .buildkite/publish-mediapicker-source-wordpress.sh
   - label: "Publish :mediapicker"
     depends_on:
       - "publish-mediapicker-domain"
-    plugins: *common_plugins
+    plugins: [$CI_TOOLKIT]
     command: |
       .buildkite/publish-mediapicker.sh
