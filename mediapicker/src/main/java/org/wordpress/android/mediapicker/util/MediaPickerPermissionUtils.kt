@@ -55,25 +55,15 @@ internal class MediaPickerPermissionUtils @Inject constructor(
     }
 
     fun hasPermissionsToTakePhotos(): Boolean {
-        return hasCameraPermission() && (VERSION.SDK_INT > VERSION_CODES.P || hasWriteStoragePermission())
+        return hasCameraPermission()
     }
 
     val permissionsForTakingPhotos: List<PermissionsRequested>
-        get() = if (VERSION.SDK_INT > VERSION_CODES.P) {
-            listOf(CAMERA)
-        } else {
-            listOf(CAMERA, WRITE_STORAGE)
-        }
+        get() = listOf(CAMERA)
 
     fun hasReadStoragePermission(): Boolean {
         return ContextCompat.checkSelfPermission(
             context, permission.READ_EXTERNAL_STORAGE
-        ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun hasWriteStoragePermission(): Boolean {
-        return ContextCompat.checkSelfPermission(
-            context, permission.WRITE_EXTERNAL_STORAGE
         ) == PackageManager.PERMISSION_GRANTED
     }
 
