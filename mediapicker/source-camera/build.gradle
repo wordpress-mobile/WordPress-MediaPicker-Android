@@ -31,6 +31,15 @@ dependencies {
     implementation "androidx.core:core-ktx:$androidxCoreVersion"
 }
 
+dependencyAnalysis {
+    issues {
+        onUnusedDependencies {
+            // This dependency is actually needed because of 'androidx.core.content.FileProvider' on 'AndroidManifest.xml'.
+            exclude("androidx.core:core-ktx")
+        }
+    }
+}
+
 project.afterEvaluate {
     publishing {
         publications {
