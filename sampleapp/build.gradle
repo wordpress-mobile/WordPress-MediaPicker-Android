@@ -67,3 +67,12 @@ dependencies {
     implementation "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"
     kapt "com.google.dagger:hilt-compiler:$gradle.ext.daggerVersion"
 }
+
+dependencyAnalysis {
+    issues {
+        onUnusedDependencies {
+            // This dependency is not needed but it is kept to preserve the module's default configuration.
+            exclude(":mediapicker:source-wordpress")
+        }
+    }
+}
