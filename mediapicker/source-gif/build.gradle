@@ -42,6 +42,15 @@ dependencies {
     implementation "org.wordpress:utils:$wordpressUtilsVersion"
 }
 
+dependencyAnalysis {
+    issues {
+        onUnusedDependencies {
+            // This dependency is actually needed otherwise 'tenor' fails with 'NoClassDefFoundError' on 'GsonConverterFactory'.
+            exclude("com.squareup.retrofit2:converter-gson")
+        }
+    }
+}
+
 project.afterEvaluate {
     publishing {
         publications {

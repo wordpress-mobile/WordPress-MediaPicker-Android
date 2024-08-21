@@ -61,10 +61,18 @@ dependencies {
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinxCoroutinesVersion"
 
-    implementation "androidx.core:core-ktx:$androidxCoreVersion"
     implementation "androidx.appcompat:appcompat:$androidxAppcompatVersion"
     implementation "com.google.android.material:material:$googleMaterialVersion"
 
     implementation "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"
     kapt "com.google.dagger:hilt-compiler:$gradle.ext.daggerVersion"
+}
+
+dependencyAnalysis {
+    issues {
+        onUnusedDependencies {
+            // This dependency is not needed but it is kept to preserve the module's default configuration.
+            exclude(":mediapicker:source-wordpress")
+        }
+    }
 }
