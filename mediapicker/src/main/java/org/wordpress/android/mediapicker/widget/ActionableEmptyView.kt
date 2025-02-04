@@ -10,7 +10,6 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
-import org.openjdk.tools.javac.main.Option.InvalidValueException
 import org.wordpress.android.mediapicker.R
 import org.wordpress.android.util.DisplayUtils
 
@@ -94,7 +93,7 @@ internal class ActionableEmptyView : LinearLayout {
             if (!titleAttribute.isNullOrEmpty()) {
                 title.text = titleAttribute
             } else {
-                throw InvalidValueException(
+                throw IllegalArgumentException(
                     "$context: ActionableEmptyView must have a title (aevTitle)"
                 )
             }
