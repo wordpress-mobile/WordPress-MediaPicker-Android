@@ -8,6 +8,9 @@ import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AnimationUtils
 import android.view.animation.LinearInterpolator
+import androidx.core.graphics.Insets
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 
 fun View.redirectContextClickToLongPressListener() {
     this.setOnContextClickListener { it.performLongClick() }
@@ -60,5 +63,16 @@ fun View?.fadeOut(duration: Long) {
                 }
             })
         }.start()
+    }
+}
+
+inline fun View.doOnApplyWindowInsets(
+    insetsMask: Int = WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
+    consumeInsets: Boolean = false,
+    crossinline action: (Insets) -> Unit
+) {
+    ViewCompat.setOnApplyWindowInsetsListener(this) { _, insets ->
+        action(insets.getInsets(insetsMask))
+        if (consumeInsets) WindowInsetsCompat.CONSUMED else insets
     }
 }
