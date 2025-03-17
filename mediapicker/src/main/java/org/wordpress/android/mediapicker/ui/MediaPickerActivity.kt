@@ -6,11 +6,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.updatePadding
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.mediapicker.R
 import org.wordpress.android.mediapicker.api.Log
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.databinding.MediaPickerLibActivityBinding
+import org.wordpress.android.mediapicker.util.doOnApplyWindowInsets
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -26,6 +28,19 @@ class MediaPickerActivity : AppCompatActivity() {
         supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
             setDisplayShowTitleEnabled(true)
+        }
+        applyEdgeToEdgeSettings(binding)
+    }
+
+    fun applyEdgeToEdgeSettings(binding: MediaPickerLibActivityBinding){
+        binding.root.doOnApplyWindowInsets(consumeInsets = true) { insets ->
+            binding.toolbarMain.setPadding(0, insets.top, 0, 0)
+
+            binding.root.updatePadding(
+                left = insets.left,
+                right = insets.right,
+                bottom = insets.bottom
+            )
         }
     }
 
