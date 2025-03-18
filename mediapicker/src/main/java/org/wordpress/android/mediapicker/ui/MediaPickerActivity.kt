@@ -32,14 +32,12 @@ class MediaPickerActivity : AppCompatActivity() {
         applyEdgeToEdgeSettings(binding)
     }
 
-    fun applyEdgeToEdgeSettings(binding: MediaPickerLibActivityBinding){
-        binding.root.doOnApplyWindowInsets(consumeInsets = true) { insets ->
+    fun applyEdgeToEdgeSettings(binding: MediaPickerLibActivityBinding) {
+        binding.root.doOnApplyWindowInsets { insets ->
             binding.toolbarMain.setPadding(0, insets.top, 0, 0)
-
             binding.root.updatePadding(
                 left = insets.left,
-                right = insets.right,
-                bottom = insets.bottom
+                right = insets.right
             )
         }
     }
