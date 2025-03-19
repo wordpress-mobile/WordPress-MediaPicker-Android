@@ -286,7 +286,8 @@ internal class MediaPickerFragment : Fragment(), MenuProvider {
             insetsMask = WindowInsetsCompat.Type.navigationBars(),
             consumeInsets = true
         ) { insets ->
-            binding.recycler.addItemDecoration(LastItemPaddingDecoration(insets.bottom), 0)
+            binding.recycler.clipToPadding = false
+            binding.recycler.updatePadding(bottom = insets.bottom)
             binding.actionableEmptyView.updatePadding(bottom = insets.bottom)
             binding.softAskView.updatePadding(bottom = insets.bottom)
             binding.loadingView.updatePadding(bottom = insets.bottom)
