@@ -20,7 +20,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.text.HtmlCompat
 import androidx.core.view.MenuProvider
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -68,6 +70,7 @@ import org.wordpress.android.mediapicker.util.MediaPickerLinkMovementMethod
 import org.wordpress.android.mediapicker.util.MediaPickerPermissionUtils
 import org.wordpress.android.mediapicker.util.MediaUtils
 import org.wordpress.android.mediapicker.util.UiHelpers
+import org.wordpress.android.mediapicker.util.doOnApplyWindowInsets
 import org.wordpress.android.mediapicker.viewmodel.MediaPickerViewModel
 import org.wordpress.android.mediapicker.viewmodel.observeEvent
 import javax.inject.Inject
@@ -225,6 +228,7 @@ internal class MediaPickerFragment : Fragment(), MenuProvider {
                     }
                     setupFab(uiState.fabUiModel)
                     pullToRefresh.isRefreshing = uiState.isRefreshing
+                    applyEdgeToEdgeSettings(this)
                 }
             }
 
@@ -274,6 +278,19 @@ internal class MediaPickerFragment : Fragment(), MenuProvider {
                 ?.setTitle(mediaPickerSetup.title)
 
             viewModel.start(selectedIds, mediaPickerSetup, lastTappedAction)
+        }
+    }
+
+    private fun applyEdgeToEdgeSettings(binding: MediaPickerLibFragmentBinding){
+        binding.root.doOnApplyWindowInsets(
+            insetsMask = WindowInsetsCompat.Type.navigationBars(),
+            consumeInsets = true
+        ) { insets ->
+            binding.recycler.clipToPadding = false
+            binding.recycler.updatePadding(bottom = insets.bottom)
+            binding.actionableEmptyView.updatePadding(bottom = insets.bottom)
+            binding.softAskView.updatePadding(bottom = insets.bottom)
+            binding.loadingView.updatePadding(bottom = insets.bottom)
         }
     }
 
