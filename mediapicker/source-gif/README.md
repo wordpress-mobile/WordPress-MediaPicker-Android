@@ -28,10 +28,9 @@ Here are the key dates:
 
 ## Migration Recommendations
 
-Consider migrating to one of these alternative GIF providers:
+Consider migrating to an alternative GIF provider:
 
 - [GIPHY API](https://developers.giphy.com/) - Popular GIF platform with comprehensive API
-- [Gfycat API](https://developers.gfycat.com/) - High-quality GIF and video clips
 
 ### Migration Steps
 
