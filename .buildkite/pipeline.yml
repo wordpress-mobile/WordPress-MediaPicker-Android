@@ -49,12 +49,15 @@ steps:
     plugins: [$CI_TOOLKIT]
     command: |
       .buildkite/publish-mediapicker-source-camera.sh
-  - label: "Publish :mediapicker:source-gif"
-    depends_on:
-      - "publish-mediapicker-domain"
-    plugins: [$CI_TOOLKIT]
-    command: |
-      .buildkite/publish-mediapicker-source-gif.sh
+  # Temporarily disabled: Tenor API is being sunset on June 30, 2026.
+  # Re-enable this CI step after migrating to a new GIF provider.
+  # See mediapicker/source-gif/README.md for details.
+  # - label: "Publish :mediapicker:source-gif"
+  #   depends_on:
+  #     - "publish-mediapicker-domain"
+  #   plugins: [$CI_TOOLKIT]
+  #   command: |
+  #     .buildkite/publish-mediapicker-source-gif.sh
   - label: "Publish :mediapicker:source-wordpress"
     depends_on:
       - "publish-mediapicker-domain"
