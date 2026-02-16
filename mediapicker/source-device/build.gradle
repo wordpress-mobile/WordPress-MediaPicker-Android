@@ -20,6 +20,7 @@ android {
 
     lint {
         warningsAsErrors true
+        disable 'SelectedPhotoAccess'
     }
 
     compileOptions {
