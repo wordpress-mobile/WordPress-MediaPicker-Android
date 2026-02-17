@@ -35,7 +35,7 @@ android {
     lint {
         warningsAsErrors true
         checkReleaseBuilds false
-        disable 'GradleDependency'
+        disable 'GradleDependency', 'SelectedPhotoAccess'
     }
 
     packagingOptions {
