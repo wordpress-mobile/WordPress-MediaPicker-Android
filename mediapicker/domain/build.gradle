@@ -4,6 +4,7 @@ plugins {
     id 'org.jetbrains.kotlin.plugin.parcelize'
     id 'maven-publish'
     id "com.automattic.android.publish-to-s3"
+    id "com.autonomousapps.dependency-analysis"
 }
 
 android {

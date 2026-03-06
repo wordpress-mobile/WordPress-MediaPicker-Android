@@ -6,6 +6,7 @@ plugins {
     id 'dagger.hilt.android.plugin'
     id 'maven-publish'
     id "com.automattic.android.publish-to-s3"
+    id "com.autonomousapps.dependency-analysis"
 }
 
 android {
